@@ -34,5 +34,6 @@ Convenção: termos de domínio em português; primitivas criptográficas mantê
 | **Resolução** | Decisão registrada de um organismo (ata assinada), com escopo de vinculação; propaga-se para os feeds dos organismos subordinados. | [doc 02](docs/02-modelo-de-dominio.md) |
 | **Servidor cego** | Propriedade de projeto (P2): o servidor armazena e roteia apenas envelopes cifrados e estrutura; não lê conteúdo e não guarda PII. | [doc 00](docs/00-visao.md), [doc 03](docs/03-arquitetura-criptografica.md) |
 | **Simpatizante** | Usuário que acompanha as publicações públicas da organização sem pertencer a célula. | [doc 02](docs/02-modelo-de-dominio.md) |
+| **Voucher** | Código assinado pelo tesoureiro da célula, emitido contra pagamento em espécie, que o membro resgata como "cota paga"; permite anonimato do pagador com prestação de contas agregada. | [doc 05](docs/05-financiamento.md) |
 
 *(Glossário vivo — termos são acrescentados conforme os documentos que os definem são escritos.)*
