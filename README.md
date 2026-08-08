@@ -35,4 +35,4 @@ Ver [CONTRIBUTING.md](CONTRIBUTING.md). Nesta fase, as contribuições mais vali
 
 ## Licença
 
-Documentação sob [CC BY-SA 4.0](LICENSE). Código futuro: recomendação registrada de AGPL-3.0 (ver ADR-0007, quando houver).
+Documentação sob [CC BY-SA 4.0](LICENSE). Código futuro: recomendação registrada de AGPL-3.0 (ver [ADR-0007](docs/decisoes/adr-0007-licenciamento.md)).
