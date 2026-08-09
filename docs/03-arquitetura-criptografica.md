@@ -5,15 +5,16 @@
 | **Status** | rascunho |
 | **Última atualização** | 2026-08-08 |
 | **Depende de** | [00 — Visão](00-visao.md), [02 — Modelo de domínio](02-modelo-de-dominio.md) |
-| **Decisões** | [ADR-0001](decisoes/adr-0001-identidade-por-par-de-chaves.md), [ADR-0002](decisoes/adr-0002-autenticacao-assinatura-de-nonce.md), [ADR-0003](decisoes/adr-0003-servidor-rejeita-nao-envelope.md), [ADR-0004](decisoes/adr-0004-cripto-de-grupo-por-epoca.md), [ADR-0006](decisoes/adr-0006-voto-secreto-assinatura-cega.md) |
+| **Decisões** | [0001](decisoes/adr-0001-identidade-por-par-de-chaves.md), [0002](decisoes/adr-0002-autenticacao-assinatura-de-nonce.md), [0003](decisoes/adr-0003-servidor-rejeita-nao-envelope.md), [0006](decisoes/adr-0006-voto-secreto-assinatura-cega.md), **[0008](decisoes/adr-0008-mls-e-credenciais-anonimas.md)** (substitui a [0004](decisoes/adr-0004-cripto-de-grupo-por-epoca.md)) |
+| **Revisado por** | [revisao-critica.md](revisao-critica.md) (2026-08) |
 | **Público** | engenheiros ([técnico]) com seções [conceitual] |
 
 > Este é o documento técnico central. Ele especifica identidade, autenticação, o formato de envelope cifrado, a criptografia de grupo por organismo, o voto secreto e o que fica exposto como metadado. **Princípio inegociável (P7): só primitivas padrão, com referência (RFC/libsodium); nenhuma construção criptográfica caseira.** Onde o desenho tem limites, eles são declarados — a honestidade sobre o que **não** é protegido é requisito de qualidade, não fraqueza (ver também [doc 06](06-modelo-de-ameacas.md)).
 
 ## 1. Princípios criptográficos [conceitual]
 
-1. **Servidor cego (P2).** O cliente cifra tudo antes de enviar. O servidor armazena e roteia; não possui chaves para ler conteúdo.
-2. **Cliente é a raiz de confiança.** A garantia de que "só o destinatário lê" vem do software cliente — que é **livre e auditável** — e das chaves do usuário, não de promessas do servidor.
+1. **Servidor cego quanto ao conteúdo (P2).** O cliente cifra tudo antes de enviar; o servidor armazena e roteia, sem chaves para ler conteúdo. **Ele não é cego quanto à estrutura** — e, no reprojeto, as **credenciais anônimas** (§6, ADR-0008) reduzem o que ele aprende sobre *quem* participa, o principal furo apontado na revisão.
+2. **O cliente é a raiz de confiança — e um requisito, não uma premissa.** A garantia de que "só o destinatário lê" vem do software cliente **livre e auditável**; por isso **build reprodutível + binary transparency** são requisito ([doc 06 A7](06-modelo-de-ameacas.md)), não meta futura.
 3. **Primitivas padrão (P7).** Tudo abaixo referencia uma RFC e/ou uma implementação em libsodium.
 4. **MVP vs. futuro, explícito.** Cada mecanismo declara o que entra na primeira versão (MVP) e o que é evolução planejada. Empurrar o difícil para "futuro" com honestidade é melhor do que inventar solução frágil agora.
 
@@ -21,25 +22,28 @@
 
 Esta tabela é a **norma** do documento: todo mecanismo abaixo cita uma linha dela. Introduzir qualquer primitiva fora desta tabela exige um ADR.
 
+> **Nota de revisão (2026-08).** A tabela e as seções abaixo refletem o **reprojeto** decidido em [ADR-0008](decisoes/adr-0008-mls-e-credenciais-anonimas.md) (MLS + credenciais anônimas) e [ADR-0006 atualizado](decisoes/adr-0006-voto-secreto-assinatura-cega.md), após a [revisão crítica](revisao-critica.md). O modelo anterior de "chave de época por sealed box" (ADR-0004) foi substituído.
+
 | Uso | Primitiva | Referência |
 |---|---|---|
 | Assinatura de identidade | **Ed25519** | RFC 8032; libsodium `crypto_sign` |
 | Cifra assimétrica (para um destinatário) | **X25519 + sealed box** | RFC 7748; libsodium `crypto_box_seal` |
 | Cifra simétrica autenticada (AEAD) | **XChaCha20-Poly1305** | libsodium `crypto_aead_xchacha20poly1305_ietf` (nonce de 192 bits ⇒ nonce aleatório é seguro) |
+| **Grupo E2E dos organismos** | **MLS** (árvore assinada, `tree_hash`, `confirmation_tag`, FS + PCS) | RFC 9420 |
+| **ACL sem revelar identidade** | **Credencial anônima — BBS+ / KVAC** (prova ZK de pertencimento) | *Signal private groups*; literatura BBS+/KVAC |
 | Hash / resumo | **BLAKE2b** | RFC 7693; libsodium `crypto_generichash` |
 | Derivação de chave a partir de senha | **Argon2id** | RFC 9106; libsodium `crypto_pwhash` |
 | Derivação de chave (a partir de chave) | **HKDF-SHA-512** | RFC 5869 |
-| Assinatura cega (voto secreto) | **RSA blind signatures (RSABSSA)** | RFC 9474 |
-| Divisão de segredo (chave da urna) | **Shamir Secret Sharing** | libsodium não provê; usar implementação padrão auditada |
-| Grupo E2E dinâmico (evolução futura) | **MLS** | RFC 9420 |
-| Serialização canônica | **CBOR determinístico** | RFC 8949 §4.2 |
-| Biblioteca de referência | **libsodium** | — |
+| Assinatura cega (voto) — **emissão limiar** | **RSABSSA** (RFC 9474) sob **assinatura limiar** k-de-n | RFC 9474 + esquema limiar auditado |
+| Chave da urna | **DKG + VSS** (geração distribuída) + **decifração limiar** | Feldman/Pedersen VSS; ElGamal limiar |
+| Serialização e assinatura | **CBOR determinístico** + **COSE** (assina os bytes exatos) | RFC 8949 §4.2; RFC 9052 |
+| Biblioteca de referência | **libsodium** (+ implementação MLS e de credencial anônima auditadas) | — |
 
 Parâmetros de referência (ajustáveis por estatuto/deploy):
 
-- **Argon2id**: `opslimit`/`memlimit` na faixa "interativa a moderada" de libsodium (baseline sugerido: memória ≥ 64 MiB, iterações ≥ 3, paralelismo 1), seguindo as recomendações correntes do OWASP.
-- **Nonces XChaCha20-Poly1305**: 24 bytes aleatórios por mensagem.
-- **Tag Poly1305**: 16 bytes.
+- **Argon2id para a seed em repouso**: tier **SENSITIVE** do libsodium (`OPSLIMIT_SENSITIVE`, `MEMLIMIT` ~1 GiB) — é um custo único no *unlock*, no próprio dispositivo, e a seed é um alvo de **ataque offline** de alto valor (não o cenário "servidor com muitos logins" do tier interativo). Além disso: **exigir/medir entropia da passphrase** (ex.: diceware ≥ 6 palavras — Argon2id não salva senha fraca) e **ancorar a chave no keystore de hardware** (Secure Enclave/TPM/Android Keystore) quando disponível, para *rate-limiting* e não-exportabilidade.
+- **Separação de domínio (obrigatória em TODO objeto assinado):** cada assinatura carrega um rótulo de domínio único e versionado (`"partido-auth-v1"`, `"partido-envelope-v1"`, `"partido-cert-v1"`, `"partido-voto-commit-v1"`, …); as entradas são serializadas com **comprimento explícito** (CBOR/COSE), assinando **os bytes exatos transmitidos** — nunca uma re-serialização — para eliminar ambiguidade de fronteira e malleabilidade de canonicalização.
+- **Nonces XChaCha20-Poly1305**: 24 bytes aleatórios. **Tag Poly1305**: 16 bytes.
 
 ## 3. Identidade e chaves [técnico]
 
@@ -52,7 +56,7 @@ A identidade nasce de uma **seed** aleatória (256 bits) gerada **no cliente**. 
 - o par **Ed25519 de identidade** (`sk_id`, `pk_id`) — assina tudo; **é** a identidade;
 - o par **X25519 de cifra** (`sk_enc`, `pk_enc`) — recebe conteúdo cifrado.
 
-**Separação de chaves.** Assinatura e cifra usam pares distintos (princípio criptográfico consolidado: uma chave, um propósito). A `pk_enc` é **certificada** por uma assinatura de `sk_id` sobre `pk_enc || validade`, de modo que a chave de cifra pode ser **rotacionada** sem trocar a identidade.
+**Separação de chaves.** Assinatura e cifra usam pares distintos (princípio consolidado: uma chave, um propósito). A `pk_enc` é **certificada** por uma assinatura de `sk_id` (com rótulo de domínio `"partido-cert-v1"`) sobre `versao || pk_enc || notBefore || notAfter`, de modo que a chave de cifra pode ser **rotacionada** sem trocar a identidade. Para evitar *rollback* de chave pelo servidor (finding da revisão): o certificado tem **número de versão monotônico** e vale a regra "**somente a maior versão é válida**"; há **revogação** explícita; e a distribuição de certificados apoia-se em **key transparency** (log público append-only estilo CONIKS) para que o cliente detecte se o servidor está servindo um certificado obsoleto (a chave antiga, possivelmente comprometida).
 
 O identificador do usuário é auto-certificante:
 
@@ -92,7 +96,9 @@ sequenceDiagram
     Note over Srv: servidor guarda só pk_id, pk_enc, pseudonimo, estado
 ```
 
-O convite carrega o organismo de destino; a admissão efetiva (entrada como membro) é uma operação do organismo, que dispara a distribuição da chave de época (§7).
+O convite carrega o organismo de destino; a admissão efetiva (entrada como membro) é uma operação do organismo, que dispara um **`Commit` de `Add` no grupo MLS** do organismo (§7).
+
+> **Metadado de recrutamento (correção da revisão — [doc 06 A3](06-modelo-de-ameacas.md)).** Se o servidor verifica um convite assinado por um secretário específico, ele aprende **quem apadrinhou quem** — um grafo de recrutamento, alvo de repressão. Mitigação: o convite deve ser **cegado** para o servidor — o secretário emite uma credencial que o servidor valida como "convite legítimo desta organização" **sem** saber qual secretário assinou (assinatura de grupo / credencial anônima, a mesma família do §6); ou a validação do convite ocorre **no organismo que admite**, não no servidor. O diagrama acima descreve o fluxo lógico; a versão que preserva privacidade substitui a verificação nominal do convite pela verificação cega.
 
 ## 5. Autenticação: desafio-resposta por assinatura de nonce [técnico]
 
@@ -116,8 +122,9 @@ sequenceDiagram
 
     Cli->>Srv: pedido de desafio (user_id)
     Srv->>Srv: gera nonce aleatório (>=128 bits), guarda com expiração (~60s)
-    Srv-->>Cli: desafio {nonce, id_servidor, timestamp}
-    Cli->>Cli: monta mensagem M = "partido-auth-v1" || id_servidor || nonce || timestamp
+    Srv-->>Cli: desafio {nonce, id_servidor, timestamp} assinado pela chave_pub_organizacao
+    Cli->>Cli: verifica a assinatura do servidor e faz PINNING do id_servidor esperado
+    Cli->>Cli: monta M = "partido-auth-v1" || id_servidor || nonce || timestamp
     Cli->>Cli: assina M com sk_id
     Cli->>Srv: resposta {user_id, assinatura}
     Srv->>Srv: verifica assinatura com pk_id, nonce válido, não usado e não expirado
@@ -127,9 +134,9 @@ sequenceDiagram
 
 Propriedades:
 
-- **Separação de domínio.** O prefixo constante `"partido-auth-v1"` amarra a assinatura ao propósito de autenticação: uma assinatura de login nunca pode ser confundida com a assinatura de uma resolução, de um voto ou de um envelope.
-- **Anti-replay.** Nonce de uso único, com expiração curta, invalidado após o uso.
-- **Vínculo ao servidor.** Incluir `id_servidor` impede que uma resposta capturada por um servidor sirva para autenticar em outro (relevante na federação, doc 04).
+- **Canal autenticado do servidor (correção da revisão).** O desafio é **assinado pela `chave_pub_organizacao`** (doc 02 §2.3), e o cliente **verifica e fixa (pinning, TOFU + fingerprint)** o `id_servidor` esperado. Sem isso, um servidor malicioso poderia apresentar o `id_servidor` de outro e obter uma assinatura de login reutilizável (ataque de *relay*) — o `id_servidor` no desafio só protege se o cliente o conhece independentemente.
+- **Separação de domínio.** O prefixo `"partido-auth-v1"` amarra a assinatura ao login: uma assinatura de login nunca é confundível com a de uma resolução, voto ou envelope.
+- **Anti-replay.** Nonce de uso único, com expiração curta, invalidado após o uso (o anti-replay real é o nonce rastreado; o `timestamp` é só janela de validade).
 - **Só a chave pública é guardada.** O servidor nunca vê `sk_id`.
 
 ## 6. Envelope cifrado e a regra "o servidor rejeita o que não é envelope" [técnico]
@@ -146,143 +153,153 @@ Envelope = {
     versao,                 # versão do formato
     tipo,                   # mensagem | correspondencia | resolucao | voto | ...
     organismo_destino,      # id do organismo (compartimento)
-    epoca_de_chave,         # inteiro; qual chave de grupo cifra o corpo
-    remetente               # user_id (ver tradeoff em 6.3)
+    epoch,                  # epoch MLS corrente do organismo (§7)
+    msg_id,                 # identificador único da mensagem (anti-replay)
+    contador,               # contador monotônico por remetente-no-organismo
+    prev_hash               # BLAKE2b do envelope anterior do feed (cadeia)
   },
-  corpo_cifrado: bytes,     # AEAD: XChaCha20-Poly1305(chave_da_epoca, nonce, plaintext, AD=cabecalho)
-  nonce: bytes(24),
-  assinatura: bytes         # Ed25519 de sk_id sobre (cabecalho || corpo_cifrado || nonce)
+  corpo_cifrado: bytes,     # AEAD (MLS application message), AD = cabecalho
+  prova_membro: bytes       # credencial anônima (BBS+/KVAC): "sou membro autorizado
+                            #   de organismo_destino para este tipo" — SEM revelar quem
 }
 ```
 
-Pontos de projeto:
+Pontos de projeto (reprojeto — [ADR-0008](decisoes/adr-0008-mls-e-credenciais-anonimas.md)):
 
-- O **cabeçalho é usado como *associated data* (AD)** do AEAD: qualquer adulteração do cabeçalho (ex.: mudar `organismo_destino`) invalida a decifração no cliente destinatário. Cabeçalho e corpo ficam criptograficamente amarrados.
-- A **assinatura externa** (sobre cabeçalho + corpo + nonce) permite ao servidor verificar **autoria e ACL** (o remetente é membro do organismo?) **sem decifrar** o corpo.
-- O corpo é cifrado com a **chave simétrica da época** do organismo (§7). Para mensagens a um único destinatário (DM — futuro), usa-se sealed box para a `pk_enc` do destinatário.
+- **Autoria por credencial anônima, não por assinatura nominal.** No lugar do `remetente` (user_id) em claro + assinatura Ed25519, o envelope carrega uma **prova de pertencimento** (BBS+/KVAC): o servidor verifica que **um** membro autorizado do organismo produziu a mensagem, **sem aprender qual**. Isso (a) tira o `remetente` do cabeçalho — a maior fonte de exposição do grafo (doc 06 A3); e (b) dá **deniability** — o envelope deixa de ser prova não-repudiável de autoria contra o remetente numa apreensão (o problema do §7 do doc 06 / STRIDE).
+- **Transcrição em cadeia (anti-equivocação).** `msg_id` + `contador` monotônico + `prev_hash` encadeiam o feed do organismo. Clientes **detectam** replay (msg_id repetido), lacuna (contador com buraco) e reordenação/drop (prev_hash não bate); comparando a raiz da cadeia entre si, detectam **equivocação** (o servidor servindo visões divergentes). É a "cadeia de hashes verificável" que antes só existia na prosa do doc 06 — agora está no formato.
+- **Cabeçalho como AD** do AEAD: adulterar o cabeçalho invalida a decifração. O corpo é uma **mensagem de aplicação MLS** do grupo do organismo (§7); a chave vem do *ratchet* MLS, não de uma chave de época estática.
 
 ### 6.2 Validação estrutural sem decifrar
 
-Ao receber um envelope, o servidor **aceita ou rejeita** com base apenas na estrutura (P2 preservado):
+Ao receber um envelope, o servidor **aceita ou rejeita** só pela estrutura (P2 quanto ao conteúdo):
 
-1. CBOR decodifica no schema de `Envelope` (campos e tipos corretos)?
-2. `assinatura` confere com a `pk_id` do `remetente`?
-3. `remetente` é membro do `organismo_destino` com papel autorizado a esse `tipo` (ACL)?
-4. `epoca_de_chave` é a corrente do organismo (rejeita épocas obsoletas)?
-5. Tamanhos canônicos: `nonce` = 24 B, presença da tag de 16 B, e o `corpo_cifrado` cai num dos **buckets de padding** previstos (§9)?
+1. CBOR decodifica no schema de `Envelope`?
+2. `prova_membro` verifica contra o **verificador de credencial** do `organismo_destino` para o `tipo` (ACL) — **sem** identificar o membro?
+3. `epoch` é o corrente do organismo, e o avanço de epoch é **autenticado** pelo grupo (§7 — rejeita downgrade)?
+4. `contador`/`prev_hash` são consistentes com o feed (sem replay nem lacuna)?
+5. Tamanhos canônicos e `corpo_cifrado` num dos **buckets de padding** (§9)?
 
-Falhou qualquer item ⇒ **rejeitado**. É assim que "o servidor obriga tudo a ser cifrado": ele não aceita objetos que não tenham a forma de um envelope válido.
+Falhou qualquer item ⇒ **rejeitado**.
 
 ### 6.3 Honestidade: o que essa regra realmente garante
 
-**O servidor não consegue *provar* que uma sequência de bytes é um texto cifrado** — `corpo_cifrado` é opaco por definição; um cliente adulterado poderia colocar ali bytes em claro do mesmo tamanho. Portanto:
+**O servidor não consegue *provar* que uma sequência de bytes é um texto cifrado** — `corpo_cifrado` é opaco; um cliente adulterado poderia colocar ali bytes em claro. Portanto:
 
-- A garantia real de confidencialidade vem do **cliente livre e auditável**, que só produz envelopes de verdade, somada à validação estrutural acima.
-- Como **defesa em profundidade** (não como garantia), o servidor pode aplicar heurísticas baratas — rejeitar corpos com entropia baixa ou que decodifiquem como UTF-8 válido — mas o documento é explícito: **isso é higiene, não prova.**
-- A **única exceção formal** à regra é a `Publicacao` de escopo `publico` (I7), que é assinada mas legível por desenho (alcançar simpatizantes e o exterior). Toda exceção a "tudo cifrado" é essa e só essa, registrada em [ADR-0003](decisoes/adr-0003-servidor-rejeita-nao-envelope.md).
+- A garantia real de confidencialidade vem do **cliente livre e auditável** ([doc 06 A7](06-modelo-de-ameacas.md): build reprodutível é **requisito**), somada à validação acima.
+- Heurísticas de entropia/UTF-8 são **higiene, não prova** — e podem descartar mensagens curtas legítimas; mantidas só como defesa em profundidade opcional.
+- **Exceções formais** à regra "todo objeto é um envelope cifrado com prova de membro" (ADR-0003, atualizado): (1) `Publicacao` de escopo `publico` (assinada, legível por desenho); (2) **cédula de voto anônima** (§8, portadora de credencial de voto, não de credencial de membro); (3) **objetos de gestão de grupo MLS** (`KeyPackage`, `Welcome`, `Commit`), validados pela assinatura do emissor autorizado.
 
-**Tradeoff de metadado:** `remetente` e `organismo_destino` ficam no cabeçalho em claro (o servidor precisa deles para ACL e roteamento). Isso é metadado exposto ao servidor — mitigações e a evolução "sealed sender" estão em §9 e no doc 06.
+**Metadado residual.** Sai o `remetente`; permanecem `organismo_destino`, `epoch`, tamanhos e horário — ainda metadado. Mitigações (padding, retenção mínima, e o roteamento por organismo em vez de por pessoa) em §9; o grafo por-pessoa deixa de ser reconstruível a partir do cabeçalho, que era o pior vazamento.
 
-## 7. Criptografia de grupo por organismo [técnico]
+## 7. Grupo por organismo: MLS [técnico]
 
-Ver [ADR-0004](decisoes/adr-0004-cripto-de-grupo-por-epoca.md). Cada organismo é um **compartimento criptográfico** (M5, need-to-know): só seus membros leem seu conteúdo.
+Ver [ADR-0008](decisoes/adr-0008-mls-e-credenciais-anonimas.md) (substitui a ADR-0004). Cada organismo é um **grupo MLS** (RFC 9420) — um compartimento criptográfico (M5, need-to-know): só seus membros leem seu conteúdo.
 
-### 7.1 Chave de época
+### 7.1 Por que MLS, e não "chave de época por sealed box"
 
-Cada organismo tem uma **chave simétrica de grupo** associada a uma **época** (`epoca_de_chave`, doc 02 §2.2). O corpo dos envelopes do organismo é cifrado com a chave da época corrente.
+O desenho anterior distribuía a chave de época por `crypto_box_seal`. A [revisão crítica](revisao-critica.md) §2-B mostrou que isso é inseguro contra o adversário declarado: `sealed box` é **anônimo e não-autenticado** (qualquer parte, inclusive o servidor, fabrica um pacote de chave e **equivoca** membros), não há confirmação de que o grupo compartilha a **mesma** chave, e não há *post-compromise security* (comprometer uma chave privada dá leitura permanente do futuro). O MLS foi desenhado exatamente contra essa classe de ataque:
 
-**Distribuição.** Quando um membro é admitido, quem o admite cifra a chave da época corrente para a `pk_enc` dele com um **sealed box** (`crypto_box_seal`), e publica esse pacote no servidor (que o roteia sem lê-lo). Assim cada membro obtém a chave do grupo sem que o servidor a veja.
+- **Árvore de ratchet assinada** + `tree_hash`: a composição e as chaves são autenticadas; o servidor não insere membro nem troca chave sem quebrar a árvore.
+- **`confirmation_tag`**: todos os membros confirmam a **mesma** visão de epoch — elimina a equivocação.
+- **Forward secrecy + post-compromise security**: comprometer uma chave não dá o passado (FS) e, após uma atualização/remoção, o adversário perde o futuro (PCS).
+- **Avanço de epoch autenticado** (`Commit`): não há *downgrade* de epoch induzido por metadado não autenticado.
 
-### 7.2 Rotação (I9)
+### 7.2 Composição, admissão e remoção
 
 ```mermaid
 flowchart LR
-    E1["Época N<br/>membros A, B, C"] -->|"C sai / é removido"| ROT["Rotação"]
-    ROT --> E2["Época N+1<br/>nova chave, membros A, B"]
-    A2["novo membro D entra"] --> ROT2["Rotação"]
-    E2 --> ROT2
-    ROT2 --> E3["Época N+2<br/>membros A, B, D"]
+    E1["Epoch N (grupo MLS)<br/>membros A, B, C"] -->|"Commit: remove C"| E2["Epoch N+1<br/>PCS: C perde o futuro"]
+    E2 -->|"Commit em lote: entram D, E"| E3["Epoch N+2<br/>membros A, B, D, E"]
 ```
 
-Regras:
+- Admissão via `Add`/`Welcome`; remoção via `Remove`; ambas empacotadas em **`Commit`**, que avança o epoch de forma autenticada.
+- **Admissão em lote:** credenciar um congresso de centenas de delegados é **um** `Commit`, não uma rotação por delegado — elimina o custo O(n²) e a corrida do modelo anterior (I9 relaxada para "entrada em lote / saída", doc 02).
+- **Remoção corta o futuro (PCS):** o membro removido não lê epochs seguintes, mesmo que retenha material antigo.
+- Por padrão, quem entra **não lê o passado** (need-to-know); acesso a histórico é decisão explícita do organismo (ver §7.3).
 
-- **Saída/remoção de membro ⇒ nova época obrigatória.** Gera-se nova chave, distribuída apenas aos membros restantes. O que sai **não lê** o conteúdo futuro.
-- **Entrada de membro ⇒ nova época.** Por padrão (need-to-know), o novo membro **não recebe** as chaves de épocas anteriores — não lê o passado. Política de "dar acesso ao histórico" é decisão explícita do organismo, por época.
+### 7.3 Memória durável, separada da higiene de chave
 
-### 7.3 Registros duráveis vs. sigilo perfeito
+Uma organização precisa de **memória** (atas, resoluções, jornal legíveis no tempo). Isso **não** conflita com a forward secrecy do MLS — a falsa dicotomia "durabilidade exige FS fraca" foi corrigida na revisão. A solução é separar as camadas:
 
-Uma organização política precisa de **memória**: atas, resoluções e o jornal têm de permanecer legíveis para os membros presentes ao longo do tempo. Por isso o MVP favorece **registro cifrado durável por época** em vez de *forward secrecy* agressiva (apagar chaves rapidamente). É um tradeoff consciente, não um esquecimento.
+- **Transporte** (mensageria corrente do organismo): MLS, com FS/PCS plenos.
+- **Arquivo durável** (atas, resoluções que precisam sobreviver): re-cifrado sob uma **chave de arquivo do organismo**, versionada e acessível aos membros correntes — um registro explícito, não um efeito colateral de guardar chaves de transporte antigas.
 
-- Mensageria efêmera entre indivíduos (DM com *double ratchet*, estilo Signal) é **futuro**; o MVP é centrado em organismos.
-- **MLS (RFC 9420)** oferece gestão de grupo dinâmica com melhores propriedades (PCS/forward secrecy) e é a **evolução natural** da §7. O formato de envelope (§6) é agnóstico o suficiente para migrar de "chave de época simétrica" para MLS sem reescrever o modelo de domínio.
+Assim, apagar material de transporte antigo (bom para FS) não apaga a memória institucional (guardada, deliberadamente, no arquivo).
 
 ## 8. Voto secreto [técnico]
 
-Ver [ADR-0006](decisoes/adr-0006-voto-secreto-assinatura-cega.md). Requisitos de uma eleição: **elegibilidade** (só membros votam), **unicidade** (um voto por membro — I5), **sigilo** (ninguém liga voto→pessoa), **verificabilidade** (a apuração é conferível) e um **limite honesto**: nenhum esquema aqui resiste a **coação** ou **venda de voto** (o eleitor pode provar seu voto a um coator). Isso é declarado, não escondido.
+Ver [ADR-0006](decisoes/adr-0006-voto-secreto-assinatura-cega.md). Requisitos de uma eleição: **elegibilidade** (só membros votam), **unicidade** (um voto por membro — I5), **sigilo** (ninguém liga voto→pessoa), **integridade** (não se cunha voto além do censo — o ponto que a revisão corrigiu) e **verificabilidade** (a apuração é conferível — **parcial no MVP**, ver §8.3). **Limite honesto:** nenhum esquema aqui resiste a **coação** ou **venda de voto** (o eleitor pode provar seu voto a um coator). Declarado, não escondido.
 
 ### 8.1 Votação nominal aberta — *commit-reveal* (MVP)
 
 Para deliberações ordinárias e para a **tradição da votação nominal** em congressos (onde se quer registro de quem votou o quê), usa-se **commit-reveal**:
 
-1. **Commit:** cada eleitor publica `BLAKE2b(voto || sal)` assinado. Ninguém vê o voto ainda; ninguém pode mudar depois.
-2. **Reveal:** encerrado o prazo, revelam-se `voto || sal`; qualquer um confere contra o commit.
+1. **Commit:** cada eleitor publica `BLAKE2b("partido-voto-commit-v1" || voto || sal)` assinado, com `sal` **aleatório ≥ 128 bits** (obrigatório: se o espaço de voto é pequeno — sim/não — e o sal é fraco, o commit é quebrável por força bruta durante a fase de commit).
+2. **Reveal:** encerrado o prazo, revelam-se `voto || sal`; qualquer um confere.
 
-Isso garante **simultaneidade** (ninguém vota "olhando o placar"), não sigilo — por isso é o modo **aberto**.
+Garante **simultaneidade**, não sigilo — por isso é o modo **aberto**. **Aborto seletivo tratado:** quem observa os reveals alheios e **retém** o seu para negar quórum ou forçar re-votação é penalizado — o não-reveal no prazo conta como abstenção registrada (ou, para eleições sérias, usa-se abertura forçável via segredo compartilhado / *timed-commitment*), de modo que reter o voto não dá vantagem.
 
-### 8.2 Eleição secreta — assinatura cega + urna cifrada (MVP)
+### 8.2 Eleição secreta — emissão limiar + urna por DKG (MVP)
 
-Para eleições secretas (delegados, cargos), o esquema combina **assinatura cega** (RFC 9474) para separar *elegibilidade* de *conteúdo do voto*, com uma **urna cifrada** de chave dividida:
+Ver [ADR-0006 atualizado](decisoes/adr-0006-voto-secreto-assinatura-cega.md). O esquema separa **elegibilidade** de **conteúdo**, mas — correção central da revisão — **a integridade não pode depender de uma parte única**: a mesa é **distribuída** (emissão limiar) e a urna é gerada por **DKG** (ninguém detém a chave inteira).
 
 ```mermaid
 sequenceDiagram
     participant El as Eleitor
-    participant Mesa as Comissão eleitoral
+    participant Mesa as Mesa distribuída (k-de-n)
+    participant BB as Bulletin board
     participant Urna as Urna (servidor)
-    participant Esc as Escrutinadores
+    participant Esc as Escrutinadores (DKG)
 
     El->>El: prepara a cédula e a cega (blinding)
-    El->>Mesa: cédula cegada + prova de elegibilidade (assinatura de membro)
-    Mesa->>Mesa: confere elegibilidade e unicidade (1 credencial por membro)
-    Mesa-->>El: assinatura cega sobre a cédula cegada
-    El->>El: remove o blinding → credencial válida, não rastreável à identidade
-    El->>Urna: deposita cédula cifrada + credencial (por canal anônimo — Tor)
-    Note over Urna: urna só aceita cédulas com credencial válida da Mesa
-    Esc->>Urna: ao fim, escrutinadores combinam partes da chave (quórum Shamir)
-    Esc->>Esc: abrem a urna, apuram, publicam resultado + prova
+    El->>Mesa: cédula cegada + prova de elegibilidade (credencial de membro)
+    Mesa->>Mesa: k-de-n conferem elegibilidade e unicidade e coassinam a cega
+    Mesa->>BB: publica contagem de credenciais emitidas (sem identidade)
+    Mesa-->>El: assinatura cega limiar sobre a cédula cegada
+    El->>El: remove o blinding, obtém a credencial de voto (uso único)
+    El->>Urna: após atraso/mistura, deposita cédula cifrada + credencial (via Tor)
+    Note over Urna: aceita só credencial válida e AINDA NAO GASTA (uso único)
+    Esc->>Urna: ao fim, decifração LIMIAR (nenhum escrutinador reconstrói a chave)
+    Esc->>BB: publicam resultado + nº de cédulas, conferível contra o censo congelado
 ```
 
-Propriedades e cuidados:
+Propriedades e correções:
 
-- A **mesa** valida elegibilidade **sem ver o voto** (ele está cego); a **urna** aceita votos com credencial válida **sem saber de quem** (o blinding foi removido e não é rastreável). Elegibilidade e conteúdo ficam separados.
-- A **chave da urna é dividida** entre ≥2 escrutinadores por **Shamir**; abre-se só com o quórum — nenhum escrutinador isolado abre a urna antes da hora.
-- **Dependência crítica:** a deposição da cédula tem de vir por **canal anônimo (Tor / onion service)**. Sem isso, o servidor correlaciona voto→pessoa por IP/horário, e o sigilo cai. Isso está registrado como requisito, não como detalhe.
+- **Integridade não é de parte única (A9).** A assinatura cega é **emitida em limiar (k-de-n)**: nenhuma mesa isolada cunha credenciais extras (o *ballot stuffing* indetectável do desenho anterior). O **bulletin board** publica o número de credenciais emitidas, conferível contra o **censo eleitoral congelado** (I12) — sobre-emissão vira detectável.
+- **Uso único.** A urna marca cada credencial como **gasta**, prevenindo duplo-depósito (antes não especificado).
+- **Urna por DKG + VSS.** A chave da urna é gerada de forma **distribuída** (nenhum *dealer* jamais conhece a chave inteira — o furo do Shamir puro) com *shares* verificáveis; a apuração é **decifração limiar** — a urna nunca é "reconstruída" num único ponto. É também o caminho natural para o futuro homomórfico (§8.3).
+- **Sigilo depende de canal anônimo + mistura.** A deposição vem por **Tor**, e há **atraso/mistura (lote)** entre emissão e deposição — sem isso, "credenciado em T1 / depositou em T1+δ" correlaciona voto→pessoa mesmo sobre Tor. O cliente é **fail-closed**: sem canal anônimo confirmado, **recusa** depositar (doc 06 §8).
 
-### 8.3 Futuro
+### 8.3 Limite de verificabilidade e futuro
 
-Apuração **homomórfica com provas de conhecimento zero** (estilo **Helios/Belenios**), que dá verificabilidade ponta a ponta sem escrutinadores confiáveis. É referência de evolução; **não se reinventa** — adota-se um esquema publicado e revisado quando entrar no escopo.
+**O MVP é honestamente NÃO verificável ponta a ponta:** o eleitor não pode conferir que *seu* voto entrou na contagem final — confia-se que os escrutinadores decifram corretamente. A evolução é **apuração homomórfica com provas ZK** (estilo **Helios/Belenios**) e **cast-or-audit de Benaloh** (o eleitor desafia o cliente a provar que cifrou o voto certo), que dão verificabilidade E2E sem escrutinadores confiáveis. **Não se reinventa** — adota-se um esquema publicado e revisado quando entrar no escopo.
 
 ## 9. Metadados: o que fica exposto e mitigações [técnico]
 
 Confidencialidade de conteúdo (E2E) **não** é anonimato de participação. O que o servidor — e quem o observe ou apreenda — consegue ver, mesmo sem ler conteúdo:
 
-| Metadado | Quem vê | Mitigação (MVP) | Evolução |
+| Metadado | Quem vê | Mitigação | Estado |
 |---|---|---|---|
-| Quem fala com qual organismo (`remetente`, `organismo_destino`) | servidor | ACL exige, mas expõe; **onion service** esconde IP | **sealed sender** (remetente cifrado para o organismo) |
-| Grafo de filiação (quem é membro de quê) | servidor / quem apreende | zero PII; pseudônimos; retenção mínima | particionar/− minimizar; ver doc 06 A3 |
-| Horário e volume de mensagens | servidor / rede | timestamps truncados; retenção mínima | mixagem/atrasos |
-| Tamanho do conteúdo | servidor / rede | **padding em buckets** (tamanhos fixos escalonados) | — |
-| Endereço IP | rede / servidor | **Tor por padrão**; onion service nativo | — |
+| **Quem** fala com o organismo (identidade do remetente) | servidor | **credencial anônima** (BBS+/KVAC): a autoria some do cabeçalho; o servidor autoriza sem identificar | ADR-0008 — em implantação |
+| Grafo de filiação (quem é membro de quê) | servidor / apreensão | credencial anônima + **handles por-organismo não-vinculáveis** (em vez de `user_id` global) | ADR-0008; ver doc 06 A3 |
+| Qual organismo recebe (`organismo_destino`) | servidor | roteamento por organismo, não por pessoa; padding | residual (aceito) |
+| Horário e volume | servidor / rede | retenção mínima; **mistura/atraso** (obrigatória no voto, §8.2) | parcial |
+| Tamanho do conteúdo | servidor / rede | **padding em buckets** — *insuficiente isolado*: o metadado dominante é temporal, que só mistura resolve | parcial |
+| Endereço IP | rede / servidor | **Tor, fail-closed** (sem canal anônimo, recusa operações sensíveis); onion service nativo | MVP |
+| Vínculo a conta real via **push** (FCM/APNs) | Google/Apple | evitar push ou desacoplar token da identidade; polling sobre Tor | em aberto (doc 06 I2) |
 
-Esta tabela conecta-se diretamente ao [doc 06](06-modelo-de-ameacas.md), que a transforma em análise por adversário. **Ponto político central:** o sistema protege *conteúdo* muito bem e *metadado de participação* apenas parcialmente; prometer o contrário seria desonesto.
+**Padding honesto:** trata só tamanho; sem cobertura temporal (dummy traffic/mistura) rende pouco — não é creditado como mitigação autônoma. **Timestamps truncados** *in-band* são cosméticos (o servidor registra o horário real de chegada) — a mitigação real é mistura/atraso. Esta tabela alimenta o [doc 06](06-modelo-de-ameacas.md). **Ponto central:** com credenciais anônimas, o sistema deixa de reconstruir o grafo *por pessoa*; sem elas (estado anterior), a promessa de "servidor cego quanto à filiação" era insustentável.
 
 ## 10. Decisões em aberto
 
-- Momento de adoção de **MLS** (§7.3) e caminho de migração da chave de época.
-- **Sealed sender** (§9): custo x benefício frente à necessidade de ACL no servidor.
-- **Recuperação social** de identidade (§3.2) — protocolo de re-atestação pela célula.
-- Parâmetros finais de **Argon2id** por classe de dispositivo.
-- Esquema concreto de **divisão da chave da urna** (Shamir puro vs. limiar sobre curva) e sua biblioteca auditada.
-- Multi-dispositivo com sub-chaves (§3.3).
+- **Credencial anônima (BBS+/KVAC):** escolha do esquema, biblioteca auditada, e **revogação** (accumulator/epoch) quando um membro sai.
+- **MLS:** biblioteca, perfil de ciphersuite, e a camada de **arquivo durável** (§7.3) por cima.
+- **Cliente / cadeia de suprimento (doc 06 A7):** build reprodutível, *rebuilders*, binary transparency — tratado como requisito.
+- **Push notifications:** evitar FCM/APNs ou desacoplar o token (doc 06 I2).
+- **Recuperação social** de identidade (§3.2) — protocolo de re-atestação pela célula, para o MVP.
+- **Voto:** biblioteca de assinatura cega **limiar** + DKG/VSS; caminho para verificabilidade E2E (Helios/Belenios).
+- **Coação legal:** passphrase de coação / negação plausível; multi-dispositivo com sub-chaves revogáveis (§3.3).
 
 ## Referências
 
