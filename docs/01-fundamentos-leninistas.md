@@ -33,7 +33,7 @@ Dois traços dessa concepção são decisivos para o nosso projeto:
 
 ### A.2 — Comitês, círculos e a divisão de funções
 
-Na **"Carta a um camarada sobre as nossas tarefas de organização"** (1902), Lenin desce ao detalhe da estrutura local. O desenho é o seguinte: um **comitê** local dirige um conjunto de **círculos** (de fábrica, de distrito), e o trabalho é **especializado ao máximo** — grupos distintos para distribuição, para impressão, para transporte, para finanças. Cada grupo domina sua função e conhece apenas o necessário para executá-la.
+Na **"Carta a um camarada sobre as nossas tarefas de organização"** (escrita em 1902, publicada em 1903/1904), Lenin desce ao detalhe da estrutura local. O desenho é o seguinte: um **comitê** local dirige um conjunto de **círculos** (de fábrica, de distrito), e o trabalho é **especializado ao máximo** — grupos distintos para distribuição, para impressão, para transporte, para finanças. Cada grupo domina sua função e conhece apenas o necessário para executá-la.
 
 Aparecem aqui dois princípios que reaparecerão no software:
 
@@ -47,7 +47,7 @@ No **II Congresso do POSDR** (Partido Operário Social-Democrata Russo, 1903), a
 - **Lenin**: é membro quem aceita o programa, sustenta o partido materialmente **e participa pessoalmente de uma de suas organizações**.
 - **Martov**: bastaria aceitar o programa, sustentá-lo e prestar-lhe colaboração regular **sob a direção** de uma organização, sem necessariamente pertencer a uma.
 
-Dessa divergência nasceram as frações **bolchevique** (maioria, de *bolshinstvó*) e **menchevique** (minoria). Para o nosso projeto, o que importa é o conteúdo organizativo: **a distinção entre quem pertence a um organismo e quem apenas apoia** — a diferença que o software modela como **militante** vs. **simpatizante**.
+Na votação do §1, **a fórmula de Martov venceu** (cerca de 28 votos a 22) — Lênin foi derrotado *neste* ponto. Os rótulos **bolchevique** (maioria, de *bolshinstvó*) e **menchevique** (minoria) surgiram **depois**, das votações sobre os **órgãos centrais** (redação da *Iskra* e CC), quando a saída dos delegados do *Bund* e dos "economistas" deslocou a maioria para o lado de Lênin — não do §1. (Vincular os nomes ao §1 é um atalho de manual que inverte, inclusive, quem ganhou a votação descrita.) Para o nosso projeto, o que importa é o conteúdo organizativo, que independe de quem venceu: **a distinção entre quem pertence a um organismo e quem apenas apoia** — a diferença que o software modela como **militante** vs. **simpatizante**.
 
 ### A.4 — Centralismo democrático
 
@@ -61,6 +61,8 @@ Reunificadas provisoriamente no **IV Congresso ("de Unificação", Estocolmo, 19
 
 Este é o coração do que o projeto transforma em **arquitetura de fluxo de dados** (princípio P4): eleição e informes sobem; resolução vinculante desce; discussão precede o voto; mandato é temporário e revogável.
 
+> **Ressalva histórica (importante).** O equilíbrio entre democracia e centralismo é **conjuntural**, não fixo. A fórmula "liberdade de crítica, unidade de ação" é de Lênin em **1906** (a lista de cinco pontos acima é uma codificação retrospectiva). Antes de 1905, na clandestinidade, o funcionamento era muito mais por **cooptação** que por eleição — em *Um passo adiante, dois passos atrás* (1904) Lênin defende explicitamente o "burocratismo" contra o "democratismo" e chama a democracia ampla sob repressão de "brinquedo inútil e nocivo"; a eleição de baixo para cima só se torna praticável com a (semi)legalidade de 1905. Ou seja: as organizações históricas **suspendiam** eleições sob repressão. O projeto implementa o polo **eletivo/democrático** como padrão (I3) — que corresponde às **condições legais**; um regime clandestino exigiria parâmetros distintos (ver [modelo de ameaças](06-modelo-de-ameacas.md) e a decisão em aberto sobre "regime legal/semilegal/clandestino").
+
 ### A.5 — As teses de organização da Comintern (III Congresso, 1921)
 
 As **"Teses sobre a estrutura organizativa dos partidos comunistas, os métodos e o conteúdo de seu trabalho"** (III Congresso da Internacional Comunista, 1921) generalizam a experiência para os partidos de vários países. Três pontos são relevantes:
@@ -69,6 +71,8 @@ As **"Teses sobre a estrutura organizativa dos partidos comunistas, os métodos 
 - **Relatórios regulares de baixo para cima.** A prestação de contas é rotina institucional, não excepcional.
 - **Combinação de trabalho legal e clandestino**, com formas organizativas adequadas a cada um.
 
+> **Ressalva.** O próprio Lênin, no **IV Congresso da Comintern (1922)**, criticou essas teses de 1921 como "russas demais", incompreensíveis e inaplicáveis fora da Rússia — fadadas, em suas palavras, a virar "letra morta". Universalizar a "obrigação geral de trabalho + relatórios" como invariante repete o erro que ele apontou; o projeto adota o mecanismo (M10) reconhecendo que é uma *escolha*, não uma verdade universal.
+
 ### A.6 — A bolchevização e a célula de fábrica (1924–1925)
 
 Até meados dos anos 1920, a forma de base herdada da social-democracia era territorial (a seção do bairro). A **campanha de "bolchevização"** — deliberada no **V Congresso da Comintern (1924)** e detalhada na **Conferência de Organização / V Plenum Ampliado do Comitê Executivo (1925)** — muda a unidade de base para a **célula de empresa (de fábrica)**: o organismo se ancora onde as pessoas **trabalham e produzem**, não onde dormem.
@@ -76,6 +80,8 @@ Até meados dos anos 1920, a forma de base herdada da social-democracia era terr
 A razão é organizativa: a célula de fábrica coloca a organização no ponto de maior poder social dos trabalhadores (o processo produtivo) e cria vínculos densos e cotidianos. As **células de rua/território** passam a ser a forma secundária, para quem não pode se organizar no trabalho.
 
 **A célula torna-se, a partir daqui, a unidade de base por excelência** — é dela que o projeto extrai o princípio P1.
+
+> **Ressalva.** A bolchevização de 1924–25 foi **inseparável** do processo de estalinização — subordinação dos partidos nacionais a Moscou e marginalização das oposições. O projeto extrai dela a **forma** organizativa (célula de base ancorada na produção), não o conteúdo político daquela conjuntura.
 
 ### A.7 — A pirâmide organizativa
 
@@ -122,17 +128,21 @@ Onde os militantes atuam dentro de organizações mais amplas — sindicatos, co
 
 ### A.10 — A frente única
 
-Diante da necessidade de agir com outras organizações sem se fundir a elas, o **III (1921) e o IV (1922) Congressos da Comintern** formulam a tática da **frente única**. Sua fórmula clássica — **"marchar separados, golpear juntos"** — resume a ideia: organizações **independentes** firmam um **acordo entre suas direções** para uma ação comum, preservando cada uma sua estrutura, seu jornal e sua autonomia. É o modelo que o projeto adota para a **federação** entre servidores (doc 04).
+Diante da necessidade de agir com outras organizações sem se fundir a elas, a Comintern formula a tática da **frente única** — nas **Teses do CEIC (dezembro de 1921)** e no **IV Congresso (1922)**; o III Congresso (julho de 1921) deu a virada "às massas", mas não formulou a tática. A máxima associada — **"marchar separados, golpear juntos"** — é, na origem, um princípio **militar prussiano** (Moltke, *getrennt marschieren, vereint schlagen*) adotado no movimento, não uma cunhagem da Comintern. A ideia: organizações **independentes** firmam um **acordo entre suas direções** para uma ação comum, preservando cada uma sua estrutura, seu jornal e sua autonomia. É o modelo que o projeto adota para a **federação** entre servidores (doc 04).
+
+> **Ressalva.** A frente única histórica não era só cooperação neutra: tinha uma dimensão **competitiva** (a frente "por baixo" visava disputar a base das outras direções). O mapeamento M12 usa apenas a face cooperativa; a face de disputa fica fora do escopo do software.
 
 ### A.11 — Konspiratsiya: a compartimentação clandestina
 
 Operando sob repressão, o movimento desenvolveu uma disciplina de segurança — *konspiratsiya* — cujos elementos são notavelmente atuais:
 
-- **Pseudônimos de organização** (os *klichki*): "Lenin" e "Stalin" eram, eles próprios, pseudônimos. A identidade real do militante é desnecessária para a atividade e perigosa se conhecida.
-- **Need-to-know**: cada um sabe apenas o indispensável à sua tarefa.
+- **Pseudônimos** (os *klichki*): a identidade real do militante é desnecessária para a atividade e perigosa se conhecida. Historicamente favoreciam-se identidades **múltiplas e rotativas**, não-correlacionáveis entre si. (Nota: "Lênin" e "Stálin" eram *noms de plume* estáveis, mais próximos de uma assinatura pública do que dos *klichki* clandestinos descartáveis.)
+- **Need-to-know**: cada um sabe apenas o indispensável à sua tarefa — o corte de informação acontecia **dentro** da unidade, por função e por item.
 - **Separação de aparelhos**: o aparato clandestino é isolado do trabalho legal.
 
-Esses são exatamente os princípios que a criptografia moderna permite implementar de forma muito mais forte do que a disciplina pessoal jamais permitiu — é o núcleo do doc 03.
+A criptografia moderna permite implementar **parte** disso de forma mais forte que a disciplina pessoal — mas é preciso honestidade sobre o que o desenho atual **não** entrega (o [modelo de ameaças](06-modelo-de-ameacas.md) é a referência; este documento não deve prometer mais que ele):
+
+> **Alinhamento com o doc 06 (evitar superpromessa).** (1) **Need-to-know:** o mecanismo de grupo dá compartimentação **entre** organismos (um organismo não lê o outro), mas **dentro** de um organismo todos os membros leem tudo — o oposto do corte intra-unidade histórico. Um infiltrado lê tudo o que sua célula vê ([doc 06 A2](06-modelo-de-ameacas.md)). (2) **Grafo de filiação:** o servidor conhece em claro quem é membro de quê (e o papel de cada um) — exatamente a "lista de filiação" que o [doc 00 §1](00-visao.md) chama de primeiro alvo da repressão ([doc 06 A3](06-modelo-de-ameacas.md)). A adoção de **credenciais de membro anônimas** ([ADR-0008](decisoes/adr-0008-mls-e-credenciais-anonimas.md)) é a correção em curso. (3) **Identidade:** o modelo dá a cada usuário **um** par de chaves estável — um identificador de correlação, ao contrário das identidades rotativas históricas. A não-vinculabilidade multi-persona não é entregue hoje (ver [doc 06](06-modelo-de-ameacas.md)).
 
 ### A.12 — A cotização como base material
 
@@ -168,15 +178,22 @@ Esta tabela é o artefato central do documento: cada conceito histórico da Part
 
 Traduzir uma tradição organizativa histórica em software exige **escolhas**, e algumas rompem deliberadamente com a prática histórica. Registrá-las é uma questão de honestidade de projeto e de neutralidade.
 
-1. **Frações internas e tendências não são proibidas.** A proibição de frações internas aprovada no **X Congresso do PCR(b) (1921, "Sobre a unidade do partido")** foi uma medida de exceção de seu contexto. O software **não** a incorpora: na fase de *discussão* de uma deliberação (P4), ele suporta o agrupamento de posições, plataformas e tendências. O centralismo que o sistema implementa é o da **unidade de ação após a decisão** — não o do silenciamento antes dela. (Registrado como decisão de projeto; ver futuro ADR sobre política de discussão.)
+1. **Frações internas e tendências não são proibidas.** A proibição de frações internas aprovada no **X Congresso do PCR(b) (1921, "Sobre a unidade do partido")** foi uma medida de exceção de seu contexto. O software **não** a incorpora: na fase de *discussão* de uma deliberação (P4), ele pretende suportar o agrupamento de posições, plataformas e tendências. O centralismo que o sistema implementa é o da **unidade de ação após a decisão** — não o do silenciamento antes dela. (Ressalva: esta é uma **intenção de projeto** — o [modelo de domínio](02-modelo-de-dominio.md) ainda **não** tem entidade de Tendência/Plataforma; ou ela é acrescentada, ou esta promessa é suavizada. Decisão em aberto.)
 
-2. **Expulsão e disciplina são processos sociais.** O software registra estados (ativo, afastado, desligado) e executa suas consequências criptográficas (por exemplo, rotação da chave do organismo quando alguém sai — ver doc 03), mas **não decide** admissões, expulsões ou sanções. Depurações são história; aqui, o software é uma ferramenta neutra a serviço de decisões que a organização toma por seus próprios meios.
+2. **Disciplina é decisão registrada, não botão nem "processo puramente social".** *(Atualizado após a [revisão crítica](revisao-critica.md), [ADR-0009](decisoes/adr-0009-disciplina-como-deliberacao.md).)* O software não *julga*, mas a força vinculante das resoluções e as sanções (censura, afastamento, `desligado`) são **consequência de uma deliberação com quórum** (nova invariante I11) — não uma mutação de estado que qualquer papel aciona sozinho. Isso fecha o "superusuário oculto" (a exclusão criptográfica unipessoal) e dá ao centralismo o polo disciplinar que a versão anterior deixava vazio. As decisões continuam humanas e registradas; o software as executa.
 
 3. **"Centralismo" é fluxo de dados, não hierarquia de pessoas.** O sistema não confere poder a nenhum usuário por atributo pessoal. Todo poder é **mandato**: derivado de uma eleição registrada, limitado no tempo e revogável (M9). Não há "administrador" onipotente — há papéis com escopo, definidos pelo estatuto da organização.
 
 4. **A unidade de base é configurável.** A "célula de fábrica" (A.6) é o paradigma, mas o software não impõe o vínculo com o trabalho: uma célula pode ser de local de trabalho, de território ou de setor de atividade. O que é invariante é a **função** da célula (base que delibera e elege), não seu recorte sociológico.
 
-5. **Disclaimer.** Este estudo é **funcional-organizativo**: interessa-nos a engenharia social da forma-partido, não um juízo sobre a história do movimento comunista. O sistema implementa a **liberdade de associação** e pode servir a qualquer organização que queira estrutura celular, decisão coletiva e proteção de seus membros.
+5. **O que este mapeamento deixa de fora (a casca vs. a alma).** Um recorte honesto: o desenho é fiel ao leninismo-**como-organograma** e incompleto quanto ao leninismo-**como-teoria da consciência e da disciplina**. Ficam de fora, hoje, conceitos organizativos centrais das próprias fontes citadas:
+   - o **quadro profissional** (o núcleo estável de revolucionários dedicados de *Que Fazer?*) e o **membro candidato/probatório** — o modelo só tem o par simpatizante/militante;
+   - o **vetting/apadrinhamento na admissão** (você entrava se alguém confiável respondia por você) — o controle humano que era o verdadeiro núcleo da *konspiratsiya*; hoje a entrada é só um convite assinado (o que recai nas ameaças A6/A2 do [doc 06](06-modelo-de-ameacas.md));
+   - o **jornal como arma e escola de quadros** — o mapeamento M2 conserva o *organizador coletivo* e descarta o *propagandista/agitador* e a função formadora (ver ressalva em M2);
+   - a **relação com as massas** (a ação sobre a classe, a "linha de massas") — o software modela o circuito interno, não o trabalho para fora.
+   Estas ausências estão registradas como escopo de fases futuras (ver [revisao-critica.md](revisao-critica.md) §8); reconhecê-las é parte da honestidade do documento.
+
+6. **Não neutralidade e uso dual.** *(Atualizado.)* Este estudo é **funcional-organizativo** — não um juízo sobre a história do movimento comunista. Mas seria falso chamar o resultado de "ferramenta neutra": o software **grava um modelo de governança específico** como invariantes não-opcionais (célula-base única I1, árvore I2, poder só por eleição I3, disciplina por deliberação I11). Ele escolhe valores. E a mesma infraestrutura — pseudônima, servidor-cego, compartimentada, de entrada por convite, com filiação difícil de enumerar — é substrato **ótimo para qualquer organização clandestina de comando**, inclusive as que os autores abominariam. O [modelo de ameaças](06-modelo-de-ameacas.md) trata adversários *contra* a organização; a possibilidade de a ferramenta servir a uma organização *maligna* é um limite ético declarado, não resolvido por "liberdade de associação".
 
 ---
 

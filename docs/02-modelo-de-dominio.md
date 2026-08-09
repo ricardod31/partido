@@ -8,7 +8,7 @@
 | **Alimenta** | [03](03-arquitetura-criptografica.md), [04](04-federacao.md), [05](05-financiamento.md), [06](06-modelo-de-ameacas.md) |
 | **Público** | todos ([conceitual]) + engenheiros ([técnico]) |
 
-> Este documento define **as entidades do sistema, suas relações e as regras (invariantes) que nunca podem ser violadas**. Cada entidade tem origem na tabela de mapeamento M1–M15 do [doc 01](01-fundamentos-leninistas.md), indicada entre colchetes. Os documentos técnicos seguintes só usam entidades definidas aqui.
+> Este documento define **as entidades do sistema, suas relações e as regras (invariantes) que nunca podem ser violadas**. As entidades de *organização* têm origem na tabela de mapeamento M1–M13 do [doc 01](01-fundamentos-leninistas.md), indicada entre colchetes; os mapeamentos M14 (finanças) e M15 (criptografia/opsec) alimentam os docs [05](05-financiamento.md) e [03](03-arquitetura-criptografica.md), não entidades daqui. O [doc 03](03-arquitetura-criptografica.md) introduz seu próprio vocabulário técnico (envelope, urna, escrutinador, credencial anônima) definido lá.
 
 ## 1. Visão geral [conceitual]
 
@@ -67,7 +67,9 @@ Cada entidade é descrita por **descrição**, **atributos**, **relações** e *
 
 **Relações.** Um militante é membro de exatamente uma **célula-base** (I1) e pode participar adicionalmente de comissões e frações; pode deter mandatos; é membro de organismos que lhe dão acesso às respectivas chaves de época.
 
-**Regras.** O servidor guarda apenas `pseudonimo`, chaves públicas, `nivel` e `estado`, além dos vínculos de participação. Autenticação é sempre por assinatura (doc 03). Simpatizante acessa apenas publicações de escopo público.
+**Regras.** O servidor guarda apenas `pseudonimo`, chaves públicas, `nivel` e `estado`, além dos vínculos de participação. Autenticação é sempre por assinatura (doc 03).
+
+**Simpatizante — caminho de acesso (esclarecido).** As publicações de escopo `publico` são legíveis **sem conta** (texto assinado, I7) — logo o simpatizante, no MVP, é um **leitor externo anônimo**, não um usuário com chaves. Só há um caminho de registro: o convite assinado por secretário de célula (doc 03 §4), que é o do **militante**. Se um dia se quiser um simpatizante *identificado como tal* (para receber conteúdo dirigido), define-se um registro próprio mais fraco (auto-registro sem admissão); por ora, `nivel = simpatizante` como *usuário* é reservado a esse caso futuro, e o leitor comum das publicações públicas não precisa de conta.
 
 ### 2.2 Organismo (abstrato) [M5, M7]
 
@@ -86,14 +88,14 @@ Cada entidade é descrita por **descrição**, **atributos**, **relações** e *
 | `estado` | `ativo`, `suspenso`, `dissolvido`. |
 | `estatuto_local` | Parâmetros herdados/sobrepostos do estatuto da organização (quórum, regra de maioria). |
 
-**Papéis** (`papel` em `membros`): `secretario`, `tesoureiro`, `agitprop`, `membro`, e para organismos dirigentes `titular`/`suplente` (o mandato — 2.7). Papéis são atribuídos por deliberação, não por privilégio de sistema (Parte C.3 do doc 01).
+**Papéis** (`papel` em `membros`): `secretario`, `tesoureiro`, `agitprop`, `membro`, e para organismos dirigentes `titular`/`suplente` (o mandato — 2.7). Papéis são **atribuídos e revogados por deliberação** com quórum, não por privilégio de sistema (Parte C.3 do doc 01; I11) — inclusive o `tesoureiro`, cuja revogabilidade é o que limita o risco de desvio financeiro (doc 05; doc 06 A8). O conjunto de papéis de direção de um organismo é o que a tradição chama de **buro** (não é um subtipo de organismo — ver glossário).
 
 #### Subtipos de organismo
 
 - **Célula [M1]** — organismo-base. Referência de tamanho: 3–15 membros. Único subtipo ao qual um militante pertence obrigatória e unicamente (I1). Delibera, elege delegados, coleta cotização, mantém correspondência com a redação. Tem `subtipo_celula`: `trabalho`, `territorio`, `setor` (Parte C.4 do doc 01).
 - **Comitê [M7]** — organismo dirigente de um escopo (local, regional). Seus membros são **mandatos** eleitos pelas instâncias inferiores.
 - **Comissão** — organismo funcional permanente (finanças, ética, agitprop/redação). Membros designados por deliberação do organismo que a cria.
-- **Fração [M11]** — organismo transversal que reúne militantes de várias células que atuam numa organização externa. Não é célula-base de ninguém (I1 preservada).
+- **Fração [M11]** — organismo transversal que reúne militantes de várias células que atuam numa organização externa. Não é célula-base de ninguém (I1 preservada). Para respeitar a árvore (I2), seu `pai` é o **comitê que a coordena** (ex.: o comitê responsável pela atuação sindical); as células de origem de seus membros são registradas como relação à parte (`fracao_alimentada_por`), não como múltiplos `pai`.
 - **Congresso [M13]** — organismo deliberativo **temporário** e supremo. Tem `pauta`, `periodo` (abertura/encerramento) e um processo de **credenciamento** de delegados. Ao encerrar, passa a `dissolvido` mas suas resoluções persistem.
 - **Direção / Comitê Central [M7]** — executivo eleito pelo congresso; dirige entre congressos. Mantém sub-organismos executivos (buro/secretariado) como comissões.
 
@@ -116,7 +118,7 @@ Cada entidade é descrita por **descrição**, **atributos**, **relações** e *
 
 ### 2.4 Jornal, Publicação e Correspondência [M2, M10]
 
-**Descrição.** O aparato de comunicação. O **Jornal** é o órgão editorial (central da organização, ou boletim de um organismo). Uma **Publicação** é uma edição/matéria; uma **Correspondência** é um informe que sobe da base para a redação.
+**Descrição.** O aparato de comunicação. O **Jornal** não é uma entidade própria: é uma *visão* das `Publicacao` agrupadas por `orgao_editor` e `escopo` — o "jornal central" é a visão das publicações da redação da organização; um "boletim de organismo" é a visão das publicações daquele organismo; o "jornal da frente" (doc 04) é a visão das publicações do organismo conjunto. Uma **Publicação** é uma edição/matéria; uma **Correspondência** é um informe que sobe da base para a redação.
 
 **Publicação — atributos.**
 
@@ -144,7 +146,9 @@ Cada entidade é descrita por **descrição**, **atributos**, **relações** e *
 
 **Voto.** `deliberacao`, `eleitor` (ou credencial anônima, no voto secreto), `conteudo` (cifrado/às cegas conforme o modo), `assinatura`. Regra: **um voto por membro por deliberação** (I5), garantido por elegibilidade e unicidade (doc 03 §8).
 
-**Resolução.** Decisão registrada de uma deliberação bem-sucedida: `deliberacao`, `texto`, `orgao` (que a emite), `escopo_vinculacao` (quais organismos obriga), `assinatura_do_organismo`, `timestamp`. A resolução é uma **ata assinada** e imutável; propaga-se para os feeds dos organismos subordinados dentro do `escopo_vinculacao` — é o "de cima para baixo" do centralismo (P4).
+**Resolução.** Decisão registrada de uma deliberação bem-sucedida: `deliberacao`, `texto`, `orgao` (que a emite), `escopo_vinculacao` (quais organismos obriga), `substitui` (id de resolução anterior que esta corrige/revoga — nullable), `assinatura_do_organismo`, `timestamp`. A resolução é uma **ata assinada** e imutável; correções são **novas** resoluções que apontam para a anterior via `substitui` (encadeamento auditável — I10). Propaga-se para os feeds dos organismos subordinados dentro do `escopo_vinculacao` — é o "de cima para baixo" do centralismo (P4).
+
+> **Mecanismo da propagação descendente (esclarecido após a revisão).** Como cada organismo é um compartimento com chave própria, o comitê emissor **não** tem a chave das células-filhas. A resolução vinculante é, portanto, **reembalada pelo emissor** para os membros dos organismos no `escopo_vinculacao` (pelo mecanismo de grupo do [doc 03](03-arquitetura-criptografica.md), custo O(membros-alvo) assumido conscientemente) — não basta "publicar com a chave do comitê", que seria ilegível embaixo. Ver [revisao-critica.md](revisao-critica.md) §2-A.
 
 ### 2.7 Mandato / Delegação [M9]
 
@@ -160,9 +164,13 @@ Cada entidade é descrita por **descrição**, **atributos**, **relações** e *
 | `tipo` | `titular`, `suplente`, `observador`. |
 | `periodo` | Início e fim (o mandato **expira**). |
 | `revogavel` | Verdadeiro por padrão; recall por deliberação do mandante. |
+| `estado` | `ativo`, `expirado`, `revogado` — registra o desfecho (antes ausente). |
+| `data_fim_efetiva` | Quando o mandato terminou de fato (expiração ou revogação). |
 | `relatorios` | Correspondências de prestação de contas vinculadas ao mandato. |
 
-**Regras.** Um mandato só nasce de uma deliberação `eleicao` registrada (I3). Expira automaticamente ao fim do `periodo`. Pode ser revogado antes por nova deliberação do `mandante` (recall). Sem eleição válida, não há como um usuário figurar como `titular`/`suplente` em organismo dirigente.
+**Regras.** Um mandato só nasce de uma deliberação `eleicao` registrada (I3). Expira automaticamente ao fim do `periodo` (`estado→expirado`). Pode ser revogado antes por nova deliberação do `mandante` (recall → `estado→revogado`, com `data_fim_efetiva`). Sem eleição válida, não há como um usuário figurar como `titular`/`suplente` em organismo dirigente.
+
+**Recall de mandato de congresso (recém-esclarecido).** O `mandante` de um mandato do Comitê Central é o **Congresso**, que ao encerrar fica `dissolvido` e não pode mais deliberar — logo o mandato mais poderoso ficaria sem quem o revogasse entre congressos (I4 falharia justamente para ele). Solução: o estatuto define um **`mandante` persistente de recall** para mandatos de congresso — por exemplo, a convocação de **congresso extraordinário** por um limiar de células (X% das células delibera a convocação), que então pode revogar. Nenhum mandato fica fora do alcance da base. (Ver [revisao-critica.md](revisao-critica.md) §3, achado 7; registrar em ADR próprio na fase seguinte.)
 
 ### 2.8 Frente [M12]
 
@@ -178,12 +186,15 @@ Regras que **nenhuma operação** pode violar. Numeradas e citáveis (I#).
 - **I2 — Árvore de organismos.** Os organismos formam uma árvore com raiz na organização; não há ciclos; todo organismo (exceto a raiz) tem exatamente um `pai`.
 - **I3 — Poder só por eleição.** Um mandato (`titular`/`suplente` em organismo dirigente) só existe se derivar de uma deliberação `eleicao` registrada e válida.
 - **I4 — Mandato é temporário e revogável.** Todo mandato tem `periodo` finito e pode ser revogado por deliberação do `mandante`.
-- **I5 — Um voto por membro por deliberação.** Garantido por elegibilidade + unicidade (doc 03 §8), inclusive no voto secreto.
+- **I5 — Um voto por membro por deliberação.** Garantido por elegibilidade + unicidade (doc 03 §8). No voto secreto, a unicidade é imposta por **emissão limiar** de credencial (nenhuma mesa isolada cunha credenciais) + **uso único** verificado pela urna + conferência contra o censo congelado (I12) — não por confiança numa mesa de parte única (ver [ADR-0006](decisoes/adr-0006-voto-secreto-assinatura-cega.md) atualizado).
 - **I6 — Sem superusuário.** Nenhum poder decorre de operar o servidor ou de qualquer atributo pessoal; todo poder é mandato (I3). O operador do servidor é adversário no modelo de ameaças (doc 06, A5).
-- **I7 — Nada em claro no servidor, salvo publicação pública.** Todo conteúdo é envelope cifrado (doc 03); a única exceção é a `Publicacao` de `escopo = publico`, que é assinada e legível por desenho (ADR-0003).
+- **I7 — Nenhum *conteúdo* em claro no servidor, salvo publicação pública.** O corpo de todo objeto é envelope cifrado (doc 03); a única exceção de *conteúdo* é a `Publicacao` de `escopo = publico`, assinada e legível por desenho (ADR-0003). *(Correção de sobreafirmação: o cabeçalho de roteamento, os timestamps, o grafo de filiação e o **`papel`** de cada membro permanecem visíveis ao servidor — a ACL depende disso; ver [doc 06 A3](06-modelo-de-ameacas.md) e a mitigação por credenciais anônimas no [ADR-0008](decisoes/adr-0008-mls-e-credenciais-anonimas.md).)*
 - **I8 — Quórum para vincular.** Uma resolução só é vinculante se a deliberação que a produziu atingiu o `quorum` e a `regra_maioria` do estatuto.
-- **I9 — Época de chave acompanha a composição.** Toda entrada ou saída de membro em um organismo incrementa sua `epoca_de_chave` e dispara redistribuição da chave de grupo (doc 03 §7).
-- **I10 — Resolução é imutável.** Publicada, uma resolução não se altera; correções são novas resoluções que referenciam a anterior (preserva o registro auditável — P5).
+- **I9 — Época/epoch acompanha a composição.** Entrada ou saída de membro avança a época do organismo e dispara nova distribuição de chave de grupo (doc 03 §7). *(Sob MLS — [ADR-0008](decisoes/adr-0008-mls-e-credenciais-anonimas.md) — o avanço é um `Commit` autenticado; admissões/remoções podem ser feitas **em lote** — ex.: credenciamento de um congresso — em vez de uma época por membro, evitando o custo O(n²) e a corrida da versão anterior.)*
+- **I10 — Resolução é imutável.** Publicada, uma resolução não se altera; correções são novas resoluções que a referenciam via `substitui` (encadeamento auditável — P5).
+- **I11 — Sanção só por deliberação.** *(Novo — [ADR-0009](decisoes/adr-0009-disciplina-como-deliberacao.md).)* Qualquer transição de `estado` de membro que restrinja direitos (censura, afastamento, `desligado`) só é válida como consequência de uma **deliberação com quórum** do organismo competente. A exclusão criptográfica é *executada* pelo sistema, mas *decidida* pela deliberação — não há exclusão unipessoal (fecha o "superusuário oculto"; reforça I6). O desligamento implica remoção de todas as filiações e revogação de todos os mandatos do usuário, com avanço de época.
+- **I12 — Censo eleitoral congelado.** *(Novo.)* Ao abrir uma deliberação, a composição elegível (o "caderno eleitoral") é **congelada** até a apuração — mudanças de membros no meio não alteram o denominador do quórum (I8) nem a contagem de credenciais do voto secreto (I5). O número de elegíveis é publicável para conferência (bulletin board).
+- **I13 — Vinculação dentro da subárvore.** *(Novo.)* O `escopo_vinculacao` de uma resolução ⊆ descendentes do `orgao` que a emite — um organismo não vincula quem está fora de sua subárvore (o "de cima para baixo" respeita a árvore I2).
 
 ## 4. Ciclos de vida [técnico]
 
