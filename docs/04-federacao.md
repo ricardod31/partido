@@ -58,7 +58,7 @@ Esta é a propriedade central do desenho de federação: **uma organização nun
 
 - **Só delegados credenciados cruzam a fronteira.** Para participar de um organismo conjunto, a organização B emite um **atestado assinado** — "este pseudônimo é delegado credenciado da organização B para a frente F" — sem revelar quem mais existe em B. O servidor de A vê apenas os delegados de B que a própria B credenciou; nunca o grafo de filiação de B.
 - **A base acessa a frente pelo próprio servidor.** Um militante comum de A lê o jornal da frente **espelhado no servidor de A**. Ele não se conecta ao servidor de B; o servidor de B nunca vê o IP nem o pseudônimo da base de A.
-- **Os objetos trocados são os envelopes assinados do [doc 03](03-arquitetura-criptografica.md).** A federação não introduz criptografia nova: resoluções, publicações e correspondências da frente são os mesmos envelopes (§6 do doc 03), agora cifrados para a chave de época do **organismo conjunto**, cujos membros são os delegados credenciados dos dois lados.
+- **Os objetos trocados são os envelopes do [doc 03](03-arquitetura-criptografica.md).** A federação não introduz criptografia nova: resoluções, publicações e correspondências da frente são os mesmos envelopes (§6 do doc 03), cifrados no **grupo MLS do organismo conjunto**, cujos membros são os delegados credenciados dos dois lados.
 
 ## 5. Níveis de interface [conceitual]
 

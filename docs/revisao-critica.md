@@ -92,7 +92,7 @@ O "modo anônimo" recomendado como padrão é estruturalmente o mecanismo de **c
 ## 5. Coerência interna apontada
 
 - **P4 vs. C.2** (vinculante prometido, sanção negada) — resolvido pela decisão de disciplina (§7).
-- **C.5 "neutro" vs. I1–I10** (invariantes que gravam um modelo de governo) — reconhecido no doc 00/01.
+- **C.6 "neutro" vs. I1–I10** (invariantes que gravam um modelo de governo) — reconhecido no doc 00/01.
 - **M5/M15 (doc 01) vs. A2/A3 (doc 06)** — o doc conceitual superafirmava a konspiratsiya; tom alinhado.
 - **I7 "nada em claro"** era falso (cabeçalho, grafo, papéis) — reescrito para "nenhum **conteúdo** em claro".
 - **"Jornal"** tratado como entidade sem existir no ER; **"buro"** com três sentidos divergentes — alinhados.

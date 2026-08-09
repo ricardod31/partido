@@ -17,7 +17,7 @@ A revisão crítica mostrou que o centralismo democrático (P4) — o "coração
 
 1. **Nova invariante I11 — sanção só por deliberação.** Qualquer transição de `estado` de membro que restrinja direitos (censura, afastamento, `desligado`) só é válida como **consequência de uma deliberação com quórum** do organismo competente — espelhando I3 ("poder só por eleição"). A exclusão criptográfica (rotação que corta o membro) é *executada* pelo sistema, mas *decidida* pela deliberação.
 2. **Força vinculante é modelada.** Uma `Resolução` carrega seu `escopo_vinculacao`, e o descumprimento por um organismo/membro é, ele próprio, matéria de deliberação (podendo gerar sanção via I11). "Vinculante" deixa de ser rótulo e passa a ter um caminho de execução (deliberação → sanção), sem que o software "julgue" — ele registra e executa decisões humanas registradas.
-3. **O software embute um modelo de governança.** Assume-se, no [doc 00](../00-visao.md)/[doc 01 C.5](../01-fundamentos-leninistas.md), que o sistema **não é neutro**: ele grava um modelo democrático-centralista (I1–I11). A moldura "ferramenta que serve a qualquer organização" é substituída por essa declaração explícita.
+3. **O software embute um modelo de governança.** Assume-se, no [doc 00](../00-visao.md)/[doc 01 C.6](../01-fundamentos-leninistas.md), que o sistema **não é neutro**: ele grava um modelo democrático-centralista (I1–I11). A moldura "ferramenta que serve a qualquer organização" é substituída por essa declaração explícita.
 
 ## Alternativas consideradas
 

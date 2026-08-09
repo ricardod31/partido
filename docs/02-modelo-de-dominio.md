@@ -73,7 +73,7 @@ Cada entidade é descrita por **descrição**, **atributos**, **relações** e *
 
 ### 2.2 Organismo (abstrato) [M5, M7]
 
-**Descrição.** Qualquer instância organizada. É a abstração central do modelo: célula, comitê, comissão, fração, congresso e direção são todos **subtipos** de organismo e compartilham a mesma espinha (árvore, membros com papéis, chave de época, deliberações).
+**Descrição.** Qualquer instância organizada. É a abstração central do modelo: célula, comitê, comissão, fração, congresso e direção são todos **subtipos** de organismo e compartilham a mesma espinha (árvore, membros com papéis, grupo MLS com seu epoch, deliberações).
 
 **Atributos comuns.**
 
@@ -84,7 +84,7 @@ Cada entidade é descrita por **descrição**, **atributos**, **relações** e *
 | `nome` | Rótulo interno (não é PII de pessoa). |
 | `pai` | Organismo superior na árvore (nulo apenas para a raiz lógica, a Organização). |
 | `membros` | Conjunto de `(usuario, papel)`. |
-| `epoca_de_chave` | Inteiro; versão corrente da chave simétrica do organismo (doc 03). |
+| `epoch` | Inteiro; epoch corrente do grupo MLS do organismo — avança a cada mudança de composição ([doc 03 §7](03-arquitetura-criptografica.md), [ADR-0008](decisoes/adr-0008-mls-e-credenciais-anonimas.md)). |
 | `estado` | `ativo`, `suspenso`, `dissolvido`. |
 | `estatuto_local` | Parâmetros herdados/sobrepostos do estatuto da organização (quórum, regra de maioria). |
 
@@ -274,7 +274,7 @@ erDiagram
         id id
         enum tipo
         id pai
-        int epoca_de_chave
+        int epoch
         enum estado
     }
     MEMBRO {
