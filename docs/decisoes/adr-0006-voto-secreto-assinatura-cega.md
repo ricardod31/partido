@@ -15,6 +15,14 @@ Eleições e deliberações precisam de dois regimes distintos: votação **nomi
 - **Nominal aberta:** *commit-reveal* (`BLAKE2b(voto || sal)` assinado; revelação após prazo). Garante simultaneidade.
 - **Secreta:** **assinatura cega (RFC 9474)** emitida pela comissão eleitoral, que valida elegibilidade **sem ver o voto**; a cédula é depositada cifrada, com a credencial não-rastreável, numa **urna cuja chave é dividida entre ≥2 escrutinadores (Shamir)**, aberta só em quórum. A deposição é feita por **canal anônimo (Tor)** — requisito, não opcional.
 
+**Atualização (2026-08-09) — integridade não pode ser de parte única.** A revisão crítica ([revisao-critica.md](../revisao-critica.md) §2-D) mostrou uma assimetria invertida: o sigilo é protegido por limiar (Shamir), mas a **integridade** (quantas credenciais existem) ficava numa **mesa de parte única** que pode cunhar credenciais ilimitadas de forma indetectável, e não havia prevenção de duplo-depósito. Correções incorporadas:
+- **Emissão limiar** da assinatura cega (mesa distribuída k-de-n) — nenhuma parte isolada cunha credencial;
+- **Quadro público (bulletin board)** com o número de credenciais emitidas, conferível contra o **censo eleitoral congelado** (nova invariante I12) — sobre-emissão vira detectável;
+- **Urna por DKG + VSS** (geração distribuída de chave, shares verificáveis) e **decifração limiar** — a chave nunca é reconstruída num único ponto (Shamir puro pressupõe um *dealer* que conhece a chave inteira);
+- **Uso único de credencial** imposto pela urna (nova invariante I-voto), prevenindo duplo-depósito;
+- **Mistura/lote com atraso** entre emissão e deposição, contra correlação temporal emissão→deposição mesmo sobre Tor.
+A cédula anônima é declarada **tipo de objeto próprio**, exceção formal à regra "tudo é envelope" (ver [ADR-0003](adr-0003-servidor-rejeita-nao-envelope.md), atualizado). Verificabilidade E2E (Helios/Belenios / cast-or-audit de Benaloh) permanece como evolução — o MVP é honestamente rotulado como **não verificável ponta a ponta**.
+
 ## Alternativas consideradas
 
 - **Voto "secreto" só cifrado para a mesa** — rejeitado: a mesa (ou o servidor) liga voto→pessoa; não é sigilo real.

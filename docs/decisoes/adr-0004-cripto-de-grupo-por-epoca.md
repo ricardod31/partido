@@ -2,9 +2,11 @@
 
 | | |
 |---|---|
-| **Status** | aceita |
+| **Status** | **substituída por [ADR-0008](adr-0008-mls-e-credenciais-anonimas.md)** (2026-08-09) |
 | **Data** | 2026-08-08 |
 | **Documentos afetados** | [03 §7](../03-arquitetura-criptografica.md), [02 §2.2](../02-modelo-de-dominio.md) (I9) |
+
+> **Aviso de substituição (2026-08-09).** A revisão crítica ([revisao-critica.md](../revisao-critica.md) §2-B) mostrou que a distribuição de chave de época por `crypto_box_seal` é anônima e não-autenticada (o servidor pode fabricar pacotes de chave e equivocar membros), que o modelo não tem *post-compromise security* (comprometer uma `pk_enc` dá leitura permanente do futuro) e que o avanço de época não é autenticado (downgrade). Esta decisão foi **substituída** por [ADR-0008](adr-0008-mls-e-credenciais-anonimas.md), que adota MLS (RFC 9420). O texto abaixo é mantido como registro histórico.
 
 ## Contexto
 

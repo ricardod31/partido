@@ -19,6 +19,10 @@ O servidor aceita apenas objetos com a forma de **envelope** (doc 03 §6) e os v
 - **Confiar que o cliente cifra, sem validação no servidor** — rejeitada: não impõe nada; qualquer cliente adulterado despejaria plaintext e o servidor o armazenaria.
 - **Tentar provar que o corpo é cifrado** (heurísticas de entropia como garantia) — rejeitada como *garantia*: é indecidível em geral. Mantida apenas como **defesa em profundidade** (higiene), explicitamente não como prova.
 
+## Atualização (2026-08-09) — exceções formais adicionais
+
+A revisão crítica ([revisao-critica.md](../revisao-critica.md) §2-D) apontou que existiam **exceções não declaradas** à regra "todo objeto é um envelope com `remetente`+assinatura": (1) a **cédula de voto anônima**, que por definição não carrega `remetente` nem assinatura de identidade (senão desanonimiza o eleitor); e (2) os **objetos de gestão de grupo** (pacotes de chave / mensagens de handshake do mecanismo de grupo), entregues a quem ainda não está na época/epoch corrente. Ambos são agora declarados **tipos de objeto próprios, validáveis estruturalmente sem `remetente`** (a cédula por credencial anônima válida; os objetos de grupo pela assinatura do emissor autorizado). A regra geral permanece; as exceções formais passam a ser três: publicação pública, cédula anônima e objetos de gestão de grupo.
+
 ## Consequências
 
 - (+) Nenhum objeto malformado ou não-cifrado é aceito; ACL e autoria verificáveis sem quebrar o sigilo.
