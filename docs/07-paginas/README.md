@@ -307,6 +307,8 @@ Com o pacote de correções aplicado, a prototipagem pode começar. Ordem propos
 
 **Lacunas do design system para alta fidelidade** (registradas em [00-design-system.md §12](00-design-system.md)): tema claro com valores, estados interativos/focus ring, breakpoints e larguras, anatomia dos ~10 componentes-chave, medidas da espinha — a fixar na primeira semana de prototipagem.
 
+**Protótipo do ciclo 1: [/prototipo/index.html](../../prototipo/index.html)** — bancada clicável autocontida cobrindo as telas acima, com o fail-closed demonstrável (queda de Tor no meio do voto), os selos `DEP-nn` tocáveis e as decisões de primeira semana declaradas ([/prototipo/README.md](../../prototipo/README.md)).
+
 ## 9. Referências
 
 - Princípios e invariantes: [doc 00](../00-visao.md), [doc 02](../02-modelo-de-dominio.md).

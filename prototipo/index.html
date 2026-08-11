@@ -1,0 +1,661 @@
+<title>partido — protótipo de telas</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+/* ============================================================
+   partido — protótipo de telas (ciclo 1)
+   Aplica docs/07-paginas/00-design-system.md.
+   Decisões de protótipo (registradas em prototipo/README.md):
+   dark-only; --ink-2 clareado p/ AA; identicon placeholder;
+   dados 100% fictícios.
+   ============================================================ */
+:root{
+  --bg-0:#0E1116; --bg-1:#151A21; --bg-2:#1C222B; --border:#242C37;
+  --ink-0:#E8EDF2; --ink-1:#AEB8C4; --ink-2:#8C97A6; /* ajustado (era #6B7684) */
+  --accent:#5B8DEF; --accent-ink:#0E1116;
+  --t-prot:#3FB27F; --t-exp:#E0A33E; --t-nao:#E5686A; --t-anon:#9B7BE0;
+  --c-celula:#3E9CA8; --c-fin:#C08457; --c-cong:#6E8AD6;
+  --f-ui:-apple-system,"Segoe UI",Roboto,"Noto Sans",system-ui,sans-serif;
+  --f-serif:"Iowan Old Style","Noto Serif",Georgia,serif;
+  --f-mono:ui-monospace,"JetBrains Mono","Roboto Mono",monospace;
+  --r-c:6px; --r-card:10px; --r-sheet:16px;
+}
+*{box-sizing:border-box;margin:0}
+html{color-scheme:dark}
+body{background:var(--bg-0);color:var(--ink-0);font:400 16px/1.5 var(--f-ui);min-height:100vh}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-align:left}
+button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+input{font:inherit}
+b{font-weight:600}
+/* ---------- bancada ---------- */
+.bench{display:flex;flex-wrap:wrap;gap:32px;justify-content:center;align-items:flex-start;padding:32px 16px;max-width:1100px;margin:0 auto}
+.bench-head{width:100%;max-width:960px}
+.bench-head h1{font-size:20px;font-weight:600}
+.bench-head p{color:var(--ink-1);font-size:14px;max-width:64ch;margin-top:4px}
+.rail{width:300px;display:flex;flex-direction:column;gap:12px;font-size:13px}
+.rail section{background:var(--bg-1);border:1px solid var(--border);border-radius:var(--r-card);padding:14px}
+.rail h2{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);margin-bottom:8px}
+.rail .row{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:5px 0}
+.rail ul{list-style:none;display:flex;flex-direction:column;gap:4px;color:var(--ink-1)}
+.rail li::before{content:"·  ";color:var(--ink-2)}
+.btn{display:inline-flex;align-items:center;gap:6px;border-radius:var(--r-c);padding:8px 14px;font-size:14px;font-weight:500;background:var(--bg-2);border:1px solid var(--border);color:var(--ink-0)}
+.btn:hover{border-color:var(--ink-2)}
+.btn-p{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn-p:hover{filter:brightness(1.08)}
+.btn-danger{background:transparent;border-color:var(--t-nao);color:var(--t-nao)}
+.btn-sm{padding:5px 10px;font-size:13px}
+.switch{width:40px;height:22px;border-radius:11px;background:var(--bg-2);border:1px solid var(--border);position:relative;flex:none}
+.switch::after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:var(--ink-2);transition:transform .15s,background .15s}
+.switch[aria-checked="true"]{background:rgba(63,178,127,.2);border-color:var(--t-prot)}
+.switch[aria-checked="true"]::after{transform:translateX(18px);background:var(--t-prot)}
+/* ---------- moldura ---------- */
+.phone{width:400px;max-width:100%;height:760px;background:var(--bg-0);border:1px solid var(--border);border-radius:24px;overflow:hidden;display:flex;flex-direction:column;position:relative;box-shadow:0 24px 48px rgba(0,0,0,.45)}
+/* espinha de compartimento */
+.phone::before{content:"";position:absolute;inset:0 auto 0 0;width:4px;background:var(--spine,transparent);transition:background .2s;z-index:40;pointer-events:none}
+.phone.transversal::before{background:transparent}
+/* ---------- shell ---------- */
+.statusbar{display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--bg-1);border-bottom:1px solid var(--border);font-size:12px;flex:none}
+.pill{display:inline-flex;align-items:center;gap:5px;border-radius:99px;padding:3px 9px;font-size:11px;font-weight:500;border:1px solid}
+.pill .dot{width:7px;height:7px;border-radius:50%;background:currentColor}
+.pill-tor{color:var(--t-prot);border-color:rgba(63,178,127,.4)}
+.pill-tor.off{color:var(--t-nao);border-color:rgba(229,104,106,.5)}
+.iconbtn{width:34px;height:34px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;flex:none;color:var(--ink-1);position:relative}
+.iconbtn:hover{background:var(--bg-2);color:var(--ink-0)}
+.iconbtn .badge{position:absolute;top:2px;right:2px;width:8px;height:8px;border-radius:50%;background:var(--accent)}
+.comp-head{display:flex;align-items:center;gap:10px;padding:12px 14px;background:var(--bg-1);border-bottom:1px solid var(--border);flex:none}
+.comp-head .sw{width:14px;height:14px;border-radius:4px;background:var(--spine);flex:none;transition:background .2s}
+.comp-head .t{font-size:16px;font-weight:600;line-height:1.2}
+.comp-head .s{font-size:11px;color:var(--ink-2)}
+.epoch{margin-left:auto;font:500 10px/1 var(--f-mono);color:var(--ink-2);border:1px solid var(--border);border-radius:99px;padding:4px 8px;white-space:nowrap;flex:none}
+.screen{flex:1;overflow-y:auto;padding:14px;display:none;flex-direction:column;gap:12px;scrollbar-width:thin}
+.screen.on{display:flex}
+.tabs{display:flex;background:var(--bg-1);border-top:1px solid var(--border);flex:none}
+.tabs button{flex:1;padding:9px 2px 11px;text-align:center;font-size:10.5px;color:var(--ink-2);display:flex;flex-direction:column;align-items:center;gap:3px}
+.tabs button svg{width:19px;height:19px}
+.tabs button.on{color:var(--spine-ink,var(--ink-0))}
+.tabs button.on .tabbar{width:16px}
+.tabbar{width:0;height:2px;border-radius:1px;background:var(--spine);transition:width .15s}
+/* ---------- componentes ---------- */
+.card{background:var(--bg-1);border:1px solid var(--border);border-radius:var(--r-card);padding:13px 14px}
+.card.tap:hover{border-color:var(--ink-2)}
+h3.sec{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);margin:4px 0 -4px}
+.tchip{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:500;border-radius:99px;padding:4px 10px;border:1px solid;background:var(--bg-1);cursor:pointer;max-width:100%}
+.tchip svg{flex:none}
+.tc-prot{color:var(--t-prot);border-color:rgba(63,178,127,.35)}
+.tc-exp{color:var(--t-exp);border-color:rgba(224,163,62,.4)}
+.tc-nao{color:var(--t-nao);border-color:rgba(229,104,106,.4)}
+.tc-anon{color:var(--t-anon);border-color:rgba(155,123,224,.4)}
+.dep{display:inline-flex;align-items:center;gap:5px;font:500 10px/1 var(--f-mono);letter-spacing:.04em;color:var(--ink-2);border:1px dashed var(--ink-2);border-radius:4px;padding:4px 7px;cursor:pointer;background:none}
+.dep:hover{color:var(--ink-1);border-color:var(--ink-1)}
+.callout{border:1px solid var(--border);border-left:3px solid var(--t-exp);border-radius:var(--r-c);background:var(--bg-1);padding:10px 12px;font-size:13px;color:var(--ink-1)}
+.callout.nao{border-left-color:var(--t-nao)}
+.callout.prot{border-left-color:var(--t-prot)}
+.callout b{color:var(--ink-0)}
+.hchip{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:500}
+.avatar{width:22px;height:22px;border-radius:50%;overflow:hidden;flex:none;background:var(--bg-2)}
+.msg{display:flex;gap:9px}
+.msg .bubble{background:var(--bg-1);border:1px solid var(--border);border-radius:4px 12px 12px 12px;padding:8px 11px;font-size:14px;flex:1}
+.msg .meta{font-size:11px;color:var(--ink-2);margin-bottom:2px;display:flex;gap:8px;align-items:baseline}
+.stepper{display:flex;gap:4px;align-items:center;flex-wrap:wrap;font-size:10.5px;color:var(--ink-2)}
+.stepper .st{border:1px solid var(--border);border-radius:99px;padding:2px 8px;white-space:nowrap}
+.stepper .st.done{color:var(--ink-1);border-color:var(--ink-2)}
+.stepper .st.now{color:var(--bg-0);background:var(--spine,var(--accent));border-color:transparent;font-weight:600}
+.qmeter{height:8px;border-radius:4px;background:var(--bg-2);overflow:hidden;border:1px solid var(--border)}
+.qmeter i{display:block;height:100%;background:var(--spine,var(--accent));border-radius:4px}
+.role{display:inline-flex;align-items:center;gap:4px;font-size:10.5px;font-weight:600;letter-spacing:.03em;border-radius:4px;padding:2px 7px;background:var(--bg-2);border:1px solid var(--border);color:var(--ink-1)}
+.mono{font-family:var(--f-mono);font-size:13px}
+.kv{display:flex;flex-direction:column;gap:6px;font-size:13px}
+.kv .r{display:flex;justify-content:space-between;gap:12px}
+.kv .k{color:var(--ink-2)}
+.ata{font-family:var(--f-serif);font-size:15px;line-height:1.65}
+.ata h4{font-family:var(--f-serif);font-size:18px;margin-bottom:8px}
+.list{display:flex;flex-direction:column;gap:8px}
+.empty{color:var(--ink-2);font-size:13px;text-align:center;padding:26px 18px;border:1px dashed var(--border);border-radius:var(--r-card)}
+.bignum{font-size:26px;font-weight:600;font-variant-numeric:tabular-nums}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;text-align:center}
+.grid3 .cell{background:var(--bg-1);border:1px solid var(--border);border-radius:var(--r-card);padding:12px 6px}
+.grid3 .lbl{font-size:10.5px;color:var(--ink-2);margin-top:2px}
+input[type=text],input[type=password]{width:100%;background:var(--bg-0);border:1px solid var(--border);border-radius:var(--r-c);padding:10px 12px;color:var(--ink-0)}
+/* ---------- sheets & overlays ---------- */
+.scrim{position:absolute;inset:0;background:rgba(6,8,11,.66);z-index:50;display:none;align-items:flex-end}
+.scrim.on{display:flex}
+.sheet{background:var(--bg-1);border:1px solid var(--border);border-bottom:0;border-radius:var(--r-sheet) var(--r-sheet) 0 0;width:100%;max-height:82%;overflow-y:auto;padding:10px 16px 20px;display:flex;flex-direction:column;gap:10px}
+.sheet::before{content:"";width:36px;height:4px;border-radius:2px;background:var(--border);margin:2px auto 4px}
+.sheet h3{font-size:15px;font-weight:600}
+.sheet .sub{font-size:12px;color:var(--ink-2);margin-top:-6px}
+.blocker{position:absolute;inset:0;background:rgba(10,12,16,.94);z-index:60;display:none;flex-direction:column;justify-content:center;padding:26px;gap:14px;text-align:left}
+.blocker.on{display:flex}
+.blocker .ic{color:var(--t-nao)}
+.blocker h3{font-size:18px}
+.blocker p{color:var(--ink-1);font-size:14px}
+/* cerimônia */
+.cer{position:absolute;inset:0;background:var(--bg-0);z-index:45;display:none;flex-direction:column}
+.cer.on{display:flex}
+.cer .top{display:flex;align-items:center;gap:8px;padding:12px 14px;border-bottom:1px solid var(--border);flex:none;font-size:13px;color:var(--ink-1)}
+.cer .body{flex:1;overflow-y:auto;padding:20px 18px;display:flex;flex-direction:column;gap:14px}
+.cer .foot{padding:14px 18px;border-top:1px solid var(--border);display:flex;gap:10px;justify-content:flex-end;flex:none}
+.cstep{display:none;flex-direction:column;gap:14px}
+.cstep.on{display:flex}
+.words{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.words span{font-family:var(--f-mono);font-size:13px;background:var(--bg-1);border:1px solid var(--border);border-radius:var(--r-c);padding:7px 10px}
+.words span i{color:var(--ink-2);font-style:normal;margin-right:7px;font-size:11px}
+.opt{display:flex;flex-direction:column;gap:8px}
+.opt button{background:var(--bg-1);border:1px solid var(--border);border-radius:var(--r-c);padding:10px 12px;font-size:14px}
+.opt button:hover{border-color:var(--ink-2)}
+.opt button.sel{border-color:var(--spine,var(--accent));color:var(--ink-0)}
+.meter{height:6px;border-radius:3px;background:var(--bg-2);overflow:hidden}
+.meter i{display:block;height:100%;width:0;background:var(--t-prot);transition:width .3s}
+.spin{width:16px;height:16px;border:2px solid var(--border);border-top-color:var(--spine,var(--accent));border-radius:50%;animation:sp 1s linear infinite;flex:none}
+@keyframes sp{to{transform:rotate(360deg)}}
+.fade{animation:fd .18s ease}
+@keyframes fd{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media (max-width:820px){.bench{padding:12px 8px}.phone{height:86vh;min-height:620px}.rail{width:400px;max-width:100%}}
+.mut{color:var(--ink-2);font-size:12px}
+.i1{color:var(--ink-1);font-size:13px}
+hr{border:0;border-top:1px solid var(--border);margin:2px 0}
+.tendrow{display:flex;align-items:center;gap:8px;font-size:13px}
+.tendrow .bar{flex:1;height:7px;border-radius:4px;background:var(--bg-2);overflow:hidden}
+.tendrow .bar i{display:block;height:100%;background:var(--spine)}
+.notif{display:flex;gap:9px;align-items:flex-start;padding:9px 0;border-bottom:1px solid var(--border);font-size:13px}
+.notif:last-child{border-bottom:0}
+.notif .dot{width:9px;height:9px;border-radius:3px;margin-top:5px;flex:none}
+</style>
+
+<div class="bench">
+  <div class="bench-head">
+    <h1>partido — protótipo de telas <span class="mut">· ciclo 1</span></h1>
+    <p>Bancada de demonstração das telas prioritárias (<span class="mono">docs/07-paginas/README.md §8</span>). Dados 100% fictícios. Selos tracejados <span class="mono">DEP-nn</span> marcam desenho em aberto — toque neles. Nada aqui é build final.</p>
+  </div>
+
+  <!-- ================= MOLDURA ================= -->
+  <div class="phone" id="phone" style="--spine:#3E9CA8">
+    <!-- barra de estado -->
+    <div class="statusbar">
+      <button class="pill pill-tor" id="torpill" onclick="ui.toggleTor()" aria-label="Estado da rede anônima"><span class="dot"></span><span id="torlbl">Tor · onion</span></button>
+      <span class="pill" style="color:var(--ink-1);border-color:var(--border)" id="lockpill">🔓 destravado</span>
+      <span style="flex:1"></span>
+      <button class="iconbtn" onclick="ui.sheet('sh-not')" aria-label="Avisos locais"><svg viewBox="0 0 24 24" width="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 1 1 12 0c0 7 2 8 2 8H4s2-1 2-8"/><path d="M10 21h4"/></svg><span class="badge"></span></button>
+      <button class="iconbtn" onclick="ui.exposure()" aria-label="Painel de Exposição"><svg viewBox="0 0 24 24" width="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7z"/><path d="M9 12h6M12 9v6"/></svg></button>
+    </div>
+    <!-- cabeçalho de compartimento -->
+    <div class="comp-head" id="comphead">
+      <button class="hchip" onclick="ui.sheet('sh-comp')" aria-label="Trocar de compartimento" style="gap:10px">
+        <span class="sw"></span>
+        <span><span class="t" id="ch-nome">Célula Gráfica</span><br><span class="s" id="ch-tipo">Célula · trabalho — você aqui: <b id="ch-handle">Camarada Pórtico</b></span></span>
+      </button>
+      <span class="epoch" id="ch-epoch">época 14</span>
+    </div>
+
+    <!-- ============ TELAS ============ -->
+    <div class="screen" id="s-panorama"></div>
+    <div class="screen" id="s-mural"></div>
+    <div class="screen" id="s-delib"></div>
+    <div class="screen" id="s-delibdet"></div>
+    <div class="screen" id="s-apur"></div>
+    <div class="screen" id="s-resol"></div>
+    <div class="screen" id="s-membros"></div>
+    <div class="screen" id="s-convites"></div>
+    <div class="screen" id="s-fin"></div>
+
+    <!-- tabs -->
+    <div class="tabs" id="tabs">
+      <button data-s="panorama"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Panorama<span class="tabbar"></span></button>
+      <button data-s="mural"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a8 8 0 0 1-8 8H4l2-3a8 8 0 1 1 15-5z"/></svg>Mural<span class="tabbar"></span></button>
+      <button data-s="delib"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3 8-8"/><path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9"/></svg>Deliberações<span class="tabbar"></span></button>
+      <button data-s="membros"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.5 3.3-5.5 6.5-5.5s5.7 2 6.5 5.5"/><circle cx="17.5" cy="9" r="2.5"/><path d="M16 14.7c2.6.3 4.6 2 5.3 4.8"/></svg>Membros<span class="tabbar"></span></button>
+      <button data-s="fin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18M7 15h4"/></svg>Finanças<span class="tabbar"></span></button>
+    </div>
+
+    <!-- ============ SHEETS ============ -->
+    <div class="scrim" id="scrim" onclick="ui.closeSheets(event)">
+      <div class="sheet" id="sh-comp" role="dialog" aria-label="Seletor de compartimento"></div>
+      <div class="sheet" id="sh-exp" role="dialog" aria-label="Painel de Exposição"></div>
+      <div class="sheet" id="sh-meta" role="dialog" aria-label="Divulgação de metadados"></div>
+      <div class="sheet" id="sh-dep" role="dialog" aria-label="Dependência aberta"></div>
+      <div class="sheet" id="sh-not" role="dialog" aria-label="Avisos locais"></div>
+    </div>
+
+    <!-- fail-closed -->
+    <div class="blocker" id="blocker" role="alertdialog" aria-label="Operação recusada">
+      <svg class="ic" viewBox="0 0 24 24" width="34" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7z"/><path d="M8 12h8"/></svg>
+      <h3>Sem canal anônimo, o voto não sai daqui.</h3>
+      <p id="blk-txt">O Tor caiu. Depositar seu voto agora exporia <b>seu endereço e o horário</b> — o suficiente para ligar o voto a você. Preferimos recusar a te expor em silêncio. <b>Sua credencial está salva</b>; sua cédula <b>ainda não</b> está na urna.</p>
+      <p class="mut">fail-closed · doc 06 §8.2 · o voto é inegociável em qualquer versão da lista [DEP-10]</p>
+      <div style="display:flex;gap:10px"><button class="btn" onclick="ui.torOn()">Reconectar Tor</button><button class="btn" onclick="ui.hideBlocker()">Voltar (voto pendente)</button></div>
+    </div>
+
+    <!-- cerimônia genérica (voto / onboarding / convite) -->
+    <div class="cer" id="cer">
+      <div class="top"><button class="iconbtn" onclick="cer.abort()" aria-label="Sair da cerimônia"><svg viewBox="0 0 24 24" width="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg></button><span id="cer-title">Cerimônia</span><span style="flex:1"></span><span class="mut" id="cer-step">1/5</span></div>
+      <div class="body" id="cer-body"></div>
+      <div class="foot" id="cer-foot"></div>
+    </div>
+  </div>
+
+  <!-- ================= BANCADA ================= -->
+  <div class="rail">
+    <section>
+      <h2>Controles de demonstração</h2>
+      <div class="row"><span>Rede Tor (derrube no meio do voto)</span><button class="switch" id="torsw" role="switch" aria-checked="true" onclick="ui.toggleTor()" aria-label="Alternar Tor"></button></div>
+      <div class="row"><span>Fluxo F1 — entrada de um militante</span><button class="btn btn-sm" onclick="onb.start()">Iniciar</button></div>
+      <div class="row"><span>Fluxo F2 — voto secreto (D-033)</span><button class="btn btn-sm" onclick="ui.go('delibdet');vote.reset()">Abrir</button></div>
+      <div class="row"><span>Reiniciar protótipo</span><button class="btn btn-sm" onclick="location.reload()">Reset</button></div>
+    </section>
+    <section>
+      <h2>O que observar</h2>
+      <ul>
+        <li><b>Espinha</b>: troque de compartimento pelo cabeçalho — a cor cruza a fronteira com você.</li>
+        <li><b>Fail-closed</b>: desligue o Tor durante o depósito do voto.</li>
+        <li><b>TrustChips</b> tocáveis → divulgação de metadados completa.</li>
+        <li><b>Selos DEP-nn</b> tracejados: desenho em aberto, com “fixo / pode mudar”.</li>
+        <li><b>Escudo</b> na barra: painel de Exposição, contextual à tela.</li>
+      </ul>
+    </section>
+    <section>
+      <h2>Decisões de protótipo (1ª semana)</h2>
+      <ul>
+        <li>Ciclo 1 em <b>dark-only</b> (DS §12; opsec/D7).</li>
+        <li><span class="mono">--ink-2</span> clareado p/ AA (#8C97A6).</li>
+        <li>Identicon: placeholder normativo 5×5.</li>
+        <li>Dados e nomes <b>fictícios</b>.</li>
+      </ul>
+    </section>
+    <section>
+      <h2>Telas cobertas</h2>
+      <ul style="columns:2">
+        <li>P-NAV-01</li><li>P-NAV-03</li><li>P-ORG-02</li><li>P-ORG-03</li><li>P-ORG-10</li><li>P-DEL-01</li><li>P-DEL-03</li><li>P-DEL-06/07</li><li>P-DEL-08</li><li>P-DEL-09</li><li>P-FIN-02/05</li><li>P-SEG-06</li><li>P-ON-02→07</li>
+      </ul>
+    </section>
+  </div>
+</div>
+
+<script>
+/* ============ dados fictícios ============ */
+const COMPS={
+ celula:{nome:"Célula Gráfica",tipo:"Célula · trabalho",cor:"#3E9CA8",handle:"Camarada Pórtico",epoch:14},
+ fin:{nome:"Comissão de Finanças",tipo:"Comissão",cor:"#C08457",handle:"Camarada Estopim",epoch:9},
+ cong:{nome:"3º Congresso",tipo:"Congresso · temporário · 20–24/09",cor:"#6E8AD6",handle:"Camarada Vértice",epoch:2},
+};
+let comp="celula", tor=true, votou=false;
+
+const DEPS={
+ "DEP-01":{t:"Propagação descendente de resoluções",f:"A ata desce e aparece no feed dos organismos vinculados.",m:"Mecânica de reembalagem/relay, latência, estados de entrega.",o:"ADR de mensageria · revisao-critica-2 §1.3"},
+ "DEP-02":{t:"Assinatura do organismo",f:"Existe cerimônia de coassinatura, agnóstica ao esquema.",m:"Esquema concreto (FROST RFC 9591), nº de cossignatários.",o:"revisao-critica-2 §1.7"},
+ "DEP-03":{t:"Convite cegado",f:"Convite existe, com emissão, validade e revogação.",m:"Validação cega vs. nominal; metadado residual exposto.",o:"doc 03 §4 · revisao-critica-2"},
+ "DEP-05":{t:"ADR de identidade",f:"A interface não correlaciona handles entre organismos.",m:"Não-vinculabilidade criptográfica; pseudônimo × handle × user_id; atestados.",o:"revisao-critica-2 §1.2"},
+ "DEP-07":{t:"Congresso × I13",f:"Resoluções do congresso obrigam a organização.",m:"Forma da emenda (árvore ORG→Congresso→CC ou exceção tipada).",o:"revisao-critica-2 §1.5"},
+ "DEP-08":{t:"Transcrição do envelope × autoria anônima",f:"O cliente detecta adulteração do feed e alerta.",m:"O que exatamente é detectável, e quando; metadado exposto.",o:"doc 03 §6.1 (nota de revisão)"},
+ "DEP-09":{t:"Esquema de emissão k-de-n + mistura",f:"Fluxo do eleitor: cegar → credencial → depositar via Tor.",m:"Esquema exato (k× RFC 9474), janelas de mistura, números do bulletin board.",o:"revisao-critica-2 §3"},
+ "DEP-10":{t:"Lista canônica fail-closed",f:"Fail-closed existe; o voto nunca degrada.",m:"Fronteiras das 3 classes de operação.",o:"doc 06 (emenda pendente)"},
+};
+
+const MSGS=[
+ {h:"Camarada Baliza",t:"há 2h",x:"Fechei com a gráfica do turno da noite: 400 exemplares do boletim pra sexta. Alguém cobre a distribuição no portão 3?"},
+ {h:"Camarada Trilho",t:"há 1h",x:"Cubro o portão 3. Levo os 3 novos — bom pra apresentarem o trabalho."},
+ {h:"Camarada Pórtico",t:"há 40min",x:"Feito. Pauta da reunião de quinta sobe amanhã pela correspondência."},
+];
+
+const MEMBROS=[
+ {h:"Camarada Pórtico",r:"secretário",p:"eleito na D-021 · mandato até 12/2026"},
+ {h:"Camarada Baliza",r:"tesoureira",p:"eleita na D-021 · mandato até 12/2026"},
+ {h:"Camarada Trilho",r:"agitprop",p:"eleito na D-024 · mandato até 12/2026"},
+ {h:"Camarada Lastro"},{h:"Camarada Fresa"},{h:"Camarada Aduela"},{h:"Camarada Verruma"},
+ {h:"Camarada Cambota",estado:"afastado · R-011"},
+];
+
+const CONVITES=[
+ {c:"CNV-7Q4M-…-XR8D",s:"ativo",d:"expira em 9 dias"},
+ {c:"CNV-2H8B-…-LP1N",s:"usado",d:"→ pendente de admissão"},
+ {c:"CNV-9K3W-…-QD5T",s:"expirado",d:"há 12 dias"},
+];
+
+/* ============ identicon placeholder (5×5 espelhado) ============ */
+function icon(seed,color){let h=0;for(const ch of seed)h=(h*31+ch.charCodeAt(0))>>>0;
+ let r='';for(let y=0;y<5;y++)for(let x=0;x<3;x++){if((h>>(y*3+x))&1){r+=`<rect x="${x*4}" y="${y*4}" width="4" height="4"/><rect x="${(4-x)*4}" y="${y*4}" width="4" height="4"/>`}}
+ return `<svg viewBox="0 0 20 20" width="22" height="22" style="background:var(--bg-2)" fill="${color||'#8C97A6'}" aria-hidden="true">${r}</svg>`}
+function hchip(nome){return `<span class="hchip">${icon(nome,COMPS[comp].cor)}<span>${nome}</span></span>`}
+
+/* ============ shell/ui ============ */
+const $=id=>document.getElementById(id);
+const ui={
+ go(s,sub){document.querySelectorAll('.screen').forEach(e=>e.classList.remove('on'));
+   const el=$('s-'+s);el.classList.add('on');el.classList.add('fade');setTimeout(()=>el.classList.remove('fade'),200);
+   document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.s===s||(s==='delibdet'||s==='apur'||s==='resol')&&b.dataset.s==='delib'||(s==='convites')&&b.dataset.s==='membros'));
+   ui.screen=s;render[s]&&render[s](sub);
+   const transversal=(s==='panorama');$('comphead').style.display=transversal?'none':'flex';
+   $('phone').classList.toggle('transversal',transversal);},
+ setComp(c){comp=c;const C=COMPS[c];$('phone').style.setProperty('--spine',C.cor);
+   $('ch-nome').textContent=C.nome;$('ch-tipo').innerHTML=`${C.tipo} — você aqui: <b>${C.handle}</b>`;$('ch-epoch').textContent='época '+C.epoch;
+   ui.closeSheets();if(ui.screen!=='panorama')ui.go('mural');},
+ sheet(id){$('scrim').classList.add('on');document.querySelectorAll('.sheet').forEach(s=>s.style.display='none');$(id).style.display='flex';
+   if(id==='sh-comp')render.selector();if(id==='sh-not')render.notices();},
+ closeSheets(ev){if(ev&&ev.target!==$('scrim'))return;$('scrim').classList.remove('on')},
+ exposure(){render.exposure();ui.sheet('sh-exp')},
+ meta(){render.meta();ui.sheet('sh-meta')},
+ dep(id){const d=DEPS[id];$('sh-dep').innerHTML=`<h3><span class="dep" style="cursor:default">DESENHO EM ABERTO · ${id}</span></h3>
+   <p class="i1"><b>${d.t}</b></p>
+   <div class="kv"><div class="r"><span class="k">Fixo (a tela desenha)</span></div><p class="i1">${d.f}</p>
+   <div class="r"><span class="k">Pode mudar</span></div><p class="i1">${d.m}</p>
+   <div class="r"><span class="k">Onde se decide</span></div><p class="i1 mono" style="font-size:12px">${d.o}</p></div>
+   <p class="mut">Este selo não existe no build final — é honestidade de protótipo (README 07 §7).</p>`;
+   ui.sheet('sh-dep')},
+ toggleTor(){tor=!tor;const sw=$('torsw');sw.setAttribute('aria-checked',tor);
+   $('torpill').classList.toggle('off',!tor);$('torlbl').textContent=tor?'Tor · onion':'Tor caiu';
+   if(!tor&&cer.active&&cer.kind==='voto'&&cer.i>=3)ui.showBlocker();},
+ torOn(){if(!tor)ui.toggleTor();ui.hideBlocker()},
+ showBlocker(){$('blocker').classList.add('on')},
+ hideBlocker(){$('blocker').classList.remove('on')},
+ screen:"panorama",
+};
+
+/* ============ renderizadores ============ */
+const chipCif=`<button class="tchip tc-prot" onclick="ui.meta()"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>Cifrado · o servidor vê: destino, quando, tamanho, posição</button>`;
+
+const render={
+ panorama(){$('s-panorama').innerHTML=`
+  <h3 class="sec">Panorama — superfície agregadora <button class="dep" onclick="ui.dep('DEP-05')">DEP-05</button></h3>
+  ${card('celula',`<b>1 votação encerra em 26h</b> · Eleição de delegado ao 3º Congresso<br><span class="mut">1 resolução descida · 3 mensagens novas</span>`)}
+  ${card('fin',`<b>Prestação de contas do trimestre aberta</b> · prazo 15/08<br><span class="mut">coassinatura pendente</span>`)}
+  ${card('cong',`<b>Credenciamento em curso</b> · 41 de 58 delegados<br><span class="mut">pauta publicada</span>`)}
+  <p class="mut" style="text-align:center">Cartões trazem contagens, tipos e prazos — nunca conteúdo de mural nem handles de terceiros (README 07 §3.4).</p>`;
+  function card(c,html){const C=COMPS[c];return `<button class="card tap" style="border-left:3px solid ${C.cor}" onclick="ui.setComp('${c}');ui.go('mural')">
+   <div class="mut" style="display:flex;gap:6px;align-items:center"><span style="width:9px;height:9px;border-radius:3px;background:${C.cor}"></span>${C.nome} · ${C.tipo}</div>
+   <div style="font-size:14px;margin-top:4px">${html}</div></button>`}},
+
+ mural(){const desc=comp==='celula';$('s-mural').innerHTML=`
+  <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">${chipCif}<button class="dep" onclick="ui.dep('DEP-08')">DEP-08</button></div>
+  ${desc?`<div class="card" style="border-left:3px solid ${COMPS.celula.cor}">
+    <div class="mut" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">RESOLUÇÃO DESCIDA · Comitê Regional <button class="dep" onclick="ui.dep('DEP-01')">DEP-01</button></div>
+    <div class="ata" style="font-size:14.5px;margin-top:4px"><b>R-014 — Campanha de sindicalização</b></div>
+    <div class="mut">vincula: Célula Gráfica, Célula Portuária · <button class="btn btn-sm" style="padding:2px 8px" onclick="ui.go('resol')">ler a ata</button></div>
+  </div>`:''}
+  ${MSGS.map(m=>`<div class="msg">${icon(m.h,COMPS[comp].cor)}<div class="bubble"><div class="meta"><b>${m.h}</b><span>${m.t}</span></div>${m.x}</div></div>`).join('')}
+  <div class="empty">Você entrou nesta célula na época 12 — mensagens anteriores não são visíveis (need-to-know, doc 03 §7.2). Isso é desenho, não falha.</div>`},
+
+ delib(){$('s-delib').innerHTML=`
+  <h3 class="sec">Deliberações — ${COMPS[comp].nome}</h3>
+  <button class="card tap" onclick="ui.go('delibdet')">
+    <div style="display:flex;justify-content:space-between;gap:8px"><b>D-033 · Eleição de delegado ao 3º Congresso</b><span class="mut" style="white-space:nowrap">26h</span></div>
+    <div class="stepper" style="margin-top:7px"><span class="st done">Proposta</span><span class="st done">Discussão</span><span class="st now">Votação</span><span class="st">Apuração</span><span class="st">Resolução</span></div>
+    <div class="mut" style="margin-top:6px">secreta · censo congelado na abertura: <b>11 elegíveis</b> (I12)</div>
+  </button>
+  <button class="card tap" onclick="render.discuss()">
+    <div style="display:flex;justify-content:space-between;gap:8px"><b>D-034 · Campanha do jornal: fábricas ou bairros?</b><span class="mut">5d</span></div>
+    <div class="stepper" style="margin-top:7px"><span class="st done">Proposta</span><span class="st now">Discussão</span><span class="st">Votação</span><span class="st">Apuração</span><span class="st">Resolução</span></div>
+    <div class="mut" style="margin-top:6px">deliberativa · voto aberto · 2 tendências em formação</div>
+  </button>
+  <button class="card tap" onclick="ui.go('apur')">
+    <div style="display:flex;justify-content:space-between;gap:8px"><b>D-029 · Cota extraordinária de impressão</b><span class="mut">apurada</span></div>
+    <div class="mut" style="margin-top:5px">bulletin board publicado · quórum atingido (I8)</div>
+  </button>`},
+
+ delibdet(){$('s-delibdet').innerHTML=`
+  <button class="mut" onclick="ui.go('delib')">← deliberações</button>
+  <div class="card">
+    <b>D-033 · Eleição de delegado ao 3º Congresso</b>
+    <div class="stepper" style="margin:8px 0"><span class="st done">Proposta</span><span class="st done">Discussão</span><span class="st now">Votação</span><span class="st">Apuração</span><span class="st">Resolução</span></div>
+    <div class="kv">
+      <div class="r"><span class="k">Modo</span><span>secreto · credencial cega + urna</span></div>
+      <div class="r"><span class="k">Censo (congelado na abertura — I12)</span><span>11 elegíveis</span></div>
+      <div class="r"><span class="k">Encerra</span><span>amanhã, 21:00</span></div>
+      <div class="r"><span class="k">Último horário seguro p/ votar</span><span><b>amanhã, 19:30</b> <span class="mut">(prazo − mistura)</span></span></div>
+      <div class="r"><span class="k">Candidaturas</span><span>Camarada Trilho · Camarada Fresa</span></div>
+    </div>
+  </div>
+  <div class="callout nao">O voto é secreto perante o sistema. Ele <b>não</b> te protege se alguém te obriga a mostrar como votou (coação/venda de voto).</div>
+  ${votou?`<div class="callout prot"><b>Credencial usada.</b> Sua cédula foi depositada na janela de mistura das 14:20. O bulletin board sai na apuração.</div>`
+    :`<button class="btn btn-p" style="justify-content:center" onclick="vote.start()">Votar em segredo</button>`}
+  <div style="display:flex;gap:6px"><button class="dep" onclick="ui.dep('DEP-09')">DEP-09</button><button class="dep" onclick="ui.dep('DEP-10')">DEP-10</button></div>`},
+
+ discuss(){ui.go('delibdet');$('s-delibdet').innerHTML=`
+  <button class="mut" onclick="ui.go('delib')">← deliberações</button>
+  <div class="card"><b>D-034 · Campanha do jornal: fábricas ou bairros?</b>
+   <div class="stepper" style="margin:8px 0"><span class="st done">Proposta</span><span class="st now">Discussão</span><span class="st">Votação</span><span class="st">Apuração</span><span class="st">Resolução</span></div>
+   <p class="i1">Proposta: concentrar a distribuição do jornal nos três turnos da gráfica e da tecelagem, deslocando a banca do mercado para quinzenal.</p></div>
+  <h3 class="sec">Tendências em formação <span class="mut" style="text-transform:none;letter-spacing:0">(doc 01 C.1 — entidade em aberto)</span></h3>
+  <div class="card">
+    <div class="tendrow"><span style="width:120px">Prioridade fábricas</span><span class="bar"><i style="width:36%"></i></span><b>4</b></div>
+    <div class="tendrow" style="margin-top:6px"><span style="width:120px">Prioridade bairros</span><span class="bar"><i style="width:27%"></i></span><b>3</b></div>
+    <div class="tendrow" style="margin-top:6px"><span style="width:120px;color:var(--ink-2)">Sem alinhamento</span><span class="bar"><i style="width:36%;background:var(--ink-2)"></i></span><b>4</b></div>
+    <p class="mut" style="margin-top:8px">Alinhar-se é público dentro do organismo e não vincula o voto. Liberdade de discussão; unidade de ação depois da decisão (P4).</p>
+  </div>
+  <div class="msg">${icon('Camarada Baliza',COMPS[comp].cor)}<div class="bubble"><div class="meta"><b>Camarada Baliza</b> · <span class="mut">Prioridade fábricas</span></div>A banca do mercado rende conversa, não organização. No portão a gente encontra a mesma pessoa toda semana.</div></div>
+  <div class="msg">${icon('Camarada Aduela',COMPS[comp].cor)}<div class="bubble"><div class="meta"><b>Camarada Aduela</b> · <span class="mut">Prioridade bairros</span></div>Metade da tecelagem mora no Arruado. O bairro é onde dá pra reunir fora do olho do encarregado.</div></div>
+  <div style="display:flex;gap:8px"><input type="text" placeholder="Contribuir na discussão…" aria-label="Contribuir na discussão"><button class="btn">Enviar</button></div>`},
+
+ apur(){$('s-apur').innerHTML=`
+  <button class="mut" onclick="ui.go('delib')">← deliberações</button>
+  <div class="card"><b>D-029 · Cota extraordinária de impressão</b><div class="mut">apurada em 02/08 · decifração limiar 3-de-5 · nenhum escrutinador reconstrói a chave</div></div>
+  <h3 class="sec">Bulletin board</h3>
+  <div class="grid3">
+    <div class="cell"><div class="bignum">11</div><div class="lbl">censo congelado</div></div>
+    <div class="cell"><div class="bignum">9</div><div class="lbl">credenciais emitidas</div></div>
+    <div class="cell"><div class="bignum">8</div><div class="lbl">cédulas na urna</div></div>
+  </div>
+  <div class="kv card"><div class="r"><span class="k">Não utilizadas (abstenção ou janela perdida)</span><b>1</b></div>
+  <div class="r"><span class="k">Resultado</span><b>Sim 6 · Não 2</b></div>
+  <div class="r"><span class="k">Quórum (I8)</span><span class="mono" style="color:var(--t-prot)">atingido</span></div></div>
+  <div class="callout">Você pode conferir que não houve mais credenciais que eleitores, nem mais cédulas que credenciais. Você <b>não</b> pode, nesta versão, conferir que o seu voto específico foi contado (doc 03 §8.3).</div>
+  <div style="display:flex;gap:6px"><button class="dep" onclick="ui.dep('DEP-09')">DEP-09</button></div>`},
+
+ resol(){$('s-resol').innerHTML=`
+  <button class="mut" onclick="ui.go('mural')">← mural</button>
+  <div class="card" style="border-left:3px solid ${COMPS.celula.cor}">
+   <div class="ata"><h4>Resolução R-014 — Campanha de sindicalização</h4>
+   <p>O Comitê Regional, reunido em 08/08/2026 com quórum verificado, resolve: as células de trabalho abrirão, até o fim do trimestre, frentes de sindicalização nos seus locais, com informe quinzenal por correspondência à instância superior.</p></div>
+   <hr style="margin:10px 0">
+   <div class="kv">
+     <div class="r"><span class="k">Emitida por</span><span>Comitê Regional</span></div>
+     <div class="r"><span class="k">Vincula (escopo ⊆ subárvore)</span><span>Célula Gráfica · Célula Portuária</span></div>
+     <div class="r"><span class="k">Substitui</span><span class="mono" style="font-size:12px">R-009 (encadeamento I10)</span></div>
+     <div class="r"><span class="k">Assinatura do organismo</span><span style="color:var(--t-prot)">✓ verificada <span class="mono mut" style="font-size:11px">9F2A…D41C</span></span></div>
+   </div>
+  </div>
+  <div style="display:flex;gap:6px;flex-wrap:wrap"><button class="dep" onclick="ui.dep('DEP-01')">DEP-01</button><button class="dep" onclick="ui.dep('DEP-02')">DEP-02</button><button class="dep" onclick="ui.dep('DEP-07')">DEP-07</button></div>
+  <p class="mut">A ata é imutável (I10): correções são novas resoluções que apontam para esta.</p>`},
+
+ membros(){$('s-membros').innerHTML=`
+  <div style="display:flex;justify-content:space-between;align-items:center"><h3 class="sec" style="margin:0">Membros — 8 · handles locais</h3>
+  <button class="btn btn-sm" onclick="ui.go('convites')">Convites</button></div>
+  <div class="list">${MEMBROS.map(m=>`<div class="card" style="display:flex;align-items:center;gap:10px;padding:10px 12px;${m.estado?'opacity:.55':''}">
+    ${icon(m.h,COMPS[comp].cor)}<div style="flex:1"><div style="font-size:14px;font-weight:500">${m.h}</div>
+    ${m.r?`<div class="mut">${m.p}</div>`:m.estado?`<div class="mut">${m.estado} — por deliberação (I11)</div>`:''}</div>
+    ${m.r?`<span class="role">${m.r}</span>`:''}</div>`).join('')}</div>
+  <div class="callout">Não há botão de remover nem promover. Papéis e sanções são desfecho de <b>deliberação com quórum</b> (UX4, I11) — proponha uma em Deliberações.</div>`},
+
+ convites(){$('s-convites').innerHTML=`
+  <button class="mut" onclick="ui.go('membros')">← membros</button>
+  <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+    <button class="tchip tc-exp" onclick="ui.dep('DEP-03')"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="12" cy="12" r="3"/><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/></svg>Modo nominal: o servidor vê qual secretário assinou</button>
+    <button class="dep" onclick="ui.dep('DEP-03')">DEP-03</button></div>
+  <p class="mut">Política do estatuto: secretário emite · validade 14 dias · máx. 3 ativos. Log guardado <b>dentro do compartimento</b> — a célula vê quantos convites seu secretário emitiu (âncora contra o limite de A6).</p>
+  <div class="list">${CONVITES.map(c=>`<div class="card" style="display:flex;align-items:center;gap:10px;padding:10px 12px">
+    <span class="mono" style="flex:1">${c.c}</span><div style="text-align:right"><div style="font-size:12px;font-weight:600;color:${c.s==='ativo'?'var(--t-prot)':c.s==='usado'?'var(--ink-1)':'var(--ink-2)'}">${c.s}</div><div class="mut">${c.d}</div></div>
+    ${c.s==='ativo'?`<button class="btn btn-sm btn-danger">Revogar</button>`:''}</div>`).join('')}</div>
+  <button class="btn btn-p" style="justify-content:center" onclick="convite.start()">Emitir convite</button>`},
+
+ fin(){$('s-fin').innerHTML=`
+  <h3 class="sec">Minha cotização — ${COMPS[comp].nome}</h3>
+  <div class="card"><div style="display:flex;justify-content:space-between;align-items:baseline"><b>Cota 2026 · 3º trimestre</b><span id="cotstate" style="font-size:13px;color:var(--t-exp)">em aberto</span></div>
+   <p class="mut" style="margin-top:4px">Regime declarado: associação — modo voucher disponível, com os avisos legais do doc 05 §2. Histórico só neste dispositivo.</p></div>
+  <h3 class="sec">Resgatar voucher</h3>
+  <div class="card" style="display:flex;flex-direction:column;gap:9px">
+    <input type="text" class="mono" value="VCH-2026T3-0847-KJ3M" aria-label="Código do voucher">
+    <div class="callout" style="font-size:12.5px">Guarde o voucher <b>como dinheiro</b> até resgatá-lo — quem o tiver, pode usá-lo (instrumento ao portador).</div>
+    <button class="btn btn-p" style="justify-content:center" onclick="$('cotstate').textContent='paga ✓';$('cotstate').style.color='var(--t-prot)';this.textContent='Cota do trimestre marcada como paga';this.disabled=true;this.style.opacity=.6">Resgatar</button>
+  </div>
+  <h3 class="sec">Agregado do organismo</h3>
+  <div class="kv card">
+    <div class="r"><span class="k">Vouchers emitidos na época</span><b>7</b></div>
+    <div class="r"><span class="k">Prestação de contas</span><span>coassinada · tesoureira + secretário</span></div>
+    <div class="r"><span class="k">Conferência da instância superior</span><span class="mono" style="color:var(--t-prot);font-size:12px">nº vouchers ↔ agregado ✓</span></div>
+  </div>
+  <button class="tchip tc-prot" onclick="ui.meta()" style="align-self:flex-start"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>O servidor não lê os totais (cifrados) · vê que houve prestação, e quando</button>
+  <div class="callout">A coassinatura e o log tornam o desvio <b>detectável — não impossível</b>. Se tesoureiro e secretário combinarem, some do radar; por isso os papéis são revogáveis e rotativos (A8).</div>`},
+
+ selector(){$('sh-comp').innerHTML=`<h3>Trocar de compartimento</h3><p class="sub">Cruzar é um gesto deliberado — a espinha muda de cor com você (D2).</p>
+  ${Object.entries(COMPS).map(([k,C])=>`<button class="card tap" style="display:flex;align-items:center;gap:10px;border-left:3px solid ${C.cor}" onclick="ui.setComp('${k}')">
+   <span style="width:11px;height:11px;border-radius:3px;background:${C.cor}"></span>
+   <span style="flex:1"><b>${C.nome}</b><br><span class="mut">${C.tipo} · você aqui: ${C.handle}</span></span>
+   ${k===comp?'<span class="mono mut">atual</span>':''}</button>`).join('')}
+  <p class="mut">Seus três handles aparecem juntos <b>só aqui, só no seu aparelho</b>. A não-vinculabilidade perante o servidor é o DEP-05.</p>`},
+
+ exposure(){const ctx={'delibdet':'<b>Nesta tela:</b> o voto é secreto perante o sistema, mas <b>não</b> resiste a coação — ninguém pode impedir que te obriguem a mostrar a tela.',
+  'fin':'<b>Nesta tela:</b> quem pagou nunca sobe ao servidor; o vínculo pessoa→pagamento existe offline, com a tesoureira (e colusão tesoureira+secretário esconderia desvio — A8).',
+  'mural':'<b>Nesta tela:</b> o conteúdo é cifrado; o servidor registra que houve mensagem para este organismo, e quando.'}[ui.screen]||'';
+  $('sh-exp').innerHTML=`<h3>O que este sistema não esconde</h3><p class="sub">Tabela do doc 06 §5, viva e contextual (UX6)</p>
+  ${ctx?`<div class="callout">${ctx}</div>`:''}
+  <div class="kv">
+   <p style="color:var(--t-prot);font-weight:600;font-size:12px;letter-spacing:.05em">PROTEGE</p>
+   <ul class="i1" style="list-style:none;display:flex;flex-direction:column;gap:5px">
+    <li>· Conteúdo de mensagens, atas e jornal interno — cifrado ponta a ponta (MLS)</li>
+    <li>· Sua identidade civil — o servidor não tem nome, e-mail nem telefone</li>
+    <li>· O futuro, de quem sai — remoção corta o acesso (PCS)</li>
+    <li>· Contra criação de contas em massa — entrada só por convite</li></ul>
+   <p style="color:var(--t-nao);font-weight:600;font-size:12px;letter-spacing:.05em;margin-top:8px">NÃO PROTEGE</p>
+   <ul class="i1" style="list-style:none;display:flex;flex-direction:column;gap:5px">
+    <li>· Contra um <b>infiltrado</b>: um membro legítimo lê tudo o que o organismo lê — nenhuma criptografia ajuda (A2)</li>
+    <li>· O <b>grafo de filiação</b>: o roster dos grupos permanece visível ao servidor até o ADR de identidade (DEP-05)</li>
+    <li>· Metadados de participação: quem fala com qual organismo, quando; sem Tor, também o IP</li>
+    <li>· Contra <b>coação</b>: quem te obriga a abrir a tela vê o que você vê</li>
+    <li>· Um dispositivo <b>desbloqueado</b> nas mãos erradas</li>
+    <li>· Um app <b>adulterado</b> (A7): contorna tudo — por isso build reprodutível é requisito</li></ul>
+  </div>`},
+
+ meta(){$('sh-meta').innerHTML=`<h3>O que o servidor vê nesta conversa</h3><p class="sub">MetadataDisclosure — enumeração completa do cabeçalho (doc 03 §6.1)</p>
+  <div class="kv">
+   <div class="r"><span class="k mono">organismo_destino</span><span>este organismo</span></div>
+   <div class="r"><span class="k mono">epoch</span><span>${COMPS[comp].epoch}</span></div>
+   <div class="r"><span class="k mono">tipo</span><span>mensagem / voto / resolução…</span></div>
+   <div class="r"><span class="k mono">msg_id · contador · prev_hash</span><span>posição na sequência</span></div>
+   <div class="r"><span class="k">tamanho (bucket) · horário</span><span>sim</span></div>
+   <div class="r"><span class="k">quem escreveu</span><span style="color:var(--t-anon)">um dos ${comp==='celula'?8:COMPS[comp].nome==='3º Congresso'?58:5} membros — não qual</span></div>
+  </div>
+  <div class="callout">Num grupo pequeno, “um entre poucos” é anonimato fraco com análise de horário. O encadeamento (<span class="mono">contador/prev_hash</span>) está em reprojeto <button class="dep" onclick="ui.dep('DEP-08')">DEP-08</button></div>`},
+
+ notices(){$('sh-not').innerHTML=`<h3>Avisos locais</h3><p class="sub">Por polling sobre Tor — nunca push (doc 06 §5/§9). A latência do polling já está descontada dos prazos exibidos.</p>
+  <div>
+   <div class="notif"><span class="dot" style="background:${COMPS.celula.cor}"></span><span><b>Votação encerra em 26h</b> — D-033, Eleição de delegado.<br><span class="mut">último horário seguro: amanhã 19:30</span></span></div>
+   <div class="notif"><span class="dot" style="background:${COMPS.celula.cor}"></span><span><b>Resolução descida</b> — R-014, Campanha de sindicalização.</span></div>
+   <div class="notif"><span class="dot" style="background:${COMPS.fin.cor}"></span><span><b>Prestação de contas aberta</b> — coassinatura pendente até 15/08.</span></div>
+  </div>`},
+ delibdetSub(){},
+};
+
+function card(){}
+
+/* ============ cerimônia genérica ============ */
+const cer={active:false,kind:null,i:0,steps:[],
+ open(kind,title,steps){cer.active=true;cer.kind=kind;cer.i=0;cer.steps=steps;$('cer').classList.add('on');$('cer-title').textContent=title;cer.draw()},
+ draw(){const s=cer.steps[cer.i];$('cer-step').textContent=(cer.i+1)+'/'+cer.steps.length;
+   $('cer-body').innerHTML=`<div class="cstep on fade">${s.html}</div>`;
+   $('cer-foot').innerHTML=s.foot||`<button class="btn" onclick="cer.abort()">Sair</button><button class="btn btn-p" onclick="cer.next()">${s.cta||'Continuar'}</button>`;
+   s.run&&s.run()},
+ next(){if(cer.i<cer.steps.length-1){cer.i++;cer.draw()}else cer.close()},
+ close(){cer.active=false;$('cer').classList.remove('on')},
+ abort(){cer.close();if(cer.kind==='voto')ui.go('delibdet')},
+};
+
+/* ============ voto secreto (P-DEL-06/07) ============ */
+const vote={
+ reset(){votou=false},
+ start(){if(!tor){ui.showBlocker();return}
+  cer.open('voto','Voto secreto — D-033',[
+   {html:`<h3>Antes de começar</h3>
+     <div class="callout nao">O sistema não liga seu voto a você. Ele <b>não</b> te protege se alguém te obriga a provar como votou.</div>
+     <div class="callout">A mesa vai registrar <b>que você se credenciou</b> — sua cédula permanece cega. O anonimato nasce no depósito, misturado com os demais.</div>
+     <p class="mut">Canal anônimo confirmado ✓ · fail-closed ativo [DEP-10]</p>`,cta:'Preparar cédula'},
+   {html:`<h3>Sua cédula</h3><p class="i1">Delegado da Célula Gráfica ao 3º Congresso:</p>
+     <div class="opt" id="ballot">
+       <button onclick="vote.pick(this,'Camarada Trilho')">Camarada Trilho</button>
+       <button onclick="vote.pick(this,'Camarada Fresa')">Camarada Fresa</button>
+       <button onclick="vote.pick(this,'—')">Voto em branco</button></div>
+     <p class="mut">A cédula é cegada no seu aparelho antes de sair dele.</p>`,
+    foot:`<button class="btn" onclick="cer.abort()">Sair</button><button class="btn btn-p" id="vnext" disabled style="opacity:.5" onclick="cer.next()">Cegar e pedir credencial</button>`},
+   {html:`<h3>Coletando coassinaturas da mesa</h3>
+     <p class="i1">Mesa distribuída 3-de-5 — nenhuma mesa isolada cunha credenciais (A9).</p>
+     <div class="card" style="display:flex;align-items:center;gap:10px"><span class="spin"></span><span id="kn">Coassinatura 0 de 3…</span></div>
+     <p class="mut">Conjunto de signatários uniforme para todos os eleitores desta eleição [DEP-09].</p>`,
+    foot:`<button class="btn" onclick="cer.abort()">Sair</button><button class="btn btn-p" id="vgo" disabled style="opacity:.5" onclick="cer.next()">Credencial pronta</button>`,
+    run(){let k=0;const t=setInterval(()=>{k++;$('kn').textContent=`Coassinatura ${k} de 3…`;if(k>=3){clearInterval(t);$('kn').textContent='Credencial de uso único emitida ✓';const b=$('vgo');b.disabled=false;b.style.opacity=1}},650)}},
+   {html:`<h3>Depósito na urna</h3>
+     <div class="callout"><b>Credencial emitida; sua cédula ainda não está na urna.</b> O depósito espera a janela de mistura — sem ela, “credenciado às 14:07 / depositou às 14:08” ligaria o voto a você.</div>
+     <div class="card" style="display:flex;align-items:center;gap:10px"><span class="spin"></span><span id="mix">Aguardando janela de mistura…</span></div>
+     <p class="mut">Depósito via Tor, em lote aleatorizado. Derrube o Tor na bancada para ver o fail-closed.</p>`,
+    foot:`<button class="btn" onclick="cer.abort()">Sair (estado preservado)</button><button class="btn btn-p" id="vdep" disabled style="opacity:.5" onclick="cer.next()">Depositado</button>`,
+    run(){let x=0;const t=setInterval(()=>{if(!tor)return; x++;if(x===3){$('mix').textContent='Janela aberta — depositando com outras cédulas…'}if(x>=5){clearInterval(t);$('mix').textContent='Cédula na urna ✓ (credencial marcada como gasta)';const b=$('vdep');b.disabled=false;b.style.opacity=1}},700)}},
+   {html:`<h3>Feito.</h3>
+     <div class="callout prot">Sua cédula está na urna, misturada com as demais. A apuração é por decifração limiar; o bulletin board publicará <b>censo · emitidas · depositadas</b>.</div>
+     <div class="callout">Você poderá conferir que não houve mais votos que eleitores. Você <b>não</b> poderá, nesta versão, conferir que o seu voto específico foi contado (doc 03 §8.3).</div>`,cta:'Voltar à deliberação',
+    foot:`<button class="btn btn-p" onclick="votou=true;cer.close();ui.go('delibdet')">Voltar à deliberação</button>`},
+  ])},
+ pick(el,who){document.querySelectorAll('#ballot button').forEach(b=>b.classList.remove('sel'));el.classList.add('sel');const b=$('vnext');b.disabled=false;b.style.opacity=1},
+};
+
+/* ============ emissão de convite (P-ORG-10) ============ */
+const convite={
+ start(){cer.open('convite','Emitir convite — Célula Gráfica',[
+  {html:`<h3>Um convite é uma porta</h3><p class="i1">Ele autoriza <b>uma</b> entrada nesta célula, expira em 14 dias e pode ser revogado antes do uso.</p>
+   <div class="callout">Entregue <b>fora daqui</b> — pessoalmente ou por canal que vocês já confiam. O app gera o código; o transporte é seu (doc 03 §4).</div>
+   <p class="mut">Registro no log da célula (dentro do compartimento) — todos os membros veem quantos convites você emitiu.</p>`,cta:'Gerar código'},
+  {html:`<h3>Convite gerado</h3>
+   <div class="card" style="text-align:center"><span class="mono" style="font-size:16px;letter-spacing:.05em">CNV-7Q4M-KZ2P-XR8D</span></div>
+   <button class="tchip tc-exp" onclick="ui.dep('DEP-03')" style="align-self:center"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="12" cy="12" r="3"/><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/></svg>Modo nominal: o servidor verá que você assinou</button>
+   <p class="mut" style="text-align:center">Válido até 25/08 · 2 de 3 convites ativos usados</p>`,
+   foot:`<button class="btn btn-p" onclick="cer.close();ui.go('convites')">Concluir</button>`},
+ ])},
+};
+
+/* ============ onboarding F1 (P-ON-02→07) ============ */
+const PHRASE=["abrigo","tijolo","lanterna","ferro","miúdo","sonda","vagão","cume","trilho","âmbar","fole","graveto"];
+const onb={
+ start(){cer.open('onb','Entrada — fluxo F1',[
+  {html:`<h3>Você recebeu um convite</h3>
+   <input type="text" class="mono" value="CNV-2H8B-JW9F-LP1N" aria-label="Código do convite">
+   <button class="tchip tc-exp" onclick="ui.dep('DEP-03')" style="align-self:flex-start"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="12" cy="12" r="3"/><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/></svg>Modo nominal [DEP-03]</button>
+   <p class="mut">Assinatura do convite verificada no aparelho ✓ · destino: Célula Gráfica</p>`,cta:'Convite válido — continuar'},
+  {html:`<h3>Escolha seu pseudônimo</h3>
+   <input type="text" value="Camarada Fresa" aria-label="Pseudônimo" oninput="$('icprev').innerHTML=icon(this.value,'#8C97A6')">
+   <div style="display:flex;align-items:center;gap:8px"><span id="icprev">${icon('Camarada Fresa','#8C97A6')}</span><span class="mut">prévia do identicon</span></div>
+   <div class="callout">Escolha um nome <b>sem relação</b> com seu nome, trabalho ou redes. E saiba: um mesmo aparelho pode ligar seus pseudônimos por rede e horário — pseudônimo não é anonimato de rede; para isso existe o Tor (passo adiante).</div>`,cta:'Gerar identidade'},
+  {html:`<h3>Senha de uso diário</h3>
+   <p class="i1">Ela destrava o aplicativo neste aparelho. <b>Memorize</b> — é diferente da chave-mestra de papel, que vem a seguir.</p>
+   <input type="text" class="mono" value="correto castiçal ponte relva timbre fardo" aria-label="Passphrase" oninput="onb.meter(this.value)">
+   <div class="meter"><i id="pmeter" style="width:100%"></i></div>
+   <p class="mut" id="plbl">6 palavras · forte (diceware). Argon2id calibrado a este aparelho + keystore de hardware.</p>`,cta:'Definir senha'},
+  {html:`<h3>Chave-mestra de papel</h3>
+   <p class="i1"><b>Anote à mão e guarde offline.</b> Ela recupera sua conta se você perder o aparelho. Não fotografe, não salve na nuvem.</p>
+   <div class="words">${PHRASE.map((w,i)=>`<span><i>${i+1}</i>${w}</span>`).join('')}</div>
+   <div class="callout nao">Se você perder esta frase <b>e</b> o aparelho, a conta é perdida — ninguém no servidor pode recuperá-la, por desenho.</div>
+   <p class="mut">Captura de tela bloqueada · leitor de tela vocaliza a frase — use fone (DS §10).</p>`,cta:'Anotei — conferir'},
+  {html:`<h3>Conferência</h3><p class="i1">Qual é a <b>7ª palavra</b> da sua chave-mestra?</p>
+   <div class="opt" id="quiz">
+    <button onclick="onb.quiz(this,false)">lanterna</button>
+    <button onclick="onb.quiz(this,true)">vagão</button>
+    <button onclick="onb.quiz(this,false)">graveto</button></div>`,
+   foot:`<button class="btn" onclick="cer.abort()">Sair</button><button class="btn btn-p" id="qnext" disabled style="opacity:.5" onclick="cer.next()">Confirmado</button>`},
+  {html:`<h3>Rede anônima</h3>
+   <div class="card" style="display:flex;align-items:center;gap:10px"><span class="spin"></span><span id="torc">Conectando ao serviço onion da organização…</span></div>
+   <div class="callout">Sem Tor, o servidor e a rede veem que <b>este aparelho</b> fala com a organização. Com fail-closed, preferimos recusar a te expor em silêncio. Rede bloqueando Tor? Há <i>bridges</i>.</div>`,
+   foot:`<button class="btn btn-p" id="tnext" disabled style="opacity:.5" onclick="cer.next()">Conectado</button>`,
+   run(){setTimeout(()=>{$('torc').textContent='Canal anônimo confirmado ✓';const b=$('tnext');b.disabled=false;b.style.opacity=1},1400)}},
+  {html:`<h3>Pendente de admissão</h3>
+   <p class="i1">Sua conta existe, mas você ainda não é membro: alguém da Célula Gráfica precisa te admitir (a espera é <b>social</b>, não técnica).</p>
+   <div class="callout"><b>Avise quem te convidou</b>, pelo mesmo canal em que recebeu o convite — daqui de dentro não há como cutucar ninguém: você ainda não é membro.</div>
+   <p class="mut">Ao entrar, você não verá o histórico anterior à sua admissão (need-to-know).</p>`,
+   foot:`<button class="btn btn-p" onclick="cer.close();ui.go('panorama')">[demo] fui admitido → Panorama</button>`},
+ ])},
+ quiz(el,ok){document.querySelectorAll('#quiz button').forEach(b=>b.classList.remove('sel'));el.classList.add('sel');
+  if(ok){const b=$('qnext');b.disabled=false;b.style.opacity=1}else{el.style.borderColor='var(--t-nao)';setTimeout(()=>el.style.borderColor='',900)}},
+ meter(v){const n=v.trim().split(/\s+/).filter(Boolean).length;const pct=Math.min(100,n/6*100);
+  $('pmeter').style.width=pct+'%';$('pmeter').style.background=n>=6?'var(--t-prot)':'var(--t-exp)';
+  $('plbl').textContent=n>=6?n+' palavras · forte (diceware).':'mínimo 6 palavras — Argon2id não salva senha fraca.'},
+};
+
+/* ============ tabs & boot ============ */
+document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>ui.go(b.dataset.s));
+render.delibdet();render.apur();render.resol();
+ui.setComp('celula');
+const h=(location.hash||'').replace('#','');
+ui.go(['mural','delib','delibdet','apur','resol','membros','convites','fin'].includes(h)?h:'panorama');
+</script>
