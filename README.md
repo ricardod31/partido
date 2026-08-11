@@ -19,6 +19,7 @@ Organizações políticas hoje se organizam em plataformas comerciais vigiadas e
 | [04 — Federação](docs/04-federacao.md) | Como duas organizações formam uma frente comum, servidor a servidor? | técnico (com seções conceituais) |
 | [05 — Financiamento](docs/05-financiamento.md) | Como receber contribuições pequenas com anonimato do contribuinte — e o que é honestamente possível? | todos |
 | [06 — Modelo de ameaças](docs/06-modelo-de-ameacas.md) | Contra o que o sistema protege e contra o que ele **não** protege? | todos |
+| [07 — Páginas e experiência](docs/07-paginas/README.md) | Quais páginas o sistema tem, como se navega e qual é o design system? | todos / técnico |
 | [Decisões (ADRs)](docs/decisoes/) | Por que cada decisão de arquitetura foi tomada? | técnico |
 | [Glossário](GLOSSARIO.md) | O que cada termo significa? | todos |
 
