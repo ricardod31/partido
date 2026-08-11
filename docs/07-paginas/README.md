@@ -252,7 +252,18 @@ Cada página tem um **identificador citável** `P-AREA-NN` (o mesmo espírito de
 | P-SEG-07 | Coação / negação plausível | Passphrase de coação | Fut. | doc 06 §8, doc 03 §10 |
 | P-SEG-08 | Verificação de chaves de terceiros | Key transparency (CONIKS) | Fut. | doc 03 §3.1, A5 |
 
-**Total:** 9 áreas, **77 páginas** — 73 no MVP, 3 futuras (P-ON-11, P-SEG-07, P-SEG-08) e 1 bloqueada por ADR (P-ON-13). O detalhe de cada uma vive no documento da área.
+### J. Ajuda e aprendizado — [`09-ajuda-aprendizado.md`](09-ajuda-aprendizado.md)
+
+| ID | Página | Propósito | MVP? | Honra |
+|---|---|---|---|---|
+| P-AJU-01 | Primeiros passos | Checklist de integração acionável, embutida no Panorama; some quando cumprida | ✔ | §11, UX1 |
+| P-AJU-02 | Cartilha | Índice de lições curtas sobre **por que** o sistema é assim | ✔ | UX6, D7 |
+| P-AJU-03 | Lição | Leitor de um conceito por vez, com callout "o que isto não faz" obrigatório | ✔ | UX6, doc 06 §5 |
+| P-AJU-04 | Ensaio de votação | Praticar o voto secreto **sem cédula real, sem rede, nada vale** (6 proibições) | ✔ | doc 03 §8, UX7 |
+| P-AJU-05 | Glossário / termo sob toque | Explicar jargão no ponto de uso; fonte única = GLOSSARIO | ✔ | GLOSSARIO, D7 |
+| P-AJU-06 | Modo de aprendizado | Recém-chegada × veterana: ajusta verbosidade dos avisos, nunca a proteção | ✔ | §11, UX6 |
+
+**Total:** 10 áreas, **83 páginas** — 79 no MVP, 3 futuras (P-ON-11, P-SEG-07, P-SEG-08) e 1 bloqueada por ADR (P-ON-13). O detalhe de cada uma vive no documento da área. A área **J (aprendizado)** é resposta direta à auditoria de usabilidade: a plataforma é para todo mundo, e a curva de entrada não pode ser um muro — sem que ensinar vire teatro de segurança (UX6).
 
 ## 5. Modelo de especificação de cada página [técnico]
 
@@ -307,11 +318,11 @@ Com o pacote de correções aplicado, a prototipagem pode começar. Ordem propos
 
 **Lacunas do design system para alta fidelidade** (registradas em [00-design-system.md §12](00-design-system.md)): tema claro com valores, estados interativos/focus ring, breakpoints e larguras, anatomia dos ~10 componentes-chave, medidas da espinha — a fixar na primeira semana de prototipagem.
 
-**Protótipo do ciclo 1: [/prototipo/index.html](../../prototipo/index.html)** — bancada clicável autocontida cobrindo as telas acima, com o fail-closed demonstrável (queda de Tor no meio do voto), os selos `DEP-nn` tocáveis e as decisões de primeira semana declaradas ([/prototipo/README.md](../../prototipo/README.md)).
+**Protótipo (ciclos 1–3): [/prototipo/index.html](../../prototipo/index.html)** — bancada clicável autocontida cobrindo as telas acima, com o fail-closed demonstrável (queda de Tor no meio do voto), os selos `DEP-nn` tocáveis e as decisões de primeira semana declaradas ([/prototipo/README.md](../../prototipo/README.md)). O **ciclo 3** aplica a auditoria multi-agente de usabilidade/acessibilidade: dados isolados por compartimento, tradução de jargão ("época" → "fechadura"), cota com valor e "como pagar", a camada de aprendizado da **área J** (Primeiros passos, Cartilha, Ensaio de votação, termo sob toque) e acessibilidade WCAG 2.2 AA (foco, `aria-live`, Esc, alvos de 44 px).
 
 ## 9. Referências
 
 - Princípios e invariantes: [doc 00](../00-visao.md), [doc 02](../02-modelo-de-dominio.md).
 - Restrições de segurança/UX: [doc 03](../03-arquitetura-criptografica.md), [doc 06](../06-modelo-de-ameacas.md).
 - [Design system](00-design-system.md) — tokens, componentes e estados usados por todas as páginas.
-- Documentos de área (A–I) listados na §4.
+- Documentos de área (A–J) listados na §4.
