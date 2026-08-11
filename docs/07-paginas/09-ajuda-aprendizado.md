@@ -74,7 +74,7 @@ Princípios de fluxo: **nada aqui é obrigatório e nada bloqueia** o uso real (
 5. **Experiência e layout.** Coluna de leitura confortável; título de seção em caixa-alta discreta; os dois callouts com as cores de confiança do DS (protegido / exposto) para amarrar o modelo mental à linguagem visual do resto do app.
 6. **Estados.** Fim da lição (com atalho para a próxima ou para a prática); offline (embutido).
 7. **Restrições.** UX6; o callout "O que isto não faz" é **obrigatório** em toda lição que descreva uma proteção (voto, chave, mural) — nenhuma lição pode terminar com a impressão de proteção absoluta (doc 06 §5).
-8. **Aberto.** Formato final dos callouts (ver "tabela única de honestidade", [design system §12](00-design-system.md)).
+8. **Aberto.** Anatomia visual final dos callouts ([design system §12](00-design-system.md)); o **texto** deles já é canônico — [tabela única de honestidade, DS §11.1](00-design-system.md).
 
 ## P-AJU-04 — Ensaio de votação (modo de prática)
 
