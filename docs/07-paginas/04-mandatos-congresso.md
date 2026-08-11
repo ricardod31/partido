@@ -68,7 +68,7 @@ O poder **emana da base pela eleição** e **desce em decisões**; o mandato **v
 1. **Objetivo.** O mandatário reporta ao mandante — o fluxo ascendente do centralismo.
 2. **Quem chega.** Mandatário (envia); mandante (recebe/aprecia).
 3. **Funcionalidades.** Compor relatório vinculado ao mandato (é uma **Correspondência**, doc 02 §2.7/§2.4); anexar; enviar ao mandante; o mandante aprecia (pode desdobrar em deliberação).
-4. **Dinâmica.** Prestação de contas periódica é **institucional** (doc 01 A.5); o relatório fica ligado ao mandato (`relatorios`). Reusa o compositor de correspondência (P-JOR-06).
+4. **Dinâmica.** Prestação de contas periódica é **institucional** (doc 01 A.5); o relatório fica ligado ao mandato (`relatorios`). Reusa o compositor de correspondência (P-JOR-06) — e herda a dependência do envio cross-organismo [DEP-04] quando mandante e destino não compartilham grupo.
 5. **Experiência e layout.** `CorrespondenceComposer` no contexto do mandato; histórico de relatórios no `MandateCard`.
 6. **Estados.** Rascunho; enviado; apreciado; em atraso.
 7. **Restrições.** P4; doc 02 §2.7 (relatórios vinculados).
@@ -90,7 +90,7 @@ O poder **emana da base pela eleição** e **desce em decisões**; o mandato **v
 1. **Objetivo.** Convocar o congresso — ordinário (direção) ou **extraordinário** (a base, por limiar de células) — garantindo que **nenhum mandato escapa ao recall**.
 2. **Quem chega.** Direção (ordinário); conjunto de células (extraordinário).
 3. **Funcionalidades.** Convocação ordinária pela direção (publica no jornal, pauta e prazo — P-JOR-04); **convocação extraordinária** por um **limiar de células** (X% delibera a convocação), que habilita inclusive **revogar mandatos do Comitê Central**.
-4. **Dinâmica.** Resolve o furo apontado na revisão (doc 02 §2.7): o `mandante` de um mandato do CC é o Congresso, que ao encerrar fica `dissolvido` e não poderia revogá-lo entre congressos. O estatuto define um **`mandante` persistente de recall** — a convocação de congresso extraordinário por limiar de células — de modo que o mandato mais poderoso **também** volta ao alcance da base.
+4. **Dinâmica.** Resolve o furo apontado na revisão (doc 02 §2.7): o `mandante` de um mandato do CC é o Congresso, que ao encerrar fica `dissolvido` e não poderia revogá-lo entre congressos. O estatuto define um **`mandante` persistente de recall** — a convocação de congresso extraordinário por limiar de células — de modo que o mandato mais poderoso **também** volta ao alcance da base. *Dependência sinalizada:* a **contagem do limiar entre células** é uma agregação cross-organismo (quem conta as deliberações de células que não compartilham grupo?) — mesmo mecanismo pendente da mensageria entre organismos [DEP-04].
 5. **Experiência e layout.** Dois caminhos claros; o extraordinário mostra o progresso do **limiar** (quantas células já deliberaram a convocação), como um `QuorumMeter` distribuído entre células.
 6. **Estados.** Convocação ordinária publicada; extraordinária acumulando células até o limiar; limiar atingido → congresso aberto.
 7. **Restrições.** doc 02 §2.7 (recall de congresso); I4 (nenhum mandato fora de alcance); I6.
@@ -101,7 +101,7 @@ O poder **emana da base pela eleição** e **desce em decisões**; o mandato **v
 1. **Objetivo.** Conduzir o congresso: pauta, credenciamento, deliberações — como organismo **temporário** e supremo.
 2. **Quem chega.** Delegados credenciados; observadores; a direção que o convocou.
 3. **Funcionalidades.** Ver pauta e `periodo`; acessar o credenciamento (P-MAN-08); abrir/participar de deliberações do congresso (reusa DEL); ao encerrar, o congresso passa a `dissolvido` mas suas **resoluções persistem**.
-4. **Dinâmica.** O congresso é um organismo (grupo MLS) **temporário** (M13); ao dissolver, o grupo se encerra, mas as resoluções vão para o arquivo durável (P-ORG-08) e descem (I13). Elege a direção (mandatos).
+4. **Dinâmica.** O congresso é um organismo (grupo MLS) **temporário** (M13); ao dissolver, o grupo se encerra, mas as resoluções vão para o arquivo durável (P-ORG-08) e **descem para toda a organização — resultado pretendido cuja base normativa está pendente [DEP-07]**: sob I13 literal, o congresso (filho da raiz, sem descendentes na árvore atual do doc 02) não vincularia ninguém; a emenda (árvore ORG→Congresso→CC, fiel ao doc 01 A.7, ou exceção tipada) é pré-condição de implementação. Elege a direção (mandatos).
 5. **Experiência e layout.** Compartimento com cor própria e um selo de "temporário / período X–Y"; `DeliberationStepper` nas deliberações; contagem de delegados credenciados.
 6. **Estados.** Em credenciamento; em sessão; encerrando; dissolvido (arquivo persiste).
 7. **Restrições.** M13/doc 02 §2.2, §6; I13; I9 (composição em lote).
@@ -109,7 +109,7 @@ O poder **emana da base pela eleição** e **desce em decisões**; o mandato **v
 
 ## P-MAN-08 — Credenciamento de delegados
 
-1. **Objetivo.** Credenciar em **lote** os delegados eleitos, provando "este pseudônimo é delegado eleito da célula X" **sem expor os demais membros** da célula.
+1. **Objetivo.** Credenciar em **lote** os delegados eleitos, provando "este delegado foi eleito pela célula X" **sem expor os demais membros** da célula. *(Honestidade [DEP-05]: o atestado atual usa o **pseudônimo global** — um rótulo estável que cruza célula→congresso→frente justamente para os alvos prioritários de repressão; a forma final do identificador no atestado — handle de destino com correlação custodiada pelo mandante — é matéria do ADR de identidade.)*
 2. **Quem chega.** Delegados eleitos; a mesa/secretaria do congresso.
 3. **Funcionalidades.** Cada mandato gera um **atestado assinado**; a admissão ao grupo MLS do congresso é **um `Commit` em lote** para centenas de delegados (I9), não uma rotação por delegado.
 4. **Dinâmica.** O atestado prova a elegibilidade do delegado sem revelar a composição da célula de origem (doc 02 §6, passo 3). O lote elimina o custo O(n²) e a corrida do modelo anterior (I9, doc 03 §7.2).
@@ -131,9 +131,13 @@ O poder **emana da base pela eleição** e **desce em decisões**; o mandato **v
 
 ## Decisões em aberto da área
 
-- **ADR do mandante persistente de recall** (P-MAN-06): formaliza o recall do CC via congresso extraordinário; parâmetro X%.
-- **Quórum de congresso com suplência/ausência** (P-MAN-07): política de substituição (doc 02 §7).
+- **ADR do mandante persistente de recall** (P-MAN-06): formaliza o recall do CC via congresso extraordinário; parâmetro X% ([revisao-critica-2.md](../revisao-critica-2.md)).
+- **[DEP-07] Congresso × I13** (P-MAN-07): emenda de árvore/invariante — pré-condição da descida das resoluções.
+- **[DEP-04] Agregações cross-organismo** (P-MAN-04/06): prestação de contas e contagem do limiar extraordinário.
+- **[DEP-05] Identificador nos atestados** (P-MAN-08): pseudônimo global vs. handle de destino.
+- **Quórum de congresso com suplência/ausência** (P-MAN-07): política de substituição (doc 02 §7); fluxo "assumir suplência" sem página até o ADR.
 - **Titular/suplente na eleição** (P-MAN-01): regra de promoção do suplente.
+- **Pauta pré-congresso**: construção da pauta pela base (janela de teses/propostas das células → consolidação) — hoje a pauta só aparece pronta em P-MAN-06/07; compõe com Tendência/Plataforma (doc 01 C.1) e está registrada em revisao-critica-2.
 
 ## Referências
 

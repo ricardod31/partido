@@ -70,7 +70,7 @@ O "nível de interface" que a visão deixou em aberto vira um **parâmetro do ac
 | **2 — Organismo conjunto** | Comitê da frente com deliberação vinculante **apenas dentro do escopo da frente** | Coordenação de uma greve, de um ato, de uma pauta |
 | **3 — Processos conjuntos** | Eleições/congressos conjuntos (delegações de ambos deliberam juntas) | Fusão em curso, coordenação de longo prazo |
 
-**Recomendação:** o MVP implementa os **níveis 1 e 2**. O nível 3 (voto conjunto entre bases de organizações distintas) levanta questões de elegibilidade e sigilo entre servidores que merecem desenho próprio; fica como evolução.
+**Recomendação** *(atualizada 2026-08-11, aplicando o achado 12 da [revisão crítica](revisao-critica.md) §3)*: o MVP implementa o **nível 1**. O **nível 2** (organismo conjunto com deliberação vinculante) fica **condicionado** a duas dependências hoje em aberto (§8): sincronização do espelho com **prova de completude** e **revogação tempestiva** de credencial de delegado no servidor parceiro — sem elas, "vinculante" entre servidores não é verificável. O nível 3 (voto conjunto entre bases de organizações distintas) levanta questões de elegibilidade e sigilo entre servidores que merecem desenho próprio; fica como evolução.
 
 ## 6. Topologia de hospedagem [técnico]
 

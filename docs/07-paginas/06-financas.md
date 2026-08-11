@@ -24,7 +24,7 @@ flowchart TD
     F --> G["Instância superior confere nº de vouchers vs. agregado (P-FIN-07)"]
 ```
 
-O servidor vê apenas L–G (log de série + agregados coassinados). O vínculo "pessoa → pagamento" existe **apenas offline, com o tesoureiro** — como na cotização histórica. Nunca "pessoa → valor" no servidor (doc 05 §4).
+O servidor participa apenas dos passos L–G — e mesmo neles **não lê os valores**: os agregados sobem **cifrados** (envelope do doc 03; norma do doc 05 §4 — o §5 do doc 05, "o servidor vê os passos L–G", deve ser lido como *vê que houve prestação*, não o conteúdo; tensão de redação sinalizada na origem). O vínculo "pessoa → pagamento" existe **apenas offline, com o tesoureiro** — como na cotização histórica. Nunca "pessoa → valor" no servidor.
 
 ---
 
@@ -34,7 +34,7 @@ O servidor vê apenas L–G (log de série + agregados coassinados). O vínculo 
 2. **Quem chega.** Membros (agregado); tesoureiro/secretário (ações).
 3. **Funcionalidades.** Mostrar totais por período (arrecadado, nº de cotizações/vouchers); estado da prestação de contas; atalhos para emitir/resgatar/prestar contas conforme o papel.
 4. **Dinâmica.** Só **agregados** por organismo (doc 05 §3/§4). A compartimentação vale para finanças: o tesoureiro sabe o detalhe; as instâncias superiores veem o agregado.
-5. **Experiência e layout.** `AggregatePanel` — números do coletivo, nunca uma lista "quem pagou quanto". TrustChip: *"O servidor vê totais deste organismo, não quem pagou."*
+5. **Experiência e layout.** `AggregatePanel` — números do coletivo, nunca uma lista "quem pagou quanto". TrustChip exato nas duas direções (D3): *"O servidor **não lê** os totais (sobem cifrados); vê **que** este organismo prestou contas, e quando. Quem lê os números é a instância destinatária. Quem pagou nunca sobe."*
 6. **Estados.** Sem movimentações; prestação de contas em atraso; regime não declarado (bloqueia modos até P-FIN-08).
 7. **Restrições.** doc 05 §3/§4 (só agregado, nunca pessoa→valor); M5 (compartimentação financeira).
 8. **Aberto.** —
@@ -55,7 +55,7 @@ O servidor vê apenas L–G (log de série + agregados coassinados). O vínculo 
 1. **Objetivo.** Contribuir de forma identificada — o **default** para partido registrado.
 2. **Quem chega.** Membro, quando o regime exige transparência (ou por escolha).
 3. **Funcionalidades.** Instruções de PIX/transferência identificada; registro do rastro contábil completo; conciliação com a cota.
-4. **Dinâmica.** Modo **transparente é o padrão** para partido registrado (doc 05 §2): doações de origem não identificada são vedadas (Leis 9.096/1995 e 9.504/1997; resoluções do TSE). Rastro contábil total.
+4. **Dinâmica.** Modo **transparente é o padrão** para partido registrado (doc 05 §2): doações de origem não identificada são vedadas (Leis 9.096/1995 e 9.504/1997; resoluções do TSE). Rastro contábil total. **Lacuna sinalizada:** a prestação de contas legal (TSE) exige um **livro identificado pessoa→valor com recibos** — que o desenho E2E recusa guardar no servidor por construção; onde vive esse livro (com o tesoureiro? sistema contábil externo? camada local exportável?) é decisão em aberto ([revisao-critica-2.md](../revisao-critica-2.md), item jurídico) — esta tela não a improvisa.
 5. **Experiência e layout.** Fluxo claro de PIX; `HonestyCallout`: *"Neste regime, a contribuição é identificada por exigência legal — o anonimato do pagador não é oferecido."*
 6. **Estados.** Pendente; conciliado; falha de conciliação.
 7. **Restrições.** doc 05 §2 (base legal); transparência do recebedor.
@@ -119,6 +119,9 @@ O servidor vê apenas L–G (log de série + agregados coassinados). O vínculo 
 ## Decisões em aberto da área
 
 - **Antifraude do voucher** (P-FIN-04/05): token de uso único sem revelar o pagador (doc 05 §6).
+- **Livro identificado do modo transparente** (P-FIN-03): onde vive o registro pessoa→valor + recibos que a lei exige e o servidor E2E recusa — decisão jurídica/arquitetural (revisao-critica-2).
+- **[DEP-04] Prestação de contas cross-organismo** (P-FIN-06/07): mesmo mecanismo pendente da correspondência.
+- **Despesas** (saída de dinheiro): o doc 05 só modela entrada; lançamentos de despesa (append-only, coassinados — A8 desvia na saída) são domínio novo registrado em revisao-critica-2.
 - **Plugins futuros** (fora do MVP): GNU Taler (ideal conceitual, quando houver operador/liquidez) e Monero (doc 05 §4/§6).
 - **Integração contábil** do modo transparente (doc 05 §6).
 

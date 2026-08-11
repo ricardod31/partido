@@ -44,11 +44,11 @@ sequenceDiagram
 
 1. **Objetivo.** Propor uma frente a outra organização, definindo escopo, prazo e nível.
 2. **Quem chega.** Direção/mandato competente.
-3. **Funcionalidades.** Definir escopo (o que a frente fará), validade, e **nível de interface** (1 jornal comum, 2 organismo conjunto, 3 processos conjuntos — **MVP: 1–2**); enviar à outra organização.
-4. **Dinâmica.** Primeiro o acordo, depois o peering (ADR-0005). O nível 3 (voto conjunto entre bases distintas) é evolução (doc 04 §5) — a UI o mostra como indisponível no MVP, com o porquê.
-5. **Experiência e layout.** Assistente de proposta; seletor de nível com descrição honesta de cada um; nível 3 desabilitado com nota.
+3. **Funcionalidades.** Definir escopo (o que a frente fará), validade, e **nível de interface** (1 jornal comum, 2 organismo conjunto, 3 processos conjuntos — **MVP: nível 1**); enviar à outra organização.
+4. **Dinâmica.** Primeiro o acordo, depois o peering (ADR-0005). O **nível 2** sai do MVP por decisão registrada (revisao-critica §3, achado 12; doc 04 §5 atualizado): "vinculante" entre servidores depende de espelho com **prova de completude** e **revogação tempestiva** de credencial — ambas em aberto (doc 04 §8). O nível 3 é evolução. A UI mostra 2 e 3 como indisponíveis, com o porquê de cada um.
+5. **Experiência e layout.** Assistente de proposta; seletor de nível com descrição honesta de cada um; níveis 2 e 3 desabilitados com nota.
 6. **Estados.** Rascunho; enviada; contraproposta recebida.
-7. **Restrições.** doc 04 §5 (níveis; MVP 1–2); ADR-0005.
+7. **Restrições.** doc 04 §5 (níveis; MVP nível 1); ADR-0005.
 8. **Aberto.** Nível 3 — elegibilidade e sigilo entre bases (doc 04 §8).
 
 ## P-FED-03 — Acordo da frente
@@ -66,7 +66,7 @@ sequenceDiagram
 
 1. **Objetivo.** Operar o organismo conjunto: jornal da frente e comitê da frente.
 2. **Quem chega.** Delegados credenciados dos dois lados; base (leitura do jornal espelhado).
-3. **Funcionalidades.** Ler/publicar no **jornal da frente** (nível 1); deliberar no **comitê da frente** (nível 2, vinculante **apenas dentro do escopo da frente**); ver resoluções conjuntas.
+3. **Funcionalidades.** Ler/publicar no **jornal da frente** (nível 1 — MVP); deliberar no **comitê da frente** (nível 2 — **pós-MVP**, condicionado; ver P-FED-02). **Como uma resolução de frente vincula [DEP-07]:** por **readoção interna** — cada organização a reemite pelo órgão que firmou o acordo, dentro da própria subárvore e do escopo da frente (a frente não é suprema sobre ninguém; I13 fica intacta). *Nota de dependência para a leitura da base:* o conteúdo da frente é cifrado no grupo MLS **dos delegados** (doc 04 §4) — a entrega ao militante comum via espelho é a variante federativa da mensageria pendente [DEP-01/DEP-04].
 4. **Dinâmica.** O comitê da frente é um organismo (grupo MLS) cujos membros são os **delegados credenciados** dos dois lados (doc 04 §4). Os objetos são os **mesmos envelopes** do doc 03 — a federação não introduz cripto nova. Escritas vão ao **servidor-sede**; o outro lado mantém **espelho somente-leitura** (doc 04 §6).
 5. **Experiência e layout.** Compartimento da frente (cor própria); indica o **servidor-sede** e o estado do espelho; reusa DEL/JOR dentro do escopo da frente.
 6. **Estados.** Espelho sincronizado/atrasado; sede indisponível (escrita bloqueada, leitura do espelho segue); nível 1 (só jornal, sem comitê).
@@ -77,7 +77,7 @@ sequenceDiagram
 
 1. **Objetivo.** Credenciar quem representa cada lado na frente — **sem expor a base**.
 2. **Quem chega.** Direção/secretaria de cada organização.
-3. **Funcionalidades.** Emitir **atestado assinado** ("este pseudônimo é delegado credenciado da organização B para a frente F"); admitir os delegados externos ao organismo conjunto; revogar credenciais.
+3. **Funcionalidades.** Emitir **atestado assinado** ("este delegado é credenciado da organização B para a frente F"); admitir os delegados externos ao organismo conjunto; revogar credenciais. *(O identificador do atestado herda a pendência [DEP-05] — hoje seria o pseudônimo global, um rótulo estável cruzando organizações.)*
 4. **Dinâmica.** Só delegados credenciados cruzam a fronteira (doc 04 §4): o servidor de A vê apenas os delegados que **B credenciou**, nunca o grafo de filiação de B. Reusa `DelegateAttestation` (também usado em MAN).
 5. **Experiência e layout.** Lista de delegados externos com seus atestados; TrustChip: *"Você vê os delegados que a outra organização credenciou — não a base dela."*
 6. **Estados.** Credenciado; revogado; atestado inválido.
@@ -97,8 +97,11 @@ sequenceDiagram
 
 ## Decisões em aberto da área
 
+- **Nível 2 no pós-MVP** (P-FED-02/04): condicionado a espelho com prova de completude + revogação tempestiva (revisao-critica §3, achado 12).
 - **Nível 3** (processos decisórios conjuntos): elegibilidade e sigilo de voto entre bases (doc 04 §5/§8).
 - **Sincronização do espelho** (P-FED-04): frequência, resolução de conflitos, prova de completude (doc 04 §8).
+- **[DEP-04] Variante cross-servidor da mensageria** (P-FED-04): entrega do conteúdo da frente à base via espelho; escrita de delegado externo na sede (doc 04 §6 — com que credencial?).
+- **[DEP-05] Identificador nos atestados** (P-FED-05).
 - **Federação multilateral** (P-FED-01): allowlists e organismos conjuntos de 3+ (doc 04 §8).
 - **Revogação de credencial de delegado** no parceiro em tempo hábil (P-FED-05, doc 04 §8).
 

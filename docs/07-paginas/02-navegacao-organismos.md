@@ -34,8 +34,8 @@ Todo organismo (célula, comissão, comitê, fração, congresso, direção) com
 1. **Objetivo.** Dar um ponto de partida que reúne **apenas o que você tem direito de ver** — sem virar feed social.
 2. **Quem chega.** Todo usuário autenticado, ao abrir o app.
 3. **Funcionalidades.** Resumo por compartimento (o que há de novo em cada organismo seu: deliberações abertas, resoluções descidas, correspondência); atalho ao Jornal central (publicações descidas); pendências que **exigem sua ação** (votar antes do prazo, prestar contas de mandato).
-4. **Dinâmica.** É uma **agregação de compartimentos**, não um mural único — cada item leva ao seu organismo e assume a cor daquele compartimento. Ordena por urgência de ação (prazos), não por "engajamento".
-5. **Experiência e layout.** Sem chrome de compartimento fixo (o Panorama é transversal); cada cartão traz a cor do organismo de origem. Sem contadores de curtida/visualização (D1). `HonestyCallout` inicial some após onboarding.
+4. **Dinâmica.** É uma **superfície agregadora** — a exceção formal declarada no [README §3.4](README.md) à regra de compartimento único. Cada item leva ao seu organismo e assume a cor daquele compartimento. Ordena por urgência de ação (prazos), não por "engajamento". **Regra de conteúdo dos cartões:** identidade do organismo + contagens + tipos + prazos + o **título mínimo** de uma pendência acionável ("1 votação com prazo hoje: eleição de delegado") — **nunca** trecho de mensagem de mural/correspondência, nunca handles de terceiros. Custo assumido: uma captura expõe o mapa de filiações *do próprio usuário* — mitigado por app-lock, retenção local e o **modo discreto** opcional (cores sem nomes de organismo).
+5. **Experiência e layout.** Sem chrome de compartimento fixo (o Panorama é transversal); cada cartão traz a cor do organismo de origem. Sem contadores de curtida/visualização (D1). `HonestyCallout` inicial some após onboarding (política de repetição do design system §11).
 6. **Estados.** Vazio (recém-admitido, sem pendências — explica o need-to-know); offline (mostra o último sincronizado, enfileira ações); rekey em algum organismo (sinaliza no cartão).
 7. **Restrições.** UX1 (não é feed social); UX3 (pendências seguem mandato); need-to-know.
 8. **Aberto.** —
@@ -78,10 +78,10 @@ Todo organismo (célula, comissão, comitê, fração, congresso, direção) com
 1. **Objetivo.** Notificar sem push que ligue pseudônimo a conta real.
 2. **Quem chega.** Todo usuário.
 3. **Funcionalidades.** Central de avisos **locais** (novas deliberações, prazos, resoluções descidas, pedidos de prestação de contas); alimentada por **polling sobre Tor**.
-4. **Dinâmica.** **Nunca push (FCM/APNs)** — o device token liga o pseudônimo a uma conta real e vaza timing (doc 06 A7/I2). O polling é consciente de bateria (design system §10).
+4. **Dinâmica.** **Nunca push (FCM/APNs)** — o device token liga o pseudônimo a uma conta real e vaza timing (doc 06 §5/§9). O polling é consciente de bateria (design system §10) — e a **latência do polling entra na margem dos prazos** exibidos (classe "ação com prazo", design system §7): um prazo nunca aparece mais folgado do que o aviso consegue alcançar.
 5. **Experiência e layout.** `LocalNoticeCenter` do shell; cada aviso leva ao seu compartimento (com a cor de origem).
 6. **Estados.** Offline (acumula ao voltar); polling pausado por bateria (informa).
-7. **Restrições.** doc 06 A7/I2 (sem push); UX7 (polling sobre Tor).
+7. **Restrições.** doc 06 §5/§9 (sem push); UX7 (polling sobre Tor).
 8. **Aberto.** Custo de bateria/tráfego do polling sobre Tor (doc 06 §9).
 
 ---
@@ -102,18 +102,18 @@ Todo organismo (célula, comissão, comitê, fração, congresso, direção) com
 1. **Objetivo.** A conversa corrente do organismo — mensageria E2E do grupo.
 2. **Quem chega.** Membros do organismo.
 3. **Funcionalidades.** Ler e escrever mensagens (mensagens de aplicação MLS, doc 03 §6/§7); ver autoria **por handle interno**; anexos cifrados; ver resoluções descidas de cima (dentro do `escopo_vinculacao`, I13).
-4. **Dinâmica.** Cada mensagem é um envelope: **conteúdo cifrado** (MLS ratchet), **autoria anônima ao servidor** (credencial de membro) mas **atribuída por handle entre membros** (doc 03 §6.1, design system §4). O feed é encadeado (msg_id/contador/prev_hash) — o cliente detecta replay/lacuna/reordenação e alerta. **Resolução vinculante** de um organismo superior aparece aqui como item especial (mecanismo de reembalagem/relay — dependência de backend, README §7).
-5. **Experiência e layout.** `HandleChip` na autoria; TrustChip permanente ("Cifrado · o servidor vê: destino, horário, tamanho"); item de resolução descida usa `ResolutionAta` (link para P-DEL-09).
+4. **Dinâmica.** Cada mensagem é um envelope: **conteúdo cifrado** (MLS ratchet); autoria **atribuída por handle entre membros** (doc 03 §6.1, design system §4) e, perante o servidor, autorizada por credencial de membro — o servidor não aprende **qual dos N membros** escreveu (com o residual do roster dito no ExposurePanel). **Integridade do feed [DEP-08]:** o cliente confere o feed contra adulteração (replay/lacuna/reordenação/equivocação) e alerta — mas a mecânica exata está **em reprojeto**: o formato vigente do doc 03 §6.1 (`contador` por remetente em claro) contradiz a autoria anônima (nota de revisão no próprio doc 03); o que a tela fixa é o **resultado** (anomalia detectada → alerta), não o mecanismo. **Resolução vinculante** de um organismo superior aparece aqui como item especial (reembalagem/relay — [DEP-01]).
+5. **Experiência e layout.** `HandleChip` na autoria; TrustChip permanente com classes ("Cifrado · o servidor vê: destino, quando, tamanho, posição na sequência") → `MetadataDisclosure` com a enumeração completa do cabeçalho real (design system §2); item de resolução descida usa `ResolutionAta` (link para P-DEL-09).
 6. **Estados.** Need-to-know (sem histórico anterior à entrada — EmptyState explica); rekey (envio brevemente travado); anomalia de cadeia (alerta de possível equivocação — doc 06 A5); offline (enfileira).
 7. **Restrições.** doc 03 §6/§7; I13 (vinculação desce dentro da subárvore); UX2; UX6.
-8. **Aberto.** Propagação descendente da resolução (doc 02 §2.6, revisao-critica §2-A) — desenha o resultado, marca a mecânica como dependente.
+8. **Aberto.** [DEP-01] propagação descendente; [DEP-08] transcrição do envelope × autoria anônima.
 
 ## P-ORG-03 — Membros e papéis
 
 1. **Objetivo.** Ver a composição do organismo e os papéis do buro — com a **fonte** de cada poder.
 2. **Quem chega.** Membros; ações extras para quem tem papel/mandato.
-3. **Funcionalidades.** Lista de membros (handles locais); papéis (secretário, tesoureiro, agitprop; titular/suplente em dirigentes); **proveniência** de cada papel (qual deliberação o atribuiu). Iniciar uma deliberação de atribuição/revogação de papel ou de admissão/disciplina — **sempre via deliberação**.
-4. **Dinâmica.** **Não há botão "remover" nem "promover"** (UX4, I11): papéis são **atribuídos e revogados por deliberação com quórum** (doc 02 §2.2). A tela conduz à deliberação apropriada (P-DEL-02/P-DEL-10). O `RoleBadge` sempre mostra a fonte (mandato/deliberação) e o prazo, quando aplicável.
+3. **Funcionalidades.** Lista de membros (handles locais); papéis (secretário, tesoureiro, agitprop; titular/suplente em dirigentes); **proveniência** de cada papel (qual deliberação o atribuiu). Iniciar deliberação de atribuição/revogação de **papel** ou **disciplinar** — sempre via deliberação. **Admissão é regime distinto** (autoridade única, alinhada a P-ORG-04 e doc 03 §4): a *elegibilidade* vem do convite; a *execução* (`Commit Add`) é do papel autorizado pela política do estatuto — não exige deliberação por entrada.
+4. **Dinâmica.** **Não há botão "remover" nem "promover"** (UX4): papéis são **atribuídos e revogados por deliberação com quórum** (doc 02 §2.2), e sanções pelo rito disciplinar (I11). A tela conduz à deliberação apropriada (P-DEL-02/P-DEL-10). O `RoleBadge` sempre mostra a fonte (mandato/deliberação) e o prazo, quando aplicável. EmptyState de **papel vago**: *"esta célula está sem secretário eleito — abrir eleição"* (o desbloqueio existe no domínio; a UI o conduz).
 5. **Experiência e layout.** `HandleChip` + `RoleBadge` por membro; ações de "propor atribuição/revogação/admissão/disciplina" só aparecem para quem pode iniciá-las, levando a uma deliberação — nunca a uma mutação direta.
 6. **Estados.** Membro pendente (P-ON-07); membro afastado/desligado (estado do domínio, com a resolução de origem, I11); época em transição.
 7. **Restrições.** UX3, UX4; I6 (sem superusuário); I11 (papel/sanção por deliberação); doc 06 A3 (o `papel` é metadado sensível — a exibição é interna ao organismo).
@@ -135,7 +135,7 @@ flowchart LR
 
 Admissão é, por I11-espírito, um ato do organismo; para célula, o secretário costuma executá-la, mas a **elegibilidade** vem do convite (doc 03 §4). Novo membro **não** recebe o histórico (need-to-know).
 5. **Experiência e layout.** Lista de pendentes com o organismo de destino do convite; ação de admitir em lote com seleção múltipla; EpochIndicator anima na conclusão.
-6. **Estados.** Sem pendentes; admissão em lote parcial; falha de Commit (retenta).
+6. **Estados.** Sem pendentes; admissão em lote parcial; falha de Commit (retenta); admitido com deliberação aberta no organismo (explica a **inelegibilidade** naquela deliberação — o censo congelou na abertura, I12).
 7. **Restrições.** doc 03 §4/§7.2; I9 (lote); need-to-know.
 8. **Aberto.** —
 
@@ -143,8 +143,8 @@ Admissão é, por I11-espírito, um ato do organismo; para célula, o secretári
 
 1. **Objetivo.** Criar um novo organismo na posição correta da árvore.
 2. **Quem chega.** Papel/mandato competente (a criação de sub-organismos deriva de deliberação do organismo que os cria — doc 02 §2.2).
-3. **Funcionalidades.** Escolher subtipo (célula, comissão, fração); definir `pai` na árvore (I2); herdar/sobrepor estatuto (P-ORG-06); para **fração**, registrar o `pai` como o **comitê coordenador** e as células de origem como relação à parte (`fracao_alimentada_por`) — preservando I1/I2.
-4. **Dinâmica.** A criação respeita a árvore (I2, sem ciclos) e I1 (fração não é célula-base de ninguém). O novo grupo MLS nasce com seus membros iniciais (um `Commit` de composição).
+3. **Funcionalidades.** Escolher subtipo (célula, **comitê**, comissão, fração); definir `pai` na árvore (I2); herdar/sobrepor estatuto (P-ORG-06); para **fração**, registrar o `pai` como o **comitê coordenador** e as células de origem como relação à parte (`fracao_alimentada_por`) — preservando I1/I2. Para **comitê**: criar ≠ compor — a criação (por deliberação da instância que o institui) apenas abre o organismo; sua **composição** vem de eleições nas instâncias inferiores (P-MAN-01), porque seus membros são mandatos (doc 02 §2.2). Congresso e direção **não** nascem aqui (congresso → P-MAN-06; direção → eleita pelo congresso).
+4. **Dinâmica.** A criação respeita a árvore (I2, sem ciclos) e I1 (fração não é célula-base de ninguém). Célula nova escolhe o **`subtipo_celula`** (`trabalho`/`territorio`/`setor` — doc 02 §2.2, a escolha C.4 do doc 01), exibido depois no `CompartmentHeader`. O novo grupo MLS nasce com seus membros iniciais (um `Commit` de composição).
 5. **Experiência e layout.** Assistente por passos; diagrama da posição na árvore antes de confirmar; `ConfirmDestructive` não se aplica (é criação), mas confirma a posição.
 6. **Estados.** Violação de invariante bloqueada com explicação (ex.: tentar dar dois `pai`); criação em curso.
 7. **Restrições.** I1, I2; doc 02 §2.2 (subtipos e fração).
@@ -154,7 +154,7 @@ Admissão é, por I11-espírito, um ato do organismo; para célula, o secretári
 
 1. **Objetivo.** Ajustar os parâmetros locais (estatuto herdado/sobreposto).
 2. **Quem chega.** Papel/mandato competente; mudanças que **vinculam** passam por deliberação (UX4).
-3. **Funcionalidades.** Ver o estatuto herdado da organização (quórum por tipo, regra de maioria, duração/teto de mandatos, tamanho de célula); **sobrepor** onde permitido (`estatuto_local`).
+3. **Funcionalidades.** Ver o estatuto herdado da organização **completo** (doc 02 §2.3: quórum por tipo, regra de maioria, duração/teto de mandatos, **proporção de delegados por número de membros**, **política de convites**, tamanho mínimo/máximo de célula); **sobrepor** onde permitido (`estatuto_local`). A **reforma do estatuto global** não acontece aqui — é deliberação da instância competente (presumivelmente congresso), registrada como pendência de domínio (estatuto versionado — [revisao-critica-2.md](../revisao-critica-2.md)).
 4. **Dinâmica.** Distinção clara: **preferências locais não-vinculantes** podem ser ajustadas pelo papel; **parâmetros que afetam validade de decisões** (quórum, maioria) só mudam por **deliberação** (I8, UX4). O tamanho de célula pode ser **imposto pelo servidor** (doc 06 §8.3), não só sugerido.
 5. **Experiência e layout.** Formulário que marca cada parâmetro como "local" ou "requer deliberação"; o segundo grupo abre uma proposta (P-DEL-02) em vez de salvar direto.
 6. **Estados.** Parâmetro travado pela organização (não sobreponível); pendente de deliberação.
@@ -194,12 +194,26 @@ Admissão é, por I11-espírito, um ato do organismo; para célula, o secretári
 7. **Restrições.** I9; doc 03 §7 (Commit autenticado, PCS).
 8. **Aberto.** —
 
+## P-ORG-10 — Convites do organismo
+
+1. **Objetivo.** Emitir e gerir os convites que P-ON-02 consome — a torneira do funil de entrada (defesa anti-Sybil A6).
+2. **Quem chega.** Quem a **política de convites do estatuto** autoriza (doc 02 §2.3 — tipicamente o secretário; a página lê a política de P-ORG-06, não a hardcoda).
+3. **Funcionalidades.** Emitir código de convite assinado (com organismo de destino e validade — doc 03 §4); listar convites emitidos e seus estados; **revogar** convite não usado; expiração automática.
+4. **Dinâmica.** O convite é entregue **fora da banda** (pessoalmente/canal já seguro) — a página gera o artefato, não o transporta. **O log de emissão/revogação vive dentro do compartimento** (cifrado no grupo da célula), nunca no servidor em claro: com validação cegada [DEP-03], um registro server-side recriaria exatamente o grafo de recrutamento que o cegamento esconde (doc 06 A3). Esse log interno é também a âncora de auditoria contra o limite declarado de A6 (secretário cunhando convites): a célula vê quantos convites seu secretário emitiu.
+5. **Experiência e layout.** Lista com estado por convite (ativo/usado/expirado/revogado); emissão como cerimônia curta com aviso de entrega segura; chip de confiança condicionado ao estado do cegamento ([DEP-03], mesmo regime de P-ON-02).
+6. **Estados.** Sem convites; limite da política atingido; convite usado (link ao pendente em P-ORG-04); revogado.
+7. **Restrições.** doc 03 §4; A6; A3 (log intra-compartimento); UX3 (capacidade vem da política do estatuto).
+8. **Aberto.** [DEP-03] convite cegado — muda a validação e o chip; formato exato do artefato de convite.
+
 ## Decisões em aberto da área
 
-- **Propagação descendente da resolução** (P-ORG-02): mecanismo de reembalagem/relay (revisao-critica §2-A).
+- **[DEP-01] Propagação descendente** (P-ORG-02): mecanismo de reembalagem/relay (revisao-critica §2-A).
+- **[DEP-08] Transcrição do envelope × autoria anônima** (P-ORG-02): em reprojeto no doc 03 §6.1.
+- **[DEP-03] Convite cegado** (P-ORG-10): esquema e metadado residual.
+- **[DEP-12] Arquivo durável sobre MLS** (P-ORG-08): camada a especificar (doc 03 §10).
 - **Visibilidade da estrutura por papel** (P-ORG-07): política fina, ligada às credenciais anônimas (A3).
-- **Arquivo durável sobre MLS** (P-ORG-08): camada a especificar (doc 03 §10).
 - **Frações deliberam ou só coordenam** (P-ORG-05): doc 02 §7.
+- **Ciclo de vida do organismo** (dissolução/fusão/divisão; transferência de célula-base; saída voluntária): operações de **domínio ainda não modeladas** — registradas em [revisao-critica-2.md](../revisao-critica-2.md); nenhuma página as improvisa.
 
 ## Referências
 

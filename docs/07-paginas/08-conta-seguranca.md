@@ -15,8 +15,8 @@
 
 1. **Objetivo.** Gerir o pseudônimo e ver — só localmente — os handles por-organismo, sem criar correlação.
 2. **Quem chega.** Todo usuário.
-3. **Funcionalidades.** Trocar o `pseudonimo` (mutável, único no servidor); ver o `user_id` auto-certificante (âncora estável); ver **os meus handles por-organismo** (local ao dispositivo).
-4. **Dinâmica.** O `user_id` é a âncora (derivada da chave, doc 03 §3.1); o `pseudonimo` é rótulo mutável. Os **handles são por-organismo e não-vinculáveis** (ADR-0008): a UI mostra os meus só para eu poder navegar, **nunca** os expõe correlacionados a terceiros nem ao servidor, e evita colocá-los lado a lado de modo que uma captura os ligue (design system §4).
+3. **Funcionalidades.** Trocar o `pseudonimo` (mutável, único no servidor); ver o `user_id` auto-certificante (âncora estável); ver **os meus handles por-organismo** (local ao dispositivo); **re-exibir a frase mnemônica para refazer o backup** (mediante passphrase; reusa a cerimônia P-ON-04 com as mesmas salvaguardas) — o socorro de quem perdeu o papel *antes* de perder tudo.
+4. **Dinâmica.** O `user_id` é a âncora (derivada da chave, doc 03 §3.1); o `pseudonimo` é rótulo mutável. Os **handles são por-organismo na exibição** — garantia de interface (design system §4): a UI mostra os meus só para eu navegar, não os expõe a terceiros nem os coloca lado a lado de modo que uma captura os ligue. **A não-vinculabilidade criptográfica perante o servidor não existe ainda** [DEP-05]: o próprio `user_id` e o pseudônimo único exibidos nesta tela são a prova — a tela os mostra com a explicação honesta, não os esconde.
 5. **Experiência e layout.** Sem "página de perfil" que agregue organismos (UX2); a lista de handles vem com aviso de que é local e sensível.
 6. **Estados.** Pseudônimo em uso (rejeita); troca propagada.
 7. **Restrições.** P3; UX2; ADR-0008 (handles por-organismo).
@@ -30,8 +30,8 @@
 4. **Dinâmica.** A `pk_enc` é **certificada** pela identidade e **rotacionável** sem trocar o `user_id` (doc 03 §3.1). Contra rollback pelo servidor: **versão monotônica** e a regra "**só a maior versão é válida**"; a distribuição apoia-se em **key transparency** (P-SEG-08) para o cliente detectar certificado obsoleto.
 5. **Experiência e layout.** `KeyManager`; fingerprints em mono; `ConfirmDestructive` na revogação; explicação [conceitual] do porquê rotacionar.
 6. **Estados.** Rotação em curso; certificado revogado; possível rollback detectado (alerta via key transparency).
-7. **Restrições.** doc 03 §3.1 (certificação, versão monotônica, revogação); A5 (anti-rollback).
-8. **Aberto.** —
+7. **Restrições.** doc 03 §3.1 (certificação, versão monotônica, revogação); A5.
+8. **Aberto.** [DEP-11] **Limite do MVP declarado na tela:** sem key transparency (P-SEG-08, futura), a proteção anti-rollback é só a **monotonicidade local** (este cliente rejeita versão menor do que já viu); a detecção de o servidor servir a *terceiros* um certificado obsoleto — o cenário do pós-comprometimento — só existe com o log de KT. A tela não promete o alerta que ainda não existe.
 
 ## P-SEG-03 — Dispositivos
 
@@ -48,10 +48,10 @@
 
 1. **Objetivo.** Controlar o anonimato de rede e a retenção local — o *fail-closed* em detalhe.
 2. **Quem chega.** Todo usuário; revisitado após o onboarding (P-ON-06).
-3. **Funcionalidades.** Estado do Tor/onion; ligar/desligar **fail-closed** (padrão ligado); *bridges*; **retenção local de histórico** (não reter / reter por prazo curto).
-4. **Dinâmica.** Sem canal anônimo confirmado, operações sensíveis são recusadas (UX7, doc 06 §8.2). A opção de **não reter histórico local** (ou por prazo curto) limita o dano de A4 (dispositivo comprometido).
+3. **Funcionalidades.** Estado do Tor/onion; configurar **transporte** (*bridges*/pluggable transports); **retenção local de histórico** (não reter / reter por prazo curto). **Não há interruptor de desligar o fail-closed** — a propriedade é imposta pelo sistema (doc 06 §8, "imposta, não sugerida"), regida pela lista canônica de operações [DEP-10]: voto/urna = recusa inegociável; operações de membro = recusa por padrão, com *bridges* como resposta a bloqueio; leitura pública = permitida com aviso. Qualquer modo degradado por operação, se um dia existir, será decidido no **doc 06 emendado** — nunca numa preferência desta tela.
+4. **Dinâmica.** Sem canal anônimo confirmado, operações sensíveis são recusadas (UX7, doc 06 §8.2) — e o dano de clearnet não é só individual: cada exceção encolhe o conjunto de anonimato **coletivo**. A opção de **não reter histórico local** (ou por prazo curto) limita o dano de A4 (dispositivo comprometido).
 5. **Experiência e layout.** Espelha a `NetworkStatusBar`; `HonestyCallout` sobre o custo/benefício de cada opção; `bridges` para redes que bloqueiam Tor.
-6. **Estados.** Tor ativo/bloqueado; fail-closed on/off (desligar exige confirmação explícita e um aviso, pois reduz proteção); retenção configurada.
+6. **Estados.** Tor ativo/bloqueado (com caminho para bridges); retenção configurada.
 7. **Restrições.** UX7; doc 06 §8.2/A1/A4; doc 03 §9.
 8. **Aberto.** Especificação exata do comportamento sem Tor (doc 06 §9).
 
@@ -70,7 +70,7 @@
 
 1. **Objetivo.** Consolidar, sempre acessível e contextual, o que o sistema **protege e não protege** — o componente-assinatura de honestidade (UX6).
 2. **Quem chega.** Qualquer usuário, de qualquer tela, pelo `ExposureButton` do shell.
-3. **Funcionalidades.** Listar, no contexto atual, o que fica **protegido** (conteúdo E2E) e o que fica **exposto/não protegido** (grafo de filiação e papel ao servidor até as credenciais anônimas plenas; metadados de participação; IP sem Tor; coação; dispositivo aberto; cliente adulterado A7; push — evitado). Aprofundar em cada item (D5).
+3. **Funcionalidades.** Listar, no contexto atual, o que fica **protegido** (conteúdo E2E) e o que fica **exposto/não protegido**: o **infiltrado** — um membro legítimo do seu organismo lê tudo o que ele lê, e nenhuma criptografia ajuda (A2, a primeira linha da tabela do doc 06 §5); o **grafo de filiação e papéis** ao servidor — as credenciais anônimas escondem a *autoria por mensagem*, mas o **roster dos grupos MLS permanece visível** ao serviço de entrega, então a filiação só some com o ADR de identidade [DEP-05]; metadados de participação; IP sem Tor; coação; dispositivo aberto; cliente adulterado (A7); push — evitado por desenho. Aprofundar em cada item (D5).
 4. **Dinâmica.** É a tabela "protege / não protege" do [doc 06 §5](../06-modelo-de-ameacas.md) transformada em componente vivo — e **contextual**: numa tela de voto, destaca coação; numa de finanças, o regime; num organismo, o metadado de participação. Cada estado usa a linguagem de confiança (design system §2).
 5. **Experiência e layout.** `ExposurePanel` (folha); colunas protege/não-protege; ícones+rótulos (nunca só cor). Sem alarme, sem falsa garantia (UX6/D6).
 6. **Estados.** Visão geral vs. contextual (adapta ao compartimento/ação atual).
@@ -101,9 +101,13 @@
 
 ## Decisões em aberto da área
 
+- **[DEP-10] Lista canônica fail-closed** (P-SEG-04): emenda do doc 06 §9 — as classes desta página espelham a lista, não a definem.
+- **[DEP-05] Matriz de identificadores** (P-SEG-01/06): user_id × pseudônimo × handles × roster.
+- **[DEP-11] Key transparency** (P-SEG-02/08): registro verificável de chaves (doc 06 §9) — limite do MVP declarado em P-SEG-02.
 - **Build reprodutível / binary transparency operacionais** (P-SEG-05): rebuilders, log de binários — a fronteira A7.
 - **Sub-chaves por dispositivo** (P-SEG-03) e **passphrase de coação** (P-SEG-07): doc 03 §3.3/§10.
-- **Key transparency** (P-SEG-08): registro verificável de chaves (doc 06 §9).
+- **Fluxo de incidente de dispositivo perdido/roubado**: orquestração guiada das peças existentes (revogar certificado P-SEG-02 + avisar a célula + rekey I9) — página a desenhar na próxima iteração; o comprometimento da **`sk_id`** em si não tem caminho no doc 03 (lacuna de desenho registrada em [revisao-critica-2.md](../revisao-critica-2.md)).
+- **Saída voluntária da organização**: operação de domínio pendente (emenda a I11 — hoje, lido literalmente, ninguém sai sem deliberação alheia); registrada em revisao-critica-2.
 - **Atualização viva do painel de Exposição** (P-SEG-06) conforme as lacunas do doc 06 se fecham.
 
 ## Referências

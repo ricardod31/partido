@@ -168,6 +168,7 @@ Pontos de projeto (reprojeto — [ADR-0008](decisoes/adr-0008-mls-e-credenciais-
 
 - **Autoria por credencial anônima, não por assinatura nominal.** No lugar do `remetente` (user_id) em claro + assinatura Ed25519, o envelope carrega uma **prova de pertencimento** (BBS+/KVAC): o servidor verifica que **um** membro autorizado do organismo produziu a mensagem, **sem aprender qual**. Isso (a) tira o `remetente` do cabeçalho — a maior fonte de exposição do grafo (doc 06 A3); e (b) dá **deniability** — o envelope deixa de ser prova não-repudiável de autoria contra o remetente numa apreensão (o problema do §7 do doc 06 / STRIDE).
 - **Transcrição em cadeia (anti-equivocação).** `msg_id` + `contador` monotônico + `prev_hash` encadeiam o feed do organismo. Clientes **detectam** replay (msg_id repetido), lacuna (contador com buraco) e reordenação/drop (prev_hash não bate); comparando a raiz da cadeia entre si, detectam **equivocação** (o servidor servindo visões divergentes). É a "cadeia de hashes verificável" que antes só existia na prosa do doc 06 — agora está no formato.
+  > **Nota de revisão (2026-08-11) — incompatibilidade a resolver.** O `contador` definido "por remetente-no-organismo" **em claro** contradiz a autoria por credencial anônima desta mesma seção: ou o servidor não consegue validá-lo (não sabe quem é o remetente), ou a própria sequência do contador re-particiona o feed por autor — um pseudônimo vinculável que esvazia a `prova_membro` "sem revelar quem". A §6.2(4) ("consistentes com o feed") sugere a leitura alternativa — cadeia **por feed** — que por sua vez colide com escrita concorrente. O reprojeto (cadeia por-feed com checkpoint assinado difundido via grupo MLS, ou equivalente) está registrado em [revisao-critica-2.md](revisao-critica-2.md) (DEP-08 da camada de produto); até lá, **nenhuma das duas leituras deve ser implementada sem resolver a contradição**.
 - **Cabeçalho como AD** do AEAD: adulterar o cabeçalho invalida a decifração. O corpo é uma **mensagem de aplicação MLS** do grupo do organismo (§7); a chave vem do *ratchet* MLS, não de uma chave de época estática.
 
 ### 6.2 Validação estrutural sem decifrar
@@ -287,7 +288,7 @@ Confidencialidade de conteúdo (E2E) **não** é anonimato de participação. O 
 | Horário e volume | servidor / rede | retenção mínima; **mistura/atraso** (obrigatória no voto, §8.2) | parcial |
 | Tamanho do conteúdo | servidor / rede | **padding em buckets** — *insuficiente isolado*: o metadado dominante é temporal, que só mistura resolve | parcial |
 | Endereço IP | rede / servidor | **Tor, fail-closed** (sem canal anônimo, recusa operações sensíveis); onion service nativo | MVP |
-| Vínculo a conta real via **push** (FCM/APNs) | Google/Apple | evitar push ou desacoplar token da identidade; polling sobre Tor | em aberto (doc 06 I2) |
+| Vínculo a conta real via **push** (FCM/APNs) | Google/Apple | evitar push ou desacoplar token da identidade; polling sobre Tor | em aberto (doc 06 §5/§9) |
 
 **Padding honesto:** trata só tamanho; sem cobertura temporal (dummy traffic/mistura) rende pouco — não é creditado como mitigação autônoma. **Timestamps truncados** *in-band* são cosméticos (o servidor registra o horário real de chegada) — a mitigação real é mistura/atraso. Esta tabela alimenta o [doc 06](06-modelo-de-ameacas.md). **Ponto central:** com credenciais anônimas, o sistema deixa de reconstruir o grafo *por pessoa*; sem elas (estado anterior), a promessa de "servidor cego quanto à filiação" era insustentável.
 
@@ -296,7 +297,7 @@ Confidencialidade de conteúdo (E2E) **não** é anonimato de participação. O 
 - **Credencial anônima (BBS+/KVAC):** escolha do esquema, biblioteca auditada, e **revogação** (accumulator/epoch) quando um membro sai.
 - **MLS:** biblioteca, perfil de ciphersuite, e a camada de **arquivo durável** (§7.3) por cima.
 - **Cliente / cadeia de suprimento (doc 06 A7):** build reprodutível, *rebuilders*, binary transparency — tratado como requisito.
-- **Push notifications:** evitar FCM/APNs ou desacoplar o token (doc 06 I2).
+- **Push notifications:** evitar FCM/APNs ou desacoplar o token (doc 06 §5/§9).
 - **Recuperação social** de identidade (§3.2) — protocolo de re-atestação pela célula, para o MVP.
 - **Voto:** biblioteca de assinatura cega **limiar** + DKG/VSS; caminho para verificabilidade E2E (Helios/Belenios).
 - **Coação legal:** passphrase de coação / negação plausível; multi-dispositivo com sub-chaves revogáveis (§3.3).

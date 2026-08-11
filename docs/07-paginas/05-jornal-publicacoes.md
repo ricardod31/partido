@@ -69,8 +69,8 @@ stateDiagram-v2
 3. **Funcionalidades.** Renderizar o corpo; **verificar a assinatura** do `orgao_editor` (selo); mostrar o `escopo_circulacao`; para `publico`, funciona sem conta (P-ON-12).
 4. **Dinâmica.** Publicação `publico` é a **única exceção formal** à regra "tudo cifrado" (I7, ADR-0003): assinada e legível. Escopos internos são cifrados para o organismo destinatário e só abrem para membros.
 5. **Experiência e layout.** `PublicationReader` com selo de "assinatura verificada"; TrustChip declara o escopo ("Interno à organização — cifrado" vs. "Público — assinado e legível por qualquer um").
-6. **Estados.** Assinatura verificada/inválida; escopo sem acesso; arquivada (marca como substituída, link à sucessora).
-7. **Restrições.** I7, I10 (arquivada é imutável); doc 02 §2.4.
+6. **Estados.** Assinatura verificada/inválida; escopo sem acesso; arquivada (marca como "substituída/encerrada" — rótulo da transição do doc 02 §4.2; a `Publicacao` **não** tem elo de sucessão no domínio, então nenhum "link à sucessora" é inventado aqui).
+7. **Restrições.** I7; assinatura do órgão editor (ADR-0003; a imutabilidade de *resoluções* é I10 — não se aplica a publicações); doc 02 §2.4.
 8. **Aberto.** —
 
 ## P-JOR-04 — Editor de publicação
@@ -81,7 +81,7 @@ stateDiagram-v2
 4. **Dinâmica.** Estados `rascunho→aprovada→publicada→arquivada` (doc 02 §4.2). A assinatura é do **organismo editor** (não pessoal) — depende do esquema de assinatura coletiva a fixar (FROST — README §7). Escolher `publico` dispara aviso: sairá **em claro** (I7).
 5. **Experiência e layout.** Editor com o `ScopeSelector` em destaque e `HonestyCallout` no escopo `publico`: *"Isto será legível por qualquer pessoa, para sempre — inclusive fora da organização."*
 6. **Estados.** Rascunho; aguardando aprovação; publicada; descartada; arquivada.
-7. **Restrições.** doc 02 §2.4/§4.2; I7 (público em claro); I10 (publicada→arquivada imutável); dependência: assinatura do organismo (FROST).
+7. **Restrições.** doc 02 §2.4/§4.2; I7 (público em claro); estados da máquina editorial do doc 02 §4.2 (I10 é de resoluções, não de publicações); [DEP-02] assinatura do organismo (FROST); **[DEP-01]** para o escopo `interno_organizacao`: não existe "o grupo da organização inteira" — a entrega desse escopo depende do mesmo mecanismo de relay das resoluções.
 8. **Aberto.** Esquema de assinatura do órgão editor (FROST — README §7).
 
 ## P-JOR-05 — Fila editorial
@@ -100,7 +100,7 @@ stateDiagram-v2
 1. **Objetivo.** Compor um **informe que sobe** da base para a redação ou a instância superior.
 2. **Quem chega.** Qualquer membro/organismo (o fluxo ascendente é rotina — M10).
 3. **Funcionalidades.** Redigir `corpo` (cifrado); escolher `destino` (redação ou instância superior); anexar; assinar e enviar.
-4. **Dinâmica.** Modela o fluxo ascendente do centralismo (M10): o que acontece na fábrica/no bairro sobe. Reutilizado pela **prestação de contas** de mandato (P-MAN-04). É um envelope cifrado (doc 03 §6) — só o destino lê.
+4. **Dinâmica.** Modela o fluxo ascendente do centralismo (M10): o que acontece na fábrica/no bairro sobe. Reutilizado pela **prestação de contas** de mandato (P-MAN-04). **Honestidade sobre o mecanismo [DEP-04]:** o remetente **não é membro** do grupo MLS do destino (redação/instância superior) — no formato vigente do doc 03 §6 ele não produz a `prova_membro` nem cifra para o ratchet do destino; o envio cross-organismo depende do ADR de **mensageria entre organismos** (ex.: chave caixa-postal certificada pelo grupo). A tela fixa o resultado (o informe chega ao destino e só a ele); o chip diz "cifrado para: Redação" **sem** prometer o mecanismo.
 5. **Experiência e layout.** `CorrespondenceComposer`; TrustChip (cifrado para o destino); deixa claro **quem** vai ler (o destino), não "todo mundo".
 6. **Estados.** Rascunho; enviado; recebido/apreciado.
 7. **Restrições.** M10; doc 02 §2.4; doc 03 §6.
@@ -111,7 +111,7 @@ stateDiagram-v2
 1. **Objetivo.** Receber e curar os informes que sobem, para virarem matéria.
 2. **Quem chega.** Redação/agitprop.
 3. **Funcionalidades.** Ver correspondências recebidas; triar; **converter** um informe em rascunho de publicação (liga o circuito sobe→desce).
-4. **Dinâmica.** Fecha o circuito bidirecional: a correspondência que sobe (P-JOR-06) alimenta a publicação que desce (P-JOR-04). A curadoria respeita a compartimentação — a redação vê o que lhe foi endereçado.
+4. **Dinâmica.** Fecha o circuito bidirecional: a correspondência que sobe (P-JOR-06) alimenta a publicação que desce (P-JOR-04). A curadoria respeita a compartimentação — a redação vê o que lhe foi endereçado. *Lacuna sinalizada:* esta caixa é **da redação**; a correspondência genérica ao destino "instância superior" (que P-JOR-06 oferece) ainda não tem caixa própria — generalizar esta página para "caixa de correspondência do organismo" (visível conforme papel) é ajuste previsto, dependente de [DEP-04].
 5. **Experiência e layout.** Caixa de entrada da redação; ação "transformar em matéria" leva ao editor (P-JOR-04).
 6. **Estados.** Sem correspondências; triadas; convertidas.
 7. **Restrições.** M2/M10; doc 02 §2.4.
@@ -119,7 +119,9 @@ stateDiagram-v2
 
 ## Decisões em aberto da área
 
-- **Assinatura do órgão editor** (P-JOR-04): esquema coletivo (FROST — README §7).
+- **[DEP-02] Assinatura do órgão editor** (P-JOR-04): esquema coletivo (FROST).
+- **[DEP-01] Entrega do escopo `interno_organizacao`** (P-JOR-01/04): sem grupo "organização inteira", depende do relay das resoluções.
+- **[DEP-04] Mensageria entre organismos** (P-JOR-06/07): mecanismo do envio ascendente; caixa genérica da instância superior.
 - **Granularidade de tarefas** dentro do organismo (doc 02 §7): se a correspondência carrega tarefas atribuíveis ou se vira entidade própria.
 
 ## Referências

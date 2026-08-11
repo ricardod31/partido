@@ -6,7 +6,7 @@
 
 ## A ideia em um parágrafo
 
-Organizações políticas hoje se organizam em plataformas comerciais vigiadas e sem forma organizativa. Este projeto desenha a alternativa: um sistema onde **a célula é a unidade fundamental** (P1), **o servidor é cego** — só armazena envelopes cifrados no cliente e não guarda nenhum dado pessoal (P2), **a identidade é um par de chaves com pseudônimo** (P3), o método decisório é o **centralismo democrático** transformado em fluxo de dados (P4), a comunicação central é um **jornal** — o organizador coletivo (P5), e **cada organização roda seu próprio servidor**, federando com outras apenas por acordo político explícito (P6). Os princípios completos estão no [documento de visão](docs/00-visao.md).
+Organizações políticas hoje se organizam em plataformas comerciais vigiadas e sem forma organizativa. Este projeto desenha a alternativa: um sistema onde **a célula é a unidade fundamental** (P1), **o servidor é cego quanto ao conteúdo** — só armazena envelopes cifrados no cliente e não guarda nome civil, e-mail ou telefone (P2; o que permanece visível como estrutura, e a análise LGPD do grafo pseudônimo, estão declarados no [modelo de ameaças](docs/06-modelo-de-ameacas.md) e em [revisao-critica-2.md](docs/revisao-critica-2.md)), **a identidade é um par de chaves com pseudônimo** (P3), o método decisório é o **centralismo democrático** transformado em fluxo de dados (P4), a comunicação central é um **jornal** — o organizador coletivo (P5), e **cada organização roda seu próprio servidor**, federando com outras apenas por acordo político explícito (P6). Os princípios completos estão no [documento de visão](docs/00-visao.md).
 
 ## Mapa de leitura
 

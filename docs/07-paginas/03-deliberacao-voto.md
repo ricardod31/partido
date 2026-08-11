@@ -27,7 +27,7 @@ stateDiagram-v2
     Arquivada --> [*]
 ```
 
-O componente `DeliberationStepper` (design system §8) materializa esta máquina no topo de toda tela de deliberação — a pessoa sempre sabe em que fase está e o que vem a seguir. **Ao abrir a votação, o censo eleitoral congela** (I12): a composição elegível vira o "caderno" e não muda até a apuração.
+O componente `DeliberationStepper` (design system §8) materializa esta máquina no topo de toda tela de deliberação — a pessoa sempre sabe em que fase está e o que vem a seguir. **Ao abrir a deliberação, o censo eleitoral congela** (I12, literal): a composição elegível vira o "caderno" e não muda até a apuração — quem é admitido durante a discussão **não vota nesta deliberação** (coerente com need-to-know: não leu o debate; e fecha a janela de encher a assembleia no meio de uma deliberação viva, A2/A6). *(Uma flexibilização — re-abertura do censo por deliberação do próprio organismo, só até abrir a votação — está proposta como ADR em [revisao-critica-2.md](../revisao-critica-2.md); até ela existir, vale I12 literal.)*
 
 ---
 
@@ -47,7 +47,7 @@ O componente `DeliberationStepper` (design system §8) materializa esta máquina
 1. **Objetivo.** Abrir uma deliberação com as regras corretas herdadas do estatuto.
 2. **Quem chega.** Membro elegível a propor (conforme estatuto/papel).
 3. **Funcionalidades.** Definir tipo (`consultiva`/`deliberativa`/`eleicao`); **modo de voto** (`aberto` ou `secreto`); ver **quórum** e **regra de maioria** herdados (I8, não editáveis livremente); prazos por fase; texto da proposta.
-4. **Dinâmica.** O `modo_voto` determina a mecânica adiante (doc 03 §8): `aberto` → commit-reveal (P-DEL-05); `secreto` → assinatura cega + urna (P-DEL-06/07). O quórum/maioria vêm do `estatuto_local` (P-ORG-06); alterá-los é outra deliberação, não um campo livre aqui (UX4).
+4. **Dinâmica.** **Abrir a deliberação congela o censo** (I12) — a tela diz isso na confirmação de abertura. O `modo_voto` determina a mecânica adiante (doc 03 §8): `aberto` → commit-reveal (P-DEL-05); `secreto` → credencial cega + urna (P-DEL-06/07). O quórum/maioria vêm do `estatuto_local` (P-ORG-06); alterá-los é outra deliberação, não um campo livre aqui (UX4).
 5. **Experiência e layout.** Assistente por passos; `HonestyCallout` ao escolher `secreto`: *"O voto secreto protege o sigilo perante o sistema, mas exige canal anônimo (Tor) e **não** protege contra coação."*
 6. **Estados.** Rascunho; parâmetro travado pelo estatuto (explica); sem elegibilidade para propor.
 7. **Restrições.** I8 (quórum/maioria); doc 02 §2.5; P4 (haverá discussão antes do voto).
@@ -90,12 +90,12 @@ O componente `DeliberationStepper` (design system §8) materializa esta máquina
 
 1. **Objetivo.** Preparar e cegar a cédula, obtendo a credencial de voto — **com gate fail-closed**.
 2. **Quem chega.** Eleitor elegível numa deliberação de modo `secreto`.
-3. **Funcionalidades.** Preparar a cédula; **cegá-la** (blinding); apresentar prova de elegibilidade (credencial de membro) à **mesa distribuída k-de-n**; receber a **assinatura cega limiar** → credencial de voto de uso único.
-4. **Dinâmica.** A elegibilidade é separada do conteúdo (doc 03 §8.2). A emissão é **limiar** (nenhuma mesa isolada cunha credenciais — corrige A9). **Gate fail-closed (UX7):** sem canal anônimo confirmado, o cliente **recusa** prosseguir (`FailClosedBlocker`) — não há "prosseguir mesmo assim".
-5. **Experiência e layout.** `Ceremony` de voto (focada); `SecretBallot`; TrustChip "Anônimo"; `HonestyCallout` central: *"O sistema não liga seu voto a você. Ele **não** te protege se alguém te obriga a provar como votou (coação/venda de voto)."* (doc 06 §5).
-6. **Estados.** **Fail-closed** (bloqueia, explica); credencial emitida; elegibilidade recusada; mesa indisponível.
-7. **Restrições.** UX7; I5/I12; A9 (emissão limiar); doc 03 §8.2.
-8. **Aberto.** Biblioteca de assinatura cega **limiar** + DKG/VSS (doc 03 §10).
+3. **Funcionalidades.** Preparar a cédula; **cegá-la** (blinding); apresentar prova de elegibilidade (credencial de membro) à **mesa distribuída k-de-n**; coletar as **k coassinaturas cegas** → credencial de voto de uso único.
+4. **Dinâmica.** A elegibilidade é separada do conteúdo (doc 03 §8.2). A emissão é **distribuída k-de-n** — nenhuma mesa isolada cunha credenciais (corrige A9). *Honestidade sobre o esquema [DEP-09]:* "assinatura limiar de RSA cega" não existe como padrão/artefato auditado; a direção registrada é **k assinaturas RFC 9474 independentes de mesas distintas (k > n/2, conjunto de signatários uniforme por eleição** — se cada eleitor escolhesse seu subconjunto, o padrão de assinantes o marcaria). A cerimônia coleta k respostas, e a UI mostra o progresso. **Gate fail-closed (UX7):** sem canal anônimo confirmado, o cliente **recusa** prosseguir (`FailClosedBlocker`) — não há "prosseguir mesmo assim".
+5. **Experiência e layout.** `Ceremony` de voto (focada); `SecretBallot`; **sem** chip "Anônimo" neste passo — a mesa confere elegibilidade e unicidade, logo **sabe que você pediu credencial** (o anonimato nasce no depósito, P-DEL-07); o chip aqui é "Exposto: a mesa registra que você se credenciou; sua cédula permanece cega". `HonestyCallout` central: *"O sistema não liga seu voto a você. Ele **não** te protege se alguém te obriga a provar como votou (coação/venda de voto)."* (doc 06 §5).
+6. **Estados.** **Fail-closed** (bloqueia, explica); **coletando k de n** (mesa parcialmente disponível); credencial emitida; elegibilidade recusada; mesa indisponível (→ P-DEL-11, estados de falha).
+7. **Restrições.** UX7; I5/I12; A9 (emissão distribuída); doc 03 §8.2.
+8. **Aberto.** [DEP-09] esquema de emissão k-de-n + bibliotecas DKG/VSS + parâmetros de mistura.
 
 ## P-DEL-07 — Voto secreto: depósito na urna
 
@@ -118,29 +118,29 @@ sequenceDiagram
     Note over Urna: aceita só credencial válida e NÃO gasta
 ```
 
-**Sigilo depende de canal anônimo + mistura** (doc 03 §8.2): sem atraso, "credenciado em T1 / depositou em T1+δ" correlaciona voto→pessoa mesmo sobre Tor. Por isso o cliente é fail-closed e há mistura obrigatória.
-5. **Experiência e layout.** `UrnDeposit`; mostra o estado da mistura/atraso honestamente ("aguardando janela de mistura"); nunca sugere que é instantâneo.
-6. **Estados.** Aguardando janela de mistura; depositado; **fail-closed** (Tor caiu — bloqueia); credencial já gasta (erro claro).
-7. **Restrições.** UX7; doc 03 §8.2 (Tor + mistura + uso único); A9.
-8. **Aberto.** Parâmetros de mistura/atraso.
+**Sigilo depende de canal anônimo + mistura** (doc 03 §8.2): sem atraso, "credenciado em T1 / depositou em T1+δ" correlaciona voto→pessoa mesmo sobre Tor. Por isso o cliente é fail-closed e há mistura obrigatória — e o depósito agendado cai em **janelas de lote com aleatorização** (nunca offset determinístico por usuário, que recorrelacionaria emissão→depósito). **Prazo × mistura (regra que faltava):** o prazo de **emissão de credencial** encerra antes do fechamento da **urna**, com período de graça ≥ atraso máximo de mistura — P-DEL-01/06 exibem o **"último horário seguro para votar"** (prazo − atraso máximo); voto iniciado depois disso é recusado *antes* de credenciar, nunca perdido em silêncio.
+5. **Experiência e layout.** `UrnDeposit`; mostra o estado da mistura/atraso honestamente ("aguardando janela de mistura"); nunca sugere que é instantâneo. Estado persistente e re-entrante em linguagem [conceitual]: *"credencial emitida; sua cédula **ainda não** está na urna"* — a pessoa sempre sabe responder "votei ou não votei?". Depósito agendado sobrevive ao fechamento do app com aviso local (P-NAV-05).
+6. **Estados.** Aguardando janela de mistura; depositado; **fail-closed** (Tor caiu com credencial emitida — bloqueia e **preserva** o estado re-entrante); credencial já gasta (erro claro); janela perdida (declara "não depositado", conta como credencial não utilizada — nunca finge sucesso; classe "ação com prazo", design system §7).
+7. **Restrições.** UX7; doc 03 §8.2 (Tor + mistura + uso único); A9; I12 (os dois sub-prazos entram nos `prazos` por fase do doc 02 §2.5 — toque leve de domínio sinalizado).
+8. **Aberto.** [DEP-09] Parâmetros de mistura/atraso e das janelas de lote.
 
 ## P-DEL-08 — Apuração e bulletin board
 
 1. **Objetivo.** Apurar por decifração limiar e tornar a integridade **conferível** — dentro dos limites honestos do MVP.
 2. **Quem chega.** Escrutinadores (mandato eleitoral) operam; membros conferem o bulletin board.
-3. **Funcionalidades.** Ao fim, **decifração limiar** da urna (nenhum escrutinador reconstrói a chave — DKG/VSS); publicar resultado + nº de cédulas; **bulletin board** com nº de credenciais emitidas conferível contra o **censo congelado** (I12).
-4. **Dinâmica.** A integridade não é de parte única (correção A9): sobre-emissão vira **detectável** (nº de credenciais vs censo). **Limite honesto declarado (doc 03 §8.3):** o MVP **não** é verificável ponta a ponta — o eleitor não confere que *seu* voto entrou; confia-se na decifração dos escrutinadores. A evolução (Helios/Belenios, cast-or-audit) é futura.
-5. **Experiência e layout.** `BulletinBoardPanel` (nº credenciais, nº cédulas, censo); `HonestyCallout` firme: *"Você pode conferir que não houve mais votos que eleitores. Você **não** pode, nesta versão, conferir que o seu voto específico foi contado."* (doc 03 §8.3).
-6. **Estados.** Apurando; publicado; discrepância credenciais×censo (alerta de possível fraude — A9); quórum não atingido → arquivada.
+3. **Funcionalidades.** Ao fim, **decifração limiar** da urna (nenhum escrutinador reconstrói a chave — DKG/VSS); publicar resultado; **bulletin board em três números**, todos agregados e sem identidade: **censo** (elegíveis congelados, I12), **credenciais emitidas** (≤ censo — violação = fraude da mesa), **cédulas depositadas** (≤ emitidas — violação = forja); a diferença emitidas−depositadas é declarada como *"credenciais não utilizadas (abstenção ou janela perdida)"* — credencial expirada **continua contando** em "emitidas" (são não-rastreáveis; nunca se decrementa).
+4. **Dinâmica.** A integridade não é de parte única (correção A9): sobre-emissão vira **detectável** (emitidas × censo). **Duas honestidades declaradas:** (a) o MVP **não** é verificável ponta a ponta (doc 03 §8.3) — o eleitor não confere que *seu* voto entrou; (b) a contagem agregada **não detecta** cunhagem em nome de abstencionistas dentro do censo — limite herdado da fonte, coberto pelo rótulo "não verificável E2E". A conferência **por-entrada pública foi deliberadamente recusada** (tornaria a *não-participação* verificável — um coator poderia exigir e conferir abstenção); a direção registrada é **auto-verificação privada** da própria entrada ("não pedi credencial mas consto como credenciado" → alarme com disputa via escrutinadores) — [DEP-09]/[revisao-critica-2.md](../revisao-critica-2.md).
+5. **Experiência e layout.** `BulletinBoardPanel` (censo · emitidas · depositadas); `HonestyCallout` firme: *"Você pode conferir que não houve mais credenciais que eleitores, nem mais cédulas que credenciais. Você **não** pode, nesta versão, conferir que o seu voto específico foi contado."* (doc 03 §8.3).
+6. **Estados.** Apurando; publicado; discrepância emitidas×censo ou depositadas×emitidas (alerta de possível fraude — A9); **mesa/escrutinadores incompletos** (menos de k disponíveis — a apuração não trava para sempre: estado terminal "apuração impossível" com caminho de deliberação que declara a eleição falhada e reconvoca, censo re-congelado, **nenhuma decifração parcial**); quórum não atingido → arquivada.
 7. **Restrições.** I5/I12; A9; doc 03 §8.2/§8.3 (limite de verificabilidade declarado).
-8. **Aberto.** Verificabilidade E2E (Helios/Belenios) — evolução (doc 03 §8.3, doc 06 §9).
+8. **Aberto.** [DEP-09]; verificabilidade E2E (Helios/Belenios) — evolução (doc 03 §8.3, doc 06 §9); auto-verificação privada da própria entrada.
 
 ## P-DEL-09 — Resolução (ata)
 
 1. **Objetivo.** Registrar a decisão como **ata assinada e imutável** e fazê-la descer aos organismos vinculados.
 2. **Quem chega.** Membros do organismo; e, por propagação, os organismos subordinados no `escopo_vinculacao`.
 3. **Funcionalidades.** Gerar a resolução (`texto`, `orgao`, `escopo_vinculacao`, `substitui`, assinatura do organismo, timestamp); **encadeamento** de correções via `substitui` (I10); propagação descendente (I13).
-4. **Dinâmica.** Só é **vinculante** se a deliberação atingiu quórum e maioria (I8). É **imutável** (I10): correção é uma **nova** resolução apontando para a anterior. O `escopo_vinculacao ⊆ descendentes do orgao` (I13). A **assinatura do organismo** depende do esquema de assinatura coletiva a fixar (ex.: FROST) — a UI desenha a cerimônia de coassinatura de forma agnóstica (README §7). A propagação a organismos-filhos usa reembalagem/relay (dependência de backend).
+4. **Dinâmica.** Só é **vinculante** se a deliberação atingiu quórum e maioria (I8). É **imutável** (I10): correção é uma **nova** resolução apontando para a anterior. O `escopo_vinculacao ⊆ descendentes do orgao` (I13) — **com a ressalva do congresso [DEP-07]**: na árvore atual do doc 02 o congresso não tem descendentes, e I13 literal o deixaria sem vincular ninguém; a emenda (reposicionar a árvore ORG→Congresso→CC, fiel ao doc 01 A.7, ou exceção tipada) está pendente, e esta tela desenha o resultado pretendido. A **assinatura do organismo** depende do esquema coletivo a fixar (ex.: FROST) — cerimônia agnóstica [DEP-02]. A propagação a organismos-filhos usa reembalagem/relay [DEP-01].
 5. **Experiência e layout.** `ResolutionAta` — cartão de ata com selo de assinatura, cadeia `substitui` visível, e o `escopo_vinculacao` explícito ("obriga: Célula A, Célula B"). Nos organismos-filhos, aparece no mural (P-ORG-02) como item de resolução descida.
 6. **Estados.** Vinculante; substituída (mostra o elo); em propagação; sem quórum (não vira resolução — arquivada).
 7. **Restrições.** I8, I10, I13; doc 02 §2.6; dependências: assinatura do organismo (FROST) e propagação descendente (README §7).
@@ -148,22 +148,34 @@ sequenceDiagram
 
 ## P-DEL-10 — Deliberação disciplinar
 
-1. **Objetivo.** Aplicar sanção (censura, afastamento, desligamento) **só como desfecho de deliberação com quórum** — nunca por botão.
-2. **Quem chega.** Membros do organismo competente; a instância que tem competência disciplinar.
-3. **Funcionalidades.** Abrir deliberação disciplinar (tipo próprio); discussão e voto conforme o estatuto; ao aprovar com quórum, o sistema **executa** a transição de estado do membro (censura/afastado/desligado) e a exclusão criptográfica correspondente.
-4. **Dinâmica.** I11/[ADR-0009](../decisoes/adr-0009-disciplina-como-deliberacao.md): qualquer transição que restrinja direitos **só é válida** como consequência de deliberação com quórum — fecha o "superusuário oculto" (a exclusão unipessoal). O **desligamento** implica remoção de todas as filiações e revogação de todos os mandatos, com avanço de época (I11). A exclusão é *executada* pelo sistema, *decidida* pela deliberação.
-5. **Experiência e layout.** Mesmo fluxo de deliberação (não uma tela de "admin"); `ConfirmDestructive` só na execução pós-quórum; a resolução de origem fica ligada ao estado do membro (visível em P-ORG-03).
-6. **Estados.** Em deliberação; aprovada → executando exclusão/rekey; rejeitada; recall associado (se atinge mandatos, ver MAN).
+1. **Objetivo.** Aplicar sanção (censura, afastamento, desligamento) **só como desfecho de deliberação com quórum e com devido processo** — nunca por botão.
+2. **Quem chega.** Membros do organismo competente (a **regra de competência** — qual instância pode sancionar quem — é pendência de domínio nomeada; ver §8).
+3. **Funcionalidades.** Abrir deliberação disciplinar (tipo próprio — proposta de domínio, ver §8); **rito de devido processo mínimo**, imposto pela máquina de estados: (a) **notificação** ao acusado na abertura (aviso local prioritário); (b) **espaço de defesa** garantido na fase de discussão (o acusado fala antes do voto); (c) posição do acusado no censo definida e visível (participa do quórum? vota? — a fixar no domínio, exibida sempre); (d) **apelação à instância superior** registrada como caminho na resolução. Ao aprovar com quórum, o sistema **executa** a transição de estado e a exclusão criptográfica correspondente.
+4. **Dinâmica.** I11/[ADR-0009](../decisoes/adr-0009-disciplina-como-deliberacao.md): qualquer transição que restrinja direitos **só é válida** como consequência de deliberação com quórum — fecha o "superusuário oculto". Sem defesa e recurso, porém, o rito registraria uma **máquina de expurgo** — e a tradição citada no doc 01 tinha instâncias de recurso; por isso o devido processo é parte da spec, não cortesia. O **desligamento** implica remoção de todas as filiações e revogação de todos os mandatos, com avanço de época. A exclusão é *executada* pelo sistema, *decidida* pela deliberação. A revogação da **credencial anônima** do desligado (para que não continue autorizando envios) é dependência aberta do doc 03 §10 — sinalizada, não improvisada.
+5. **Experiência e layout.** Mesmo fluxo de deliberação (não uma tela de "admin"); a fase de defesa é visualmente distinta no `DeliberationStepper`; `ConfirmDestructive` só na execução pós-quórum; a resolução de origem (e o estado da apelação) ficam ligados ao estado do membro (visível em P-ORG-03).
+6. **Estados.** Em notificação; em defesa/discussão; em votação; aprovada → executando exclusão/rekey; rejeitada; **em apelação**; recall associado (se atinge mandatos, ver MAN).
 7. **Restrições.** I11, I6 (sem superusuário), ADR-0009; I9 (época avança no desligamento).
-8. **Aberto.** Modelagem fina do estado "censura" e do tipo de deliberação disciplinar (revisão adversarial — a fixar no domínio).
+8. **Aberto.** Modelo de sanção no domínio (estado "censura", tipo de deliberação disciplinar, **regra de competência**, posição do acusado no censo, rito de apelação — ADR-0009 §Consequências deixa "direito de defesa?" em aberto; consolidado em [revisao-critica-2.md](../revisao-critica-2.md)); revogação de credencial anônima na saída (doc 03 §10).
+
+## P-DEL-11 — Constituição da mesa e da urna
+
+1. **Objetivo.** Constituir a infraestrutura que todo voto secreto pressupõe: a **mesa k-de-n** (emissão de credenciais) e os **escrutinadores com a chave da urna** (DKG/VSS) — a precondição que P-DEL-06/07/08 consomem e nenhuma outra tela criava.
+2. **Quem chega.** O organismo que abre a eleição secreta; os eleitos para a mesa/escrutínio.
+3. **Funcionalidades.** Eleger os n da mesa e os escrutinadores (**mandato eleitoral** — reusa a deliberação `eleicao`, P-MAN-01); conduzir a **cerimônia DKG/VSS** (geração distribuída da chave da urna — nenhum participante conhece a chave inteira, doc 03 §8.2), com progresso por participante; publicar no bulletin board o **conjunto de signatários da eleição** (uniforme para todos os eleitores — [DEP-09]); registrar k e n.
+4. **Dinâmica.** A cerimônia é multi-parte e humana: a UI a conduz passo a passo, com estados de espera por participante. **Estados de falha desenhados** (é o que faltava): participante ausente na cerimônia (recomeça com substituto eleito), *share* perdido antes da apuração (ver P-DEL-08 — "apuração impossível" com reconvocação; nunca decifração parcial). **Mesa mínima viável** para células pequenas (3–15): parâmetros k/n do estatuto com piso de segurança — decisão em aberto do domínio.
+5. **Experiência e layout.** `Ceremony` multi-parte com progresso por pessoa ("3 de 5 shares gerados"); cada participante vê só o próprio share (need-to-know); vocabulário [conceitual] na superfície ("mesa", "urna lacrada por várias chaves"), técnico a um toque (D5).
+6. **Estados.** Elegendo mesa; cerimônia em curso (aguardando participante X); constituída (eleições secretas habilitadas); falha (recomeçar); share comprometido (reconstituir antes de nova eleição).
+7. **Restrições.** A9 (a distribuição é a correção central); I3 (mesa/escrutínio são mandatos eleitos); doc 03 §8.2.
+8. **Aberto.** [DEP-09] bibliotecas DKG/VSS e esquema k-de-n; parâmetros k/n mínimos por tamanho de organismo (estatuto).
 
 ## Decisões em aberto da área
 
-- **Assinatura do organismo** (P-DEL-09): esquema coletivo (FROST) a fixar.
-- **Propagação descendente** (P-DEL-09): reembalagem/relay (revisao-critica §2-A).
-- **Voto limiar** (P-DEL-06/07/08): biblioteca de assinatura cega limiar + DKG/VSS; caminho a verificabilidade E2E.
+- **[DEP-02] Assinatura do organismo** (P-DEL-09): esquema coletivo (FROST) a fixar.
+- **[DEP-01] Propagação descendente** (P-DEL-09): reembalagem/relay (revisao-critica §2-A).
+- **[DEP-07] Congresso × I13** (P-DEL-09): emenda pendente (árvore ou exceção tipada).
+- **[DEP-09] Voto** (P-DEL-06/07/08/11): esquema de emissão k-de-n, DKG/VSS, mistura; caminho a verificabilidade E2E; auto-verificação privada da entrada no censo.
 - **Entidade de Tendência/Plataforma** (P-DEL-03): domínio (doc 01 C.1).
-- **Modelo de sanção** (P-DEL-10): estado "censura", tipo disciplinar, entidade de Sanção (revisão adversarial).
+- **Modelo de sanção e devido processo** (P-DEL-10): estado "censura", tipo disciplinar, competência, apelação (revisao-critica-2).
 
 ## Referências
 
