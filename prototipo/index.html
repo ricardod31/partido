@@ -2,7 +2,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
 /* ============================================================
-   partido — protótipo de telas (ciclos 1–4)
+   partido — protótipo de telas (ciclos 1–5)
    Aplica docs/07-paginas/00-design-system.md.
    Ciclo 3: simplicidade (tradução de jargão + PIN + cota com valor),
    camada de aprendizado (checklist, cartilha, ensaio, glossário),
@@ -12,21 +12,40 @@
    regime financeiro × PIX identificado (P-FIN-03/08), minhas salas
    + árvore da organização (P-NAV-02/P-ORG-07) e acesso: destravar,
    recuperar pela chave-mestra, emparelhar aparelho (P-ON-08/09/10).
-   Decisões e dívidas: prototipo/README.md. Dados 100% fictícios.
+   Ciclo 5 (alta fidelidade): tokens/estados/elevação/motion fixados
+   (DS §12 → §5/§8: hover/pressed/focus/disabled, z-scale, espinha
+   240ms), fidelidade funcional (mural publica com fila offline,
+   proposta cria a decisão, emendas entram, convites nascem, avisos
+   se marcam lidos) e as últimas telas: boas-vindas (P-ON-01),
+   propor organismo (P-ORG-05), estatuto (P-ORG-06), busca escopada
+   (P-NAV-04). Decisões e dívidas: prototipo/README.md. Dados 100%
+   fictícios.
    ============================================================ */
 :root{
-  --bg-0:#0E1116; --bg-1:#151A21; --bg-2:#1C222B; --border:#242C37; --field:#4A5561;
-  --ink-0:#E8EDF2; --ink-1:#AEB8C4; --ink-2:#8C97A6;
-  --accent:#5B8DEF; --accent-ink:#0E1116;
-  --t-prot:#3FB27F; --t-exp:#E0A33E; --t-nao:#E5686A; --t-anon:#9B7BE0;
+  /* superfícies (elevação por clareamento + fio) */
+  --bg-0:#0B0E14; --bg-1:#121824; --bg-2:#1A2130; --bg-3:#222B3C;
+  --border:#232C3D; --border-2:#313C50; --field:#435062;
+  /* tinta */
+  --ink-0:#EEF2F8; --ink-1:#B6C1CF; --ink-2:#8E9AAB;
+  /* ação */
+  --accent:#6D97F4; --accent-press:#5B85DE; --accent-ink:#0A0D12;
+  /* linguagem de confiança (DS §5.2) + tintas de fundo */
+  --t-prot:#45B584; --t-exp:#E2A83E; --t-nao:#E66A6E; --t-anon:#A184E8;
+  --t-prot-bg:rgba(69,181,132,.10); --t-exp-bg:rgba(226,168,62,.10);
+  --t-nao-bg:rgba(230,106,110,.10); --t-anon-bg:rgba(161,132,232,.10);
   --f-ui:-apple-system,"Segoe UI",Roboto,"Noto Sans",system-ui,sans-serif;
   --f-serif:"Iowan Old Style","Noto Serif",Georgia,serif;
   --f-mono:ui-monospace,"JetBrains Mono","Roboto Mono",monospace;
-  --r-c:6px; --r-card:10px; --r-sheet:16px;
+  --r-c:8px; --r-card:12px; --r-sheet:18px;
+  /* elevação (escala z fixada: espinha 40 < cerimônia 45 < folhas 50 < bloqueio 60) */
+  --z-spine:40; --z-cer:45; --z-sheet:50; --z-block:60;
+  /* movimento (reduced-motion zera tudo) */
+  --t-fast:140ms; --t-med:240ms; --ease:cubic-bezier(.2,.7,.3,1);
 }
 *{box-sizing:border-box;margin:0}
 html{color-scheme:dark}
-body{background:var(--bg-0);color:var(--ink-0);font:400 16px/1.5 var(--f-ui);min-height:100vh}
+body{background:var(--bg-0);color:var(--ink-0);font:400 16px/1.5 var(--f-ui);min-height:100vh;-webkit-font-smoothing:antialiased}
+::selection{background:rgba(109,151,244,.32)}
 button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-align:left}
 button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
 input,select,textarea{font:inherit}
@@ -43,13 +62,16 @@ b{font-weight:600}
 .rail .row{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 0}
 .rail ul{list-style:none;display:flex;flex-direction:column;gap:4px;color:var(--ink-1)}
 .rail li::before{content:"·  ";color:var(--ink-2)}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border-radius:var(--r-c);padding:9px 14px;min-height:44px;font-size:14px;font-weight:500;background:var(--bg-2);border:1px solid var(--border);color:var(--ink-0)}
-.btn:hover{border-color:var(--ink-2)}
-.btn-p{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
-.btn-p:hover{filter:brightness(1.08)}
-.btn-danger{background:transparent;border-color:var(--t-nao);color:var(--t-nao)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border-radius:var(--r-c);padding:9px 14px;min-height:44px;font-size:14px;font-weight:500;background:var(--bg-2);border:1px solid var(--border-2);color:var(--ink-0);transition:background var(--t-fast) var(--ease),border-color var(--t-fast) var(--ease),transform var(--t-fast) var(--ease)}
+.btn:hover{background:var(--bg-3);border-color:var(--field)}
+.btn:active{transform:translateY(1px)}
+.btn-p{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:600}
+.btn-p:hover{background:var(--accent);filter:brightness(1.07)}
+.btn-p:active{background:var(--accent-press);filter:none}
+.btn-danger{background:transparent;border-color:rgba(230,106,110,.55);color:var(--t-nao)}
+.btn-danger:hover{background:var(--t-nao-bg);border-color:var(--t-nao)}
 .btn-sm{min-height:36px;padding:6px 11px;font-size:13px}
-.btn[disabled]{opacity:.5;cursor:default}
+.btn[disabled]{opacity:.45;cursor:default;transform:none;pointer-events:none}
 .switch{width:40px;height:24px;border-radius:12px;background:var(--bg-2);border:1px solid var(--field);position:relative;flex:none}
 .switch::after{content:"";position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:var(--ink-1);transition:transform .15s,background .15s}
 .switch[aria-checked="true"]{background:rgba(63,178,127,.25);border-color:var(--t-prot)}
@@ -58,81 +80,88 @@ b{font-weight:600}
 .seg button{flex:1;text-align:center;padding:6px;font-size:12px;border-radius:4px;color:var(--ink-2)}
 .seg button[aria-pressed="true"]{background:var(--bg-0);color:var(--ink-0);font-weight:600}
 /* ---------- moldura ---------- */
-.phone{width:400px;max-width:100%;height:780px;background:var(--bg-0);border:1px solid var(--border);border-radius:24px;overflow:hidden;display:flex;flex-direction:column;position:relative;box-shadow:0 24px 48px rgba(0,0,0,.45)}
-.phone::before{content:"";position:absolute;inset:0 auto 0 0;width:4px;background:var(--spine,transparent);transition:background .2s;z-index:40;pointer-events:none}
+.phone{width:400px;max-width:100%;height:780px;background:var(--bg-0);border:1px solid var(--border-2);border-radius:26px;overflow:hidden;display:flex;flex-direction:column;position:relative;box-shadow:0 1px 0 rgba(255,255,255,.04) inset,0 28px 60px rgba(0,0,0,.55)}
+.phone::before{content:"";position:absolute;inset:0 auto 0 0;width:4px;background:var(--spine,transparent);transition:background var(--t-med) var(--ease);z-index:var(--z-spine);pointer-events:none}
 .phone.transversal::before{background:transparent}
 /* ---------- shell ---------- */
-.statusbar{display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--bg-1);border-bottom:1px solid var(--border);font-size:12px;flex:none}
-.pill{display:inline-flex;align-items:center;gap:5px;border-radius:99px;padding:6px 10px;min-height:32px;font-size:11px;font-weight:500;border:1px solid}
+.statusbar{display:flex;align-items:center;gap:8px;padding:9px 12px;background:var(--bg-1);border-bottom:1px solid var(--border);font-size:12px;flex:none}
+.pill{display:inline-flex;align-items:center;gap:5px;border-radius:99px;padding:6px 11px;min-height:32px;font-size:11px;font-weight:600;letter-spacing:.01em;border:1px solid;transition:color var(--t-fast),border-color var(--t-fast),background var(--t-fast)}
 .pill .dot{width:7px;height:7px;border-radius:50%;background:currentColor;flex:none}
-.pill-tor{color:var(--t-prot);border-color:rgba(63,178,127,.4)}
-.pill-tor.off{color:var(--t-nao);border-color:rgba(229,104,106,.5)}
+.pill-tor{color:var(--t-prot);border-color:rgba(69,181,132,.45);background:var(--t-prot-bg)}
+.pill-tor.off{color:var(--t-nao);border-color:rgba(230,106,110,.55);background:var(--t-nao-bg)}
 .offbar{display:none;background:rgba(224,163,62,.12);border-bottom:1px solid rgba(224,163,62,.35);color:var(--t-exp);font-size:12px;padding:6px 14px;flex:none}
 .offbar.on{display:block}
-.iconbtn{width:40px;height:40px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;flex:none;color:var(--ink-1);position:relative}
+.iconbtn{width:40px;height:40px;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;flex:none;color:var(--ink-1);position:relative;transition:background var(--t-fast),color var(--t-fast)}
 .iconbtn:hover{background:var(--bg-2);color:var(--ink-0)}
-.iconbtn .badge{position:absolute;top:5px;right:5px;width:8px;height:8px;border-radius:50%;background:var(--accent)}
-.comp-head{display:flex;align-items:center;gap:10px;padding:11px 12px;background:var(--bg-1);border-bottom:1px solid var(--border);flex:none}
-.comp-head .sw{width:14px;height:14px;border-radius:4px;background:var(--spine);flex:none;transition:background .2s}
-.comp-head .t{font-size:16px;font-weight:600;line-height:1.2}
+.iconbtn:active{background:var(--bg-3)}
+.iconbtn .badge{position:absolute;top:5px;right:5px;width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 2px var(--bg-1)}
+.comp-head{display:flex;align-items:center;gap:10px;padding:12px;border-bottom:1px solid var(--border);flex:none;background:linear-gradient(90deg,color-mix(in srgb,var(--spine) 9%,var(--bg-1)),var(--bg-1) 62%)}
+.comp-head .sw{width:14px;height:14px;border-radius:4px;background:var(--spine);flex:none;transition:background var(--t-med) var(--ease);box-shadow:0 0 0 3px color-mix(in srgb,var(--spine) 22%,transparent)}
+.comp-head .t{font-size:16px;font-weight:650;line-height:1.2;letter-spacing:-.01em}
 .comp-head .s{font-size:12px;color:var(--ink-1)}
-.epoch{margin-left:auto;font:500 11px/1 var(--f-mono);color:var(--ink-1);border:1px solid var(--border);border-radius:99px;padding:8px 10px;min-height:34px;white-space:nowrap;flex:none;display:inline-flex;align-items:center}
-.epoch.hot{color:var(--t-exp);border-color:rgba(224,163,62,.5)}
-.screen{flex:1;overflow-y:auto;padding:14px;display:none;flex-direction:column;gap:12px;scrollbar-width:thin}
+.epoch{margin-left:auto;font:500 11px/1 var(--f-mono);font-variant-numeric:tabular-nums;color:var(--ink-1);border:1px solid var(--border-2);background:var(--bg-2);border-radius:99px;padding:8px 10px;min-height:34px;white-space:nowrap;flex:none;display:inline-flex;align-items:center;transition:color var(--t-fast),border-color var(--t-fast)}
+.epoch.hot{color:var(--t-exp);border-color:rgba(226,168,62,.55);background:var(--t-exp-bg)}
+.screen{flex:1;overflow-y:auto;padding:16px 14px 18px;display:none;flex-direction:column;gap:12px;scrollbar-width:thin;scrollbar-color:var(--border-2) transparent}
 .screen.on{display:flex}
-.tabs{display:flex;background:var(--bg-1);border-top:1px solid var(--border);flex:none}
-.tabs button{flex:1;padding:8px 2px 10px;text-align:center;font-size:10.5px;color:var(--ink-2);display:flex;flex-direction:column;align-items:center;gap:3px;min-height:56px}
+.tabs{display:flex;background:var(--bg-1);border-top:1px solid var(--border);flex:none;padding:2px 4px 4px}
+.tabs button{flex:1;padding:7px 2px 8px;text-align:center;font-size:10.5px;font-weight:500;color:var(--ink-2);display:flex;flex-direction:column;align-items:center;gap:3px;min-height:56px;border-radius:10px;transition:color var(--t-fast),background var(--t-fast)}
 .tabs button svg{width:20px;height:20px}
-.tabs button.on{color:var(--ink-0)}
+.tabs button:hover{color:var(--ink-1)}
+.tabs button.on{color:var(--ink-0);font-weight:600;background:color-mix(in srgb,var(--spine,var(--accent)) 10%,transparent)}
 .tabs button.on .tabbar{width:16px}
-.tabbar{width:0;height:2px;border-radius:1px;background:var(--spine,var(--accent));transition:width .15s}
+.tabbar{width:0;height:2.5px;border-radius:2px;background:var(--spine,var(--accent));transition:width var(--t-fast) var(--ease)}
 /* ---------- componentes ---------- */
-.card{background:var(--bg-1);border:1px solid var(--border);border-radius:var(--r-card);padding:13px 14px}
-.card.tap{width:100%}
-.card.tap:hover{border-color:var(--ink-2)}
+.card{background:var(--bg-1);border:1px solid var(--border);border-radius:var(--r-card);padding:13px 15px;box-shadow:0 1px 0 rgba(0,0,0,.22)}
+.card.tap{width:100%;transition:border-color var(--t-fast) var(--ease),background var(--t-fast) var(--ease),transform var(--t-fast) var(--ease)}
+.card.tap:hover{border-color:var(--border-2);background:var(--bg-2)}
+.card.tap:active{transform:translateY(1px)}
 .card.tap .chev{float:right;color:var(--ink-2)}
-h3.sec{font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-1);margin:4px 0 -4px}
-.tchip{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:500;border-radius:99px;padding:7px 11px;min-height:34px;border:1px solid;background:var(--bg-1);cursor:pointer;max-width:100%;text-align:left}
+h3.sec{font-size:11.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-2);font-weight:600;margin:4px 0 -4px}
+.tchip{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;border-radius:99px;padding:7px 12px;min-height:34px;border:1px solid;cursor:pointer;max-width:100%;text-align:left;transition:filter var(--t-fast)}
+.tchip:hover{filter:brightness(1.12)}
 .tchip svg{flex:none}
-.tc-prot{color:var(--t-prot);border-color:rgba(63,178,127,.4)}
-.tc-exp{color:var(--t-exp);border-color:rgba(224,163,62,.45)}
-.tc-nao{color:var(--t-nao);border-color:rgba(229,104,106,.45)}
-.tc-anon{color:var(--t-anon);border-color:rgba(155,123,224,.45)}
+.tc-prot{color:var(--t-prot);border-color:rgba(69,181,132,.45);background:var(--t-prot-bg)}
+.tc-exp{color:var(--t-exp);border-color:rgba(226,168,62,.5);background:var(--t-exp-bg)}
+.tc-nao{color:var(--t-nao);border-color:rgba(230,106,110,.5);background:var(--t-nao-bg)}
+.tc-anon{color:var(--t-anon);border-color:rgba(161,132,232,.5);background:var(--t-anon-bg)}
 .dep{display:inline-flex;align-items:center;gap:5px;font:500 11px/1 var(--f-mono);letter-spacing:.03em;color:var(--ink-1);border:1px dashed var(--ink-2);border-radius:5px;padding:8px 9px;min-height:32px;cursor:pointer;background:none}
 .dep:hover{color:var(--ink-0);border-color:var(--ink-1)}
-.callout{border:1px solid var(--border);border-left:3px solid var(--t-exp);border-radius:var(--r-c);background:var(--bg-1);padding:10px 12px;font-size:13.5px;color:var(--ink-1)}
-.callout.nao{border-left-color:var(--t-nao)}
-.callout.prot{border-left-color:var(--t-prot)}
+.callout{border:1px solid var(--border);border-left:3px solid var(--t-exp);border-radius:var(--r-c);background:linear-gradient(90deg,var(--t-exp-bg),var(--bg-1) 55%);padding:11px 13px;font-size:13.5px;color:var(--ink-1)}
+.callout.nao{border-left-color:var(--t-nao);background:linear-gradient(90deg,var(--t-nao-bg),var(--bg-1) 55%)}
+.callout.prot{border-left-color:var(--t-prot);background:linear-gradient(90deg,var(--t-prot-bg),var(--bg-1) 55%)}
 .callout b{color:var(--ink-0)}
 .gterm{border-bottom:1px dotted var(--ink-2);cursor:help}
 .hchip{display:inline-flex;align-items:center;gap:7px;font-size:14px;font-weight:500}
 .msg{display:flex;gap:9px}
-.msg .bubble{background:var(--bg-1);border:1px solid var(--border);border-radius:4px 12px 12px 12px;padding:8px 11px;font-size:14px;flex:1}
+.msg .bubble{background:var(--bg-1);border:1px solid var(--border);border-radius:4px 14px 14px 14px;padding:9px 12px;font-size:14px;flex:1;box-shadow:0 1px 0 rgba(0,0,0,.2)}
+.msg.mine .bubble{background:color-mix(in srgb,var(--spine,var(--accent)) 9%,var(--bg-1));border-color:color-mix(in srgb,var(--spine,var(--accent)) 28%,var(--border))}
 .msg .meta{font-size:12px;color:var(--ink-1);margin-bottom:2px;display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
 .msg .meta .t{color:var(--ink-2)}
 .composer{display:flex;gap:8px;align-items:flex-end}
 .stepper{display:flex;gap:4px;align-items:center;flex-wrap:wrap;font-size:11px;color:var(--ink-2)}
-.stepper .st{border:1px solid var(--border);border-radius:99px;padding:3px 9px;white-space:nowrap}
-.stepper .st.done{color:var(--ink-1);border-color:var(--ink-2)}
-.stepper .st.now{color:var(--bg-0);background:var(--spine,var(--accent));border-color:transparent;font-weight:600}
+.stepper .st{border:1px solid var(--border);border-radius:99px;padding:3.5px 9px;white-space:nowrap;background:var(--bg-0)}
+.stepper .st.done{color:var(--ink-1);border-color:var(--border-2);background:var(--bg-2)}
+.stepper .st.now{color:#fff;background:color-mix(in srgb,var(--spine,var(--accent)) 82%,#000 0%);border-color:transparent;font-weight:700;box-shadow:0 0 0 3px color-mix(in srgb,var(--spine,var(--accent)) 18%,transparent)}
 .qmeter{height:9px;border-radius:5px;background:var(--bg-2);overflow:hidden;border:1px solid var(--field)}
-.qmeter i{display:block;height:100%;background:var(--spine,var(--accent));border-radius:5px}
-.role{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;letter-spacing:.02em;border-radius:5px;padding:3px 8px;background:var(--bg-2);border:1px solid var(--field);color:var(--ink-1);white-space:nowrap}
+.qmeter i{display:block;height:100%;background:linear-gradient(90deg,color-mix(in srgb,var(--spine,var(--accent)) 75%,#fff 0%),var(--spine,var(--accent)));border-radius:5px;transition:width var(--t-med) var(--ease)}
+.role{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:650;letter-spacing:.02em;border-radius:6px;padding:3.5px 8px;background:var(--bg-2);border:1px solid var(--border-2);color:var(--ink-1);white-space:nowrap}
 .mono{font-family:var(--f-mono);font-size:13px}
-.kv{display:flex;flex-direction:column;gap:7px;font-size:14px}
+.kv{display:flex;flex-direction:column;gap:7px;font-size:14px;font-variant-numeric:tabular-nums}
 .kv .r{display:flex;justify-content:space-between;gap:12px}
 .kv .k{color:var(--ink-1)}
 .big{font-size:15px;font-weight:600;color:var(--ink-0)}
-.ata{font-family:var(--f-serif);font-size:15px;line-height:1.65}
-.ata h4{font-family:var(--f-serif);font-size:18px;margin-bottom:8px}
+.ata{font-family:var(--f-serif);font-size:15px;line-height:1.7;letter-spacing:.002em}
+.ata h4{font-family:var(--f-serif);font-size:19px;margin-bottom:8px;font-weight:600}
 .list{display:flex;flex-direction:column;gap:8px}
-.empty{color:var(--ink-1);font-size:13.5px;text-align:center;padding:26px 18px;border:1px dashed var(--border);border-radius:var(--r-card)}
-.bignum{font-size:26px;font-weight:600;font-variant-numeric:tabular-nums}
+.empty{color:var(--ink-1);font-size:13.5px;text-align:center;padding:28px 18px;border:1px dashed var(--border-2);border-radius:var(--r-card);background:var(--bg-1)}
+.bignum{font-size:26px;font-weight:650;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
 .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;text-align:center}
 .grid3 .cell{background:var(--bg-1);border:1px solid var(--border);border-radius:var(--r-card);padding:12px 6px}
 .grid3 .lbl{font-size:11px;color:var(--ink-1);margin-top:2px}
-input[type=text],input[type=password],input[type=tel],select,textarea{width:100%;background:var(--bg-0);border:1px solid var(--field);border-radius:var(--r-c);padding:11px 12px;color:var(--ink-0);min-height:44px}
-input::placeholder{color:var(--ink-2)}
+input[type=text],input[type=password],input[type=tel],select,textarea{width:100%;background:var(--bg-0);border:1px solid var(--field);border-radius:var(--r-c);padding:11px 12px;color:var(--ink-0);min-height:44px;transition:border-color var(--t-fast)}
+input:hover,textarea:hover,select:hover{border-color:var(--border-2)}
+input:focus,textarea:focus,select:focus{border-color:var(--spine,var(--accent))}
+input::placeholder,textarea::placeholder{color:var(--ink-2)}
 textarea{min-height:76px;resize:vertical}
 .radio{display:flex;flex-direction:column;gap:6px}
 .radio label{display:flex;gap:9px;align-items:flex-start;background:var(--bg-1);border:1px solid var(--border);border-radius:var(--r-c);padding:11px;font-size:13.5px;cursor:pointer;min-height:44px}
@@ -147,30 +176,33 @@ textarea{min-height:76px;resize:vertical}
 .check .lbl{font-size:14px}
 .check .sub{font-size:12px;color:var(--ink-2)}
 /* ---------- sheets & overlays ---------- */
-.scrim{position:absolute;inset:0;background:rgba(6,8,11,.66);z-index:50;display:none;align-items:flex-end}
+.scrim{position:absolute;inset:0;background:rgba(5,7,10,.6);backdrop-filter:blur(2px);z-index:var(--z-sheet);display:none;align-items:flex-end}
 .scrim.on{display:flex}
-.sheet{background:var(--bg-1);border:1px solid var(--border);border-bottom:0;border-radius:var(--r-sheet) var(--r-sheet) 0 0;width:100%;max-height:84%;overflow-y:auto;padding:8px 16px 18px;display:flex;flex-direction:column;gap:11px}
-.sheet::before{content:"";width:36px;height:4px;border-radius:2px;background:var(--field);margin:4px auto}
+.sheet{background:var(--bg-1);border:1px solid var(--border-2);border-bottom:0;border-radius:var(--r-sheet) var(--r-sheet) 0 0;width:100%;max-height:84%;overflow-y:auto;padding:8px 16px 18px;display:flex;flex-direction:column;gap:11px;box-shadow:0 -16px 48px rgba(0,0,0,.5);animation:sheetup var(--t-med) var(--ease)}
+@keyframes sheetup{from{transform:translateY(24px);opacity:.6}to{transform:none;opacity:1}}
+.sheet::before{content:"";width:36px;height:4px;border-radius:2px;background:var(--field);margin:4px auto;flex:none}
 .sheet h3{font-size:16px;font-weight:600}
 .sheet .sub{font-size:12.5px;color:var(--ink-1);margin-top:-6px}
 .sheet .closer{align-self:stretch;margin-top:2px}
-.mitem{display:flex;align-items:center;gap:11px;padding:13px 4px;border-bottom:1px solid var(--border);font-size:15px;width:100%;min-height:48px}
+.mitem{display:flex;align-items:center;gap:11px;padding:13px 6px;border-bottom:1px solid var(--border);font-size:15px;width:100%;min-height:48px;border-radius:8px;transition:background var(--t-fast)}
+.mitem:hover{background:var(--bg-2)}
 .mitem:last-child{border-bottom:0}
 .mitem svg{color:var(--ink-2);flex:none}
-.blocker{position:absolute;inset:0;background:rgba(10,12,16,.95);z-index:60;display:none;flex-direction:column;justify-content:center;padding:26px;gap:14px;text-align:left}
+.blocker{position:absolute;inset:0;background:rgba(8,10,14,.96);z-index:var(--z-block);display:none;flex-direction:column;justify-content:center;padding:28px;gap:14px;text-align:left}
 .blocker.on{display:flex}
-.blocker .ic{color:var(--t-nao)}
-.blocker h3{font-size:19px}
+.blocker .ic{color:var(--t-nao);filter:drop-shadow(0 0 18px rgba(230,106,110,.35))}
+.blocker h3{font-size:20px;letter-spacing:-.01em}
 .blocker p{color:var(--ink-1);font-size:14px}
 /* cerimônia */
-.cer{position:absolute;inset:0;background:var(--bg-0);z-index:45;display:none;flex-direction:column}
+.cer{position:absolute;inset:0;background:var(--bg-0);z-index:var(--z-cer);display:none;flex-direction:column}
 .cer.on{display:flex}
-.cer .top{display:flex;align-items:center;gap:8px;padding:10px 12px;border-bottom:1px solid var(--border);flex:none;font-size:14px;color:var(--ink-1)}
-.cer .body{flex:1;overflow-y:auto;padding:20px 18px;display:flex;flex-direction:column;gap:14px}
-.cer .foot{padding:14px 18px;border-top:1px solid var(--border);display:flex;gap:10px;justify-content:flex-end;flex:none}
+.cer .top{display:flex;align-items:center;gap:8px;padding:10px 12px;border-bottom:1px solid var(--border);flex:none;font-size:14px;font-weight:500;color:var(--ink-1);background:var(--bg-1)}
+.cer .body{flex:1;overflow-y:auto;padding:22px 20px;display:flex;flex-direction:column;gap:14px}
+.cer .body h3{font-size:19px;letter-spacing:-.01em;line-height:1.3}
+.cer .foot{padding:14px 18px calc(14px + env(safe-area-inset-bottom));border-top:1px solid var(--border);display:flex;gap:10px;justify-content:flex-end;flex:none;background:var(--bg-1)}
 .cer.pub .body{font-family:var(--f-serif);font-size:16px;line-height:1.7}
-.cer.practice{outline:3px solid var(--ink-2);outline-offset:-3px}
-.pframe{background:var(--bg-2);border-bottom:1px solid var(--field);color:var(--ink-1);font-size:12.5px;font-weight:600;letter-spacing:.03em;text-align:center;padding:7px;flex:none}
+.cer.practice{outline:3px dashed var(--ink-2);outline-offset:-3px}
+.pframe{background:repeating-linear-gradient(-45deg,var(--bg-2) 0 10px,var(--bg-3) 10px 20px);border-bottom:1px solid var(--field);color:var(--ink-0);font-size:12.5px;font-weight:700;letter-spacing:.04em;text-align:center;padding:7px;flex:none}
 .words{display:grid;grid-template-columns:1fr 1fr;gap:6px}
 .words span{font-family:var(--f-mono);font-size:14px;background:var(--bg-1);border:1px solid var(--border);border-radius:var(--r-c);padding:9px 10px}
 .words span i{color:var(--ink-2);font-style:normal;margin-right:8px;font-size:12px}
@@ -207,8 +239,8 @@ mark{background:rgba(91,141,239,.2);color:var(--ink-0);border-radius:3px;padding
 
 <div class="bench">
   <div class="bench-head">
-    <h1>partido — protótipo de telas <span class="dim">· ciclos 1–4</span></h1>
-    <p>Bancada das telas prioritárias (<span class="mono">docs/07-paginas/README.md §8</span>). O ciclo 3 trouxe a camada de aprendizado, tradução de jargão e as correções da auditoria; o ciclo 4 fecha a cobertura: emendas, regime financeiro × PIX, minhas salas + árvore, e o acesso (destravar, recuperar, emparelhar). Dados 100% fictícios, sempre por compartimento. Selos <span class="mono">DEP-nn</span> tracejados = desenho em aberto. Nada aqui é build final.</p>
+    <h1>partido — protótipo de telas <span class="dim">· ciclos 1–5</span></h1>
+    <p>Bancada de <b>alta fidelidade</b> das telas do plano (<span class="mono">docs/07-paginas/README.md §8</span>): aparência candidata a final (a polir), comportamentos reais com dados 100% fictícios — o mural publica, propostas viram decisões, emendas entram, convites nascem. Sempre por compartimento. Selos <span class="mono">DEP-nn</span> tracejados = desenho em aberto. Nada aqui é build de produção.</p>
   </div>
 
   <div class="vh" id="live" aria-live="polite"></div>
@@ -220,7 +252,7 @@ mark{background:rgba(91,141,239,.2);color:var(--ink-0);border-radius:3px;padding
       <button class="pill pill-tor" id="torpill" onclick="ui.netInfo()"><span class="dot"></span><span id="torlbl">Rede protegida</span></button>
       <span class="pill" style="color:var(--ink-1);border-color:var(--border)">🔓 destravado</span>
       <span style="flex:1"></span>
-      <button class="iconbtn" onclick="ui.sheet('sh-not')" aria-label="Avisos"><svg viewBox="0 0 24 24" width="20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 8a6 6 0 1 1 12 0c0 7 2 8 2 8H4s2-1 2-8"/><path d="M10 21h4"/></svg><span class="badge"></span></button>
+      <button class="iconbtn" onclick="ui.sheet('sh-not')" aria-label="Avisos"><svg viewBox="0 0 24 24" width="20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 8a6 6 0 1 1 12 0c0 7 2 8 2 8H4s2-1 2-8"/><path d="M10 21h4"/></svg><span class="badge" id="notbadge"></span></button>
       <button class="iconbtn" onclick="ui.exposure()" aria-label="O que o sistema não esconde"><svg viewBox="0 0 24 24" width="20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7z"/><path d="M9 12h6M12 9v6"/></svg></button>
     </div>
     <div class="offbar" id="offbar">Sem conexão — <b>o que tem prazo não vale até você reconectar</b>. Nunca dizemos "enviado" sem enviar.</div>
@@ -257,6 +289,8 @@ mark{background:rgba(91,141,239,.2);color:var(--ink-0);border-radius:3px;padding
     <div class="screen" id="s-emendas"></div>
     <div class="screen" id="s-meuorgs"></div>
     <div class="screen" id="s-regime"></div>
+    <div class="screen" id="s-busca"></div>
+    <div class="screen" id="s-estatuto"></div>
 
     <nav class="tabs" id="tabs" aria-label="Navegação principal">
       <button data-s="panorama"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Início<span class="tabbar"></span></button>
@@ -303,7 +337,7 @@ mark{background:rgba(91,141,239,.2);color:var(--ink-0);border-radius:3px;padding
     </section>
     <section>
       <h2>Percursos</h2>
-      <div class="row"><span>Entrar pela primeira vez</span><button class="btn btn-sm" onclick="onb.start()">Iniciar</button></div>
+      <div class="row"><span>Primeira execução (boas-vindas)</span><button class="btn btn-sm" onclick="welcome.start()">Iniciar</button></div>
       <div class="row"><span>Votar em segredo</span><button class="btn btn-sm" onclick="ui.setComp('celula');ui.go('delibdet')">Abrir</button></div>
       <div class="row"><span>Ensaiar o voto (sem valer)</span><button class="btn btn-sm" onclick="vote.start(true)">Ensaio</button></div>
       <div class="row"><span>Cartilha (aprender)</span><button class="btn btn-sm" onclick="ui.go('cartilha')">Abrir</button></div>
@@ -312,16 +346,15 @@ mark{background:rgba(91,141,239,.2);color:var(--ink-0);border-radius:3px;padding
       <div class="row"><span>Reiniciar</span><button class="btn btn-sm" onclick="location.reload()">Reset</button></div>
     </section>
     <section>
-      <h2>O que observar (ciclos 3–4)</h2>
+      <h2>O que observar (ciclos 3–5)</h2>
       <ul>
+        <li><b>Comporta-se de verdade</b>: escreva no mural (derrube a conexão antes: entra na fila e envia ao voltar), proponha uma decisão, apresente uma emenda, faça um convite.</li>
         <li><b>Recém-chegada × veterana</b>: alterne e veja a checklist e os avisos encolherem (anti-cegueira §11).</li>
-        <li><b>Linguagem</b>: jargão traduzido; termos <span style="border-bottom:1px dotted">pontilhados</span> abrem explicação de 1 frase.</li>
         <li><b>Voto offline</b>: derrube a conexão no depósito — não finge sucesso.</li>
-        <li><b>Nada vaza</b>: troque de organismo — decisões, jornal e finanças mudam junto.</li>
-        <li><b>Ensaio</b>: pratique o voto sem cédula real e sem rede.</li>
+        <li><b>Nada vaza</b>: troque de organismo — decisões, jornal, finanças e a busca mudam junto.</li>
         <li><b>Regime</b>: em Dinheiro, vire "partido registrado" — o vale trava por lei e o PIX identificado assume, dizendo o que expõe.</li>
-        <li><b>Emendas</b>: o texto tem versão; emenda aprovada reabre o debate no texto novo.</li>
-        <li><b>Recuperação</b>: o que volta (identidade) e o que não volta (histórico local).</li>
+        <li><b>Boas-vindas</b>: os 3 caminhos da primeira execução, com "fundar" trancado e dizendo por quê.</li>
+        <li><b>Estatuto</b>: cada regra muda por decisão — não há painel de admin.</li>
         <li><b>Leitor de tela</b>: Esc fecha; estados são anunciados; foco é gerido.</li>
       </ul>
     </section>
@@ -346,6 +379,7 @@ const DEPS={
  "DEP-03":{t:"Convite que não entrega quem convidou",f:"O convite existe, com validade e cancelamento.",m:"Se o servidor vê ou não qual secretário assinou.",o:"doc 03 §4"},
  "DEP-04":{t:"Recado entre organismos",f:"Há caixa de envio e de recebimento; o app diz quem lê.",m:"Como cifrar para um grupo do qual você não é membro.",o:"revisao-critica-2 §1.3"},
  "DEP-05":{t:"Seus nomes por organismo",f:"A tela não liga seus nomes entre organismos.",m:"Impedir o servidor de ligá-los (hoje ainda pode).",o:"revisao-critica-2 §1.2"},
+ "DEP-06":{t:"Fundar uma organização do zero",f:"O caminho aparece na primeira tela, mas está trancado.",m:"A cerimônia de gênese: chave da organização, estatuto inicial, célula fundadora e salvaguardas.",o:"doc 07 §7 — ADR de gênese"},
  "DEP-07":{t:"O congresso e a árvore",f:"As decisões do congresso obrigam a organização inteira.",m:"Como encaixar o congresso na árvore sem furar a regra.",o:"revisao-critica-2 §1.5"},
  "DEP-08":{t:"A trilha de conferência do mural",f:"O app avisa se alguém adulterar a sequência de mensagens.",m:"O formato exato (o modelo atual conflita com o anonimato).",o:"doc 03 §6.1"},
  "DEP-09":{t:"A mecânica do voto secreto",f:"Você lacra a cédula, a mesa confere, a urna abre com várias chaves.",m:"O esquema criptográfico exato e os tempos de mistura.",o:"revisao-critica-2 §3"},
@@ -402,6 +436,19 @@ const CONVITES=[
  {c:"CNV-9K3W-RT2A",s:"vencido",d:"há 12 dias"},
 ];
 
+const S5=['Proposta','Debate','Voto','Apuração','Ata'];
+const CDELIBS=[
+ {t:"Quem vai ao 3º Congresso",pr:"fecha em 26h",steps:S5,now:2,sub:"voto <b>secreto</b> · lista fechada na abertura: <b>6 podem votar</b>",route:"det"},
+ {t:"Campanha do jornal: fábricas ou bairros?",pr:"5 dias",steps:S5,now:1,sub:"voto de rosto · 2 posições em formação",route:"disc"},
+ {t:"Plano de finanças do semestre",pr:"emendas: 2 dias",steps:['Proposta','Debate','Emendas','Voto','Ata'],now:2,sub:"",route:"emendas"},
+ {t:"Processo sobre Camarada Cambota",pr:"defesa",steps:['Aviso','Defesa','Voto','Apuração','Ata'],now:1,sub:"com direito de defesa — nunca por um botão",route:"proc"},
+ {t:"Cota extra de impressão",pr:"apurada",steps:null,now:-1,sub:"números públicos publicados · deu quórum",route:"apur"},
+];
+const EMENDAS=[
+ {n:1,t:"banca quinzenal",a:"Camarada Baliza",est:"incorporada",d:"aprovada terça — <b>virou a versão 2 e reabriu o debate</b> sobre o texto novo"},
+ {n:2,t:"5% da reserva ao arquivo impresso",a:"Camarada Lastro",est:"apresentada",d:"vai a voto junto com o texto, como acréscimo"},
+];
+
 const CHECK=[
  {id:"m1",lbl:"Conheça os organismos",sub:"toque no nome do grupo, no alto"},
  {id:"m4",lbl:"Veja o que o sistema não esconde",sub:"o escudo, no alto à direita"},
@@ -445,8 +492,8 @@ const focusReturn={cur:null};
 
 /* ============ identicon placeholder ============ */
 function icon(seed,color){let h=0;for(const ch of seed)h=(h*31+ch.charCodeAt(0))>>>0;
- let r='';for(let y=0;y<5;y++)for(let x=0;x<3;x++){if((h>>(y*3+x))&1){r+=`<rect x="${x*4}" y="${y*4}" width="4" height="4"/><rect x="${(4-x)*4}" y="${y*4}" width="4" height="4"/>`}}
- return `<svg viewBox="0 0 20 20" width="26" height="26" style="background:var(--bg-2);border-radius:50%;flex:none" fill="${color||'#8C97A6'}" aria-hidden="true">${r}</svg>`}
+ let r='';for(let y=0;y<5;y++)for(let x=0;x<3;x++){if((h>>(y*3+x))&1){r+=`<rect x="${x*4+.4}" y="${y*4+.4}" width="3.2" height="3.2" rx="1"/><rect x="${(4-x)*4+.4}" y="${y*4+.4}" width="3.2" height="3.2" rx="1"/>`}}
+ return `<svg viewBox="0 0 20 20" width="26" height="26" style="background:var(--bg-2);border-radius:50%;flex:none;box-shadow:inset 0 0 0 1px var(--border-2)" fill="${color||'#8E9AAB'}" aria-hidden="true">${r}</svg>`}
 
 /* ============ shell/ui ============ */
 const $=id=>document.getElementById(id);
@@ -494,6 +541,8 @@ const ui={
    if(!tor&&cer.active&&cer.kind==='voto'&&cer.i>=2&&!cer.practice)ui.showBlocker()},
  toggleOff(){on=!on;$('offsw').setAttribute('aria-checked',on);$('offbar').classList.toggle('on',!on);
    announce(on?'Conexão de volta':'Sem conexão',!on);
+   if(on){const fila=Object.values(MSGS).flat().filter(m=>m.fila);
+     if(fila.length){fila.forEach(m=>delete m.fila);announce('Fila enviada — '+fila.length+' mensagem(ns) protegida(s)');if(ui.screen==='mural')render.mural()}}
    if(on&&revPend){revPend=false;revelou=true;if(ui.screen==='nominal')render.nominal()}},
  torOn(){if(!tor)ui.toggleTor();ui.hideBlocker()},
  avisarRede(){aguardaRede=true;ui.hideBlocker();announce('Combinado — avisamos quando a rede voltar')},
@@ -503,6 +552,28 @@ const ui={
    announce(v?'Modo recém-chegada':'Modo veterana');render[ui.screen]&&render[ui.screen]()},
  mark(id){if(!done[id]){done[id]=1;announce('Passo concluído')}if(ui.screen==='panorama')render.panorama()},
  setRegime(r){regime=r;announce(r==='partido'?'Bancada: regime de partido registrado — o caminho anônimo trava':'Bancada: regime de movimento — vale em dinheiro permitido');render[ui.screen]&&render[ui.screen]()},
+ sendMural(){const ta=$('mtxt');const x=(ta&&ta.value||'').trim();
+   if(!x){announce('Escreva antes de enviar',true);return}
+   const m={h:COMPS[comp].handle,t:'agora',x};
+   if(!on){m.fila=true;announce('Sem conexão — guardada na fila, envia quando a conexão voltar')}else announce('Enviada, protegida');
+   (MSGS[comp]=MSGS[comp]||[]).push(m);render.mural();
+   const el=$('s-mural');el.scrollTop=el.scrollHeight},
+ openDelib(i){const d=CDELIBS[i];
+   if(d.route==='det')ui.go('delibdet');
+   else if(d.route==='disc')render.discuss();
+   else if(d.route==='emendas')ui.go('emendas');
+   else if(d.route==='proc')ui.go('disc');
+   else if(d.route==='apur')ui.go('apur');
+   else render.discussNew(d)},
+ novaSubmit(){const t=($('np-t').value||'').trim();
+   if(!t){announce('Diga sobre o quê é a proposta',true);$('np-t').focus();return}
+   const b=($('np-b').value||'').trim();
+   CDELIBS.splice(CDELIBS.length-1,0,{t,pr:'debate aberto',steps:S5,now:1,sub:'voto de rosto · proposta sua — em debate',route:'nova',body:b});
+   announce('Proposta aberta em debate — a lista de votantes congelou agora');ui.go('delib')},
+ sendEmenda(){const ta=$('emtxt');const x=(ta&&ta.value||'').trim();
+   if(!x){announce('Escreva a emenda antes de apresentar',true);return}
+   EMENDAS.push({n:EMENDAS.length+1,t:x.length>42?x.slice(0,42)+'…':x,a:COMPS.celula.handle,est:'apresentada',d:'agora — vai a voto junto com o texto'});
+   announce('Emenda apresentada à sala');render.emendas()},
 };
 
 /* ============ renderizadores ============ */
@@ -530,15 +601,15 @@ const render={
 
  mural(){const M=MSGS[comp]||[];const desc=comp==='celula';
   $('s-mural').innerHTML=`
-  <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">${chipMural}<button class="dep" onclick="ui.dep('DEP-08')">DEP-08</button></div>
+  <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">${chipMural}<button class="dep" onclick="ui.dep('DEP-08')">DEP-08</button><span style="flex:1"></span><button class="iconbtn" onclick="ui.go('busca')" aria-label="Buscar nesta sala"><svg viewBox="0 0 24 24" width="19" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg></button></div>
+  <div class="empty" style="padding:14px">Você entrou aqui na fechadura ${COMPS[comp].epoch-2} — as mensagens de antes ficam fechadas para você. <b>Isso é desenho, não falha.</b></div>
   ${desc?`<button class="card tap" style="border-left:3px solid ${COMPS.celula.cor}" onclick="ui.go('resol')">
     <div class="dim">${chev}DECISÃO DE CIMA · Comitê Regional</div>
     <div class="ata" style="font-size:14.5px;margin-top:4px"><b>Campanha de sindicalização</b></div>
     <div class="mut">obriga: Célula Gráfica e Portuária · toque para ler a ata</div></button>`:''}
   ${admitido&&desc?`<p class="dim" style="text-align:center">— Camarada Fresa entrou · a fechadura mudou para 🔒 15 —</p>`:''}
-  ${M.map(m=>`<div class="msg">${icon(m.h,COMPS[comp].cor)}<div class="bubble"><div class="meta"><b>${m.h}</b><span class="t">${m.t}</span></div>${m.x}</div></div>`).join('')}
-  <div class="empty">Você entrou aqui na fechadura ${COMPS[comp].epoch-2} — as mensagens de antes ficam fechadas para você. <b>Isso é desenho, não falha.</b></div>
-  <div class="composer"><textarea placeholder="Escrever no mural…" aria-label="Escrever no mural" style="min-height:44px"></textarea><button class="btn btn-p" onclick="announce('Mensagem enviada, protegida')">Enviar</button></div>`},
+  ${M.map(m=>`<div class="msg${m.h===COMPS[comp].handle?' mine':''}">${icon(m.h,COMPS[comp].cor)}<div class="bubble"><div class="meta"><b>${m.h}</b><span class="t">${m.t}</span>${m.fila?'<span class="role" style="color:var(--t-exp);border-color:rgba(226,168,62,.5)">na fila — sem conexão</span>':''}</div>${m.x}</div></div>`).join('')}
+  <div class="composer"><textarea id="mtxt" placeholder="Escrever no mural…" aria-label="Escrever no mural" style="min-height:44px"></textarea><button class="btn btn-p" onclick="ui.sendMural()">Enviar</button></div>`},
 
  delib(){const el=$('s-delib');
   if(comp==='cong'){el.innerHTML=`
@@ -558,25 +629,14 @@ const render={
   el.innerHTML=`
   <div style="display:flex;justify-content:space-between;align-items:center"><h3 class="sec" style="margin:0">Decisões — Célula Gráfica</h3>
    <button class="btn btn-sm btn-p" onclick="ui.go('nova')">+ Propor</button></div>
-  <button class="card tap" onclick="ui.go('delibdet')">
-    <div style="display:flex;justify-content:space-between;gap:8px">${chev}<b>Quem vai ao 3º Congresso</b><span class="mut" style="white-space:nowrap">fecha em 26h</span></div>
-    <div class="stepper" style="margin-top:7px"><span class="st done">Proposta</span><span class="st done">Debate</span><span class="st now">Voto</span><span class="st">Apuração</span><span class="st">Ata</span></div>
-    <div class="mut" style="margin-top:6px">voto <b>secreto</b> · lista de votantes fechada na abertura: <b>6 podem votar</b></div></button>
-  <button class="card tap" onclick="render.discuss()">
-    <div style="display:flex;justify-content:space-between;gap:8px">${chev}<b>Campanha do jornal: fábricas ou bairros?</b><span class="mut">5 dias</span></div>
-    <div class="stepper" style="margin-top:7px"><span class="st done">Proposta</span><span class="st now">Debate</span><span class="st">Voto</span><span class="st">Apuração</span><span class="st">Ata</span></div>
-    <div class="mut" style="margin-top:6px">voto de rosto · 2 posições em formação</div></button>
-  <button class="card tap" onclick="ui.go('emendas')">
-    <div style="display:flex;justify-content:space-between;gap:8px">${chev}<b>Plano de finanças do semestre</b><span class="mut">emendas: 2 dias</span></div>
-    <div class="stepper" style="margin-top:7px"><span class="st done">Proposta</span><span class="st done">Debate</span><span class="st now">Emendas</span><span class="st">Voto</span><span class="st">Ata</span></div>
-    <div class="mut" style="margin-top:6px">texto na <b>versão 2</b> · 1 emenda incorporada · 1 apresentada</div></button>
-  <button class="card tap" onclick="ui.go('disc')">
-    <div style="display:flex;justify-content:space-between;gap:8px">${chev}<b>Processo sobre Camarada Cambota</b><span class="mut">defesa</span></div>
-    <div class="stepper" style="margin-top:7px"><span class="st done">Aviso</span><span class="st now">Defesa</span><span class="st">Voto</span><span class="st">Apuração</span><span class="st">Ata</span></div>
-    <div class="mut" style="margin-top:6px">com direito de defesa — nunca por um botão</div></button>
-  <button class="card tap" onclick="ui.go('apur')">
-    <div style="display:flex;justify-content:space-between;gap:8px">${chev}<b>Cota extra de impressão</b><span class="mut">apurada</span></div>
-    <div class="mut" style="margin-top:5px">números públicos publicados · deu quórum</div></button>
+  ${CDELIBS.map((d,i)=>{
+    let sub=d.sub;
+    if(d.route==='det'&&votou)sub+=' · <b style="color:var(--t-prot)">você votou ✓</b>';
+    if(d.route==='emendas')sub=`texto na <b>versão 2</b> · ${EMENDAS.filter(e=>e.est==='incorporada').length} emenda incorporada · ${EMENDAS.filter(e=>e.est==='apresentada').length} apresentada(s)`;
+    return `<button class="card tap" onclick="ui.openDelib(${i})">
+    <div style="display:flex;justify-content:space-between;gap:8px">${chev}<b>${d.t}</b><span class="mut" style="white-space:nowrap">${d.pr}</span></div>
+    ${d.steps?`<div class="stepper" style="margin-top:7px">${d.steps.map((s,j)=>`<span class="st ${j<d.now?'done':j===d.now?'now':''}">${s}</span>`).join('')}</div>`:''}
+    <div class="mut" style="margin-top:6px">${sub}</div></button>`}).join('')}
   <div class="card"><b>Mesa e urna da eleição</b>
    <div class="kv" style="margin-top:6px"><div class="r"><span class="k">Mesa (3 das 5 concordam)</span><span style="color:var(--t-prot)">pronta ✓</span></div>
    <div class="r"><span class="k">Urna (chave repartida)</span><span style="color:var(--t-prot)">pronta ✓</span></div></div>
@@ -598,7 +658,7 @@ const render={
    <div class="kv"><div class="r"><span class="k">Precisa de (quórum, vem do estatuto)</span><span>metade + 1</span></div>
     <div class="r"><span class="k">Primeiro vem o</span><span><b>debate</b> — sempre antes do voto</span></div></div>
    <div class="callout">Você abre o <b>debate</b>, não o voto. E abrir a decisão <b>fecha a lista de votantes</b> de agora: quem entrar durante o debate não vota nesta.</div>
-   <button class="btn btn-p" onclick="announce('Proposta aberta em debate');ui.go('delib')">Abrir para debate</button>
+   <button class="btn btn-p" onclick="ui.novaSubmit()">Abrir para debate</button>
   </div>`},
 
  delibdet(){$('s-delibdet').innerHTML=`
@@ -631,6 +691,17 @@ const render={
   <div class="msg">${icon('Camarada Aduela',COMPS.celula.cor)}<div class="bubble"><div class="meta"><b>Camarada Aduela</b> · <span class="t">bairros</span></div>Metade da tecelagem mora no Arruado. O bairro é onde dá pra reunir longe do encarregado.</div></div>
   <div class="composer"><textarea placeholder="Falar no debate…" aria-label="Falar no debate" style="min-height:44px"></textarea><button class="btn btn-p" onclick="announce('Enviado')">Enviar</button></div>`},
 
+ discussNew(d){ui.go('delibdet');$('s-delibdet').innerHTML=`
+  <button class="btn btn-sm" onclick="ui.go('delib')">← decisões</button>
+  <div class="card"><b>${d.t}</b>
+   <div class="stepper" style="margin:8px 0">${S5.map((s,j)=>`<span class="st ${j<1?'done':j===1?'now':''}">${s}</span>`).join('')}</div>
+   ${d.body?`<p class="i1">${d.body}</p>`:'<p class="mut">Proposta aberta agora, em debate.</p>'}
+   <div class="kv" style="margin-top:8px"><div class="r"><span class="k">Quem vota (congelou na abertura)</span><span>6 pessoas</span></div>
+   <div class="r"><span class="k">Precisa de</span><span>metade + 1</span></div></div></div>
+  <div class="callout">O debate vem <b>antes</b> do voto, sempre. Quem entrar na sala durante o debate não vota nesta decisão.</div>
+  <div class="msg mine">${icon(COMPS.celula.handle,COMPS.celula.cor)}<div class="bubble"><div class="meta"><b>${COMPS.celula.handle}</b> · <span class="t">agora</span></div>Apresento a proposta — quem tiver objeção, traga para o debate.</div></div>
+  <div class="composer"><textarea placeholder="Falar no debate…" aria-label="Falar no debate" style="min-height:44px"></textarea><button class="btn btn-p" onclick="announce('Enviado')">Enviar</button></div>`},
+
  emendas(){$('s-emendas').innerHTML=`
   <button class="btn btn-sm" onclick="ui.go('delib')">← decisões</button>
   <div class="card"><b>Plano de finanças do semestre</b>
@@ -643,14 +714,11 @@ const render={
    <p class="i1" style="margin-top:5px">A célula destina o caixa do semestre assim: <b>60% ao jornal</b>, 25% ao fundo de solidariedade, 15% à reserva. <mark>A banca do mercado passa a quinzenal</mark>, liberando a dupla de sábado para os portões.</p>
    <p class="dim" style="margin-top:6px">O trecho <mark style="padding:0 2px">marcado</mark> veio da emenda nº 1. A versão 1 fica guardada — versões não se apagam.</p></div>
   <h3 class="sec">Emendas a este texto</h3>
-  <div class="card">
-   <div style="display:flex;justify-content:space-between;gap:8px;align-items:center"><b>nº 1 — banca quinzenal</b><span class="role" style="color:var(--t-prot);border-color:rgba(63,178,127,.5)">incorporada</span></div>
-   <div class="mut" style="margin-top:4px">de Camarada Baliza · aprovada terça — <b>virou a versão 2 e reabriu o debate</b> sobre o texto novo</div></div>
-  <div class="card">
-   <div style="display:flex;justify-content:space-between;gap:8px;align-items:center"><b>nº 2 — 5% da reserva ao arquivo impresso</b><span class="role">apresentada</span></div>
-   <div class="mut" style="margin-top:4px">de Camarada Lastro · vai a voto junto com o texto, como acréscimo</div></div>
+  ${EMENDAS.map(e=>`<div class="card">
+   <div style="display:flex;justify-content:space-between;gap:8px;align-items:center"><b>nº ${e.n} — ${e.t}</b><span class="role" ${e.est==='incorporada'?'style="color:var(--t-prot);border-color:rgba(69,181,132,.5)"':''}>${e.est}</span></div>
+   <div class="mut" style="margin-top:4px">de ${e.a} · ${e.d}</div></div>`).join('')}
   ${honesty('emendas','','Emenda aprovada <b>muda o texto e reabre o debate no texto mudado</b> — ninguém vota no que não se debateu. E emendar <b>não reabre a lista de votantes</b>: ela segue fechada desde a abertura.','Emenda aprovada reabre o debate; a lista de votantes segue a da abertura.')}
-  <div class="composer"><textarea placeholder="Propor uma emenda…" aria-label="Propor uma emenda" style="min-height:44px"></textarea><button class="btn btn-p" onclick="announce('Emenda apresentada à sala')">Apresentar</button></div>`},
+  <div class="composer"><textarea id="emtxt" placeholder="Propor uma emenda…" aria-label="Propor uma emenda" style="min-height:44px"></textarea><button class="btn btn-p" onclick="ui.sendEmenda()">Apresentar</button></div>`},
 
  nominal(){$('s-nominal').innerHTML=`
   <button class="btn btn-sm" onclick="ui.go('delib')">← decisões</button>
@@ -909,11 +977,42 @@ const render={
       <li class="you">Célula Gráfica <span class="dim">— sua</span></li>
       <li class="them">Célula Portuária — existe; quem está dentro, você não vê</li>
       <li class="them">+ 1 célula do território</li>
+      ${ORGPROP?`<li class="them">${ORGPROP.nome} <span class="role">proposta em decisão</span></li>`:''}
      </ul></li>
     <li class="you">Comissão de Finanças <span class="dim">— sua</span></li>
     <li class="you">3º Congresso <span class="dim">— convocado · você é delegado</span></li>
-   </ul></div>
+   </ul>
+   <button class="btn btn-sm" style="margin-top:10px" onclick="orgnew.start()">Propor organismo novo</button></div>
   ${honesty('arvore','nao','A <b>estrutura</b> — que salas existem e como se ligam — fica no servidor: sem ela, ele não sabe entregar as mensagens. É o que uma apreensão do servidor expõe; o <b>conteúdo</b>, não. Está dito no modelo de ameaças, sem rodeio.','A estrutura fica no servidor; o conteúdo, não.')}`},
+
+ busca(){$('s-busca').innerHTML=`
+  <h3 class="sec">Buscar — só nesta sala</h3>
+  <input type="text" id="q" placeholder="Buscar em ${COMPS[comp].nome}…" aria-label="Buscar nesta sala" oninput="render.buscar(this.value)" autocomplete="off">
+  <div id="qres"><div class="empty">Digite para buscar no mural e nas decisões <b>desta sala</b>.</div></div>
+  ${honesty('busca','','A busca acontece <b>no seu aparelho</b>, só nesta sala. Não existe busca global de pessoas nem entre salas — <b>por desenho</b>: um índice global seria um mapa pronto para quem apreender o servidor.','Busca local, só desta sala — não há busca global, por desenho.')}`;
+  setTimeout(()=>$('q')&&$('q').focus(),80)},
+ buscar(q){q=(q||'').trim().toLowerCase();const R=$('qres');if(!R)return;
+  if(q.length<2){R.innerHTML=`<div class="empty">Digite ao menos 2 letras.</div>`;return}
+  const ms=(MSGS[comp]||[]).filter(m=>(m.x+' '+m.h).toLowerCase().includes(q));
+  const ds=comp==='celula'?CDELIBS.filter(d=>d.t.toLowerCase().includes(q)):[];
+  R.innerHTML=(ms.length?`<h3 class="sec">No mural</h3>`+ms.map(m=>`<div class="msg">${icon(m.h,COMPS[comp].cor)}<div class="bubble"><div class="meta"><b>${m.h}</b><span class="t">${m.t}</span></div>${m.x}</div></div>`).join(''):'')+
+   (ds.length?`<h3 class="sec" style="margin-top:8px">Nas decisões</h3>`+ds.map(d=>`<button class="card tap" onclick="ui.openDelib(${CDELIBS.indexOf(d)})"><div style="display:flex;justify-content:space-between;gap:8px">${chev}<b>${d.t}</b><span class="mut">${d.pr}</span></div></button>`).join(''):'')||
+   `<div class="empty">Nada com "${q}" nesta sala.</div>`},
+
+ estatuto(){$('s-estatuto').innerHTML=`
+  <h3 class="sec">Estatuto — ${COMPS[comp].nome}</h3>
+  <div class="card kv">
+   <div class="r"><span class="k">Quórum para decidir</span><span><b>metade + 1</b> dos aptos</span></div>
+   <div class="r"><span class="k">Maioria comum</span><span>simples</span></div>
+   <div class="r"><span class="k">Estatuto e afastamentos</span><span><b>2/3</b></span></div>
+   <div class="r"><span class="k">Cargos (mandato)</span><span>12 meses · com <span class="gterm" onclick="ui.term('recall')">recall</span></span></div>
+   <div class="r"><span class="k">Convites</span><span>secretário · 14 dias · 3 por vez</span></div>
+   <div class="r"><span class="k">Tamanho recomendado</span><span>5 a 9 pessoas</span></div></div>
+  <div class="card kv">
+   <div class="r"><span class="k">Herdado de</span><span>Comitê Regional</span></div>
+   <div class="r"><span class="k">Mudado por último</span><span>decisão de fev/2026</span></div></div>
+  ${honesty('estatuto','','Nada aqui é configuração de administrador: <b>cada linha muda por decisão</b> — desta sala (com 2/3) ou da instância de cima. O botão abaixo abre uma proposta, não um formulário de ajustes.','Cada linha muda por decisão, nunca por ajuste de admin.')}
+  <button class="btn" onclick="ui.go('nova')">Propor mudança do estatuto</button>`},
 
  regime(){const P=regime==='partido';$('s-regime').innerHTML=`
   <button class="btn btn-sm" onclick="ui.go('fin')">← dinheiro</button>
@@ -955,6 +1054,8 @@ const render={
   ${mi('membros','Quem é desta sala')}
   ${comp==='celula'?mi('admissao','Entradas'+(admitido?'':' · 1')):''}
   ${mi('fin',comp==='fin'?'Conferência das prestações':'Dinheiro e cota')}
+  ${mi('busca','Buscar nesta sala')}
+  ${mi('estatuto','Estatuto da sala')}
   ${mi('mandatos','Meus cargos')}
   ${mi('arquivo','Arquivo da sala')}
   <hr><p class="sub">Suas coisas</p>
@@ -1011,7 +1112,7 @@ const render={
    <div class="r"><span class="k">Quem escreveu</span><span>um dos ${N} — <b>não sabe qual</b></span></div></div>
   <div class="callout">Numa sala pequena, "um entre poucos" é proteção fraca com análise de horário. A trilha que confere a ordem das mensagens ainda está em reprojeto. <button class="dep" onclick="ui.dep('DEP-08')">DEP-08</button></div>`},
 
- notices(){$('sh-not').innerHTML=`<h3>Avisos</h3><p class="sub">O app consulta de tempos em tempos pela rede protegida — nada é empurrado ao seu telefone.</p>
+ notices(){$('notbadge').style.display='none';$('sh-not').innerHTML=`<h3>Avisos</h3><p class="sub">O app consulta de tempos em tempos pela rede protegida — nada é empurrado ao seu telefone.</p>
   <button class="notif" onclick="ui.closeSheets(true);ui.setComp('celula');ui.go('delibdet')"><span class="dot" style="background:${COMPS.celula.cor}"></span><span><b>Votação fecha em 26h</b> — Quem vai ao 3º Congresso.<br><span class="dim">vote com folga até amanhã 19:30</span></span></button>
   <button class="notif" onclick="ui.closeSheets(true);ui.setComp('cong');ui.go('nominal')"><span class="dot" style="background:${COMPS.cong.cor}"></span><span><b>Abra seu voto</b> — Resolução política, até 21:00.</span></button>
   <button class="notif" onclick="ui.closeSheets(true);ui.setComp('celula');ui.go('resol')"><span class="dot" style="background:${COMPS.celula.cor}"></span><span><b>Chegou decisão de cima</b> — Campanha de sindicalização.</span></button>`},
@@ -1112,15 +1213,16 @@ const fedver={start(){cer.open('fed','Conferir a chave da outra organização',[
   foot:`<button class="btn btn-p" onclick="cer.close()">Voltar</button>`},
 ])}};
 
-const convite={start(){cer.open('convite','Fazer um convite',[
+const convite={n:0,start(){convite.n++;const code='CNV-'+String(7431+convite.n*613).slice(-4)+'-'+['MHTA','QSXV','KPLR','ZWNM'][convite.n%4];
+ cer.open('convite','Fazer um convite',[
  {title:'Um convite é uma porta',html:`<h3>Um convite é uma porta</h3><p class="i1">Ele deixa <b>uma</b> pessoa entrar nesta sala, vale 14 dias e pode ser cancelado antes de usar.</p>
   <div class="callout">Entregue o código <b>fora do app</b> — na mão, ou por um canal que vocês já confiam. O app faz o código; levar até a pessoa é com você.</div>`,cta:'Fazer o código'},
  {title:'Código feito',html:`<h3>Código feito</h3>
-  <div class="card" style="text-align:center"><span class="mono" style="font-size:17px;letter-spacing:.05em">CNV-7Q4M-KZ2P</span></div>
+  <div class="card" style="text-align:center"><span class="mono" style="font-size:17px;letter-spacing:.05em">${code}</span></div>
   <div style="display:flex;gap:8px"><button class="btn" style="flex:1" onclick="announce('Copiado')">Copiar</button><button class="btn" style="flex:1" onclick="announce('Mostrando QR')">Mostrar QR</button></div>
   <button class="tchip tc-exp" onclick="ui.dep('DEP-03')" style="align-self:center">${eye}Por ora, o servidor vê que foi você quem convidou</button>
-  <p class="dim" style="text-align:center">Vale até 25/08</p>`,
-  foot:`<button class="btn btn-p" onclick="cer.close();ui.go('convites')">Pronto</button>`},
+  <p class="dim" style="text-align:center">Vale por 14 dias</p>`,
+  foot:`<button class="btn btn-p" onclick="CONVITES.unshift({c:'${code}',s:'ativo',d:'vale por 14 dias — feito agora'});cer.close();ui.go('convites')">Pronto</button>`},
 ])}};
 
 const onb={start(){cer.open('onb','Entrar pela primeira vez',[
@@ -1205,6 +1307,37 @@ const acesso={
    foot:`<button class="btn btn-p" onclick="cer.close()">Terminar</button>`}])},
 };
 
+/* ============ boas-vindas (P-ON-01) e organismo novo (P-ORG-05) ============ */
+const welcome={start(){cer.open('welcome','Primeira execução',[
+ {title:'Boas-vindas',html:`
+  <div style="text-align:center;padding:14px 0 4px"><div style="font-size:30px;font-weight:650;letter-spacing:-.02em">partido</div>
+  <p class="dim" style="margin-top:2px">nome provisório — decisão em aberto (doc 00 §6)</p></div>
+  <p class="i1" style="text-align:center">Isto é uma ferramenta de organização. Aqui você é um <b>apelido com uma chave</b> — nada usa seu nome real, e não há campo para ele.</p>
+  <div class="opt" style="margin-top:6px">
+   <button onclick="cer.close();onb.start()"><b>Tenho um convite</b><br><span class="dim">criar minha identidade e entrar</span></button>
+   <button onclick="cer.close();acesso.restore()"><b>Já tenho conta</b><br><span class="dim">recuperar pela chave-mestra de papel</span></button>
+   <button onclick="cer.close();render.leitor('pub')"><b>Só quero ler o jornal público</b><br><span class="dim">sem conta — a única parte aberta, de propósito</span></button>
+   <button style="opacity:.55" onclick="ui.dep('DEP-06')"><b>Fundar uma organização</b> <span class="role">trancado</span><br><span class="dim">a cerimônia de gênese ainda está em desenho</span></button></div>
+  <p class="dim" style="text-align:center">Criar e recuperar funcionam <b>sem rede</b>; só o registro final precisa dela.</p>`,
+  foot:`<button class="btn" onclick="cer.close()">Fechar</button>`},
+])}};
+
+let ORGPROP=null;
+const orgnew={tipo:'comissão',start(){orgnew.tipo='comissão';cer.open('orgnew','Propor um organismo novo',[
+ {title:'O que nasce',html:`<h3>O que nasce, e onde</h3>
+  <div class="radio" role="group" aria-label="Tipo de organismo">
+   <label><input type="radio" name="ot" onchange="orgnew.tipo='célula'"><span><b>Célula</b> — grupo de base num local de trabalho ou território</span></label>
+   <label><input type="radio" name="ot" checked onchange="orgnew.tipo='comissão'"><span><b>Comissão</b> — tarefa permanente (finanças, formação…)</span></label>
+   <label><input type="radio" name="ot" onchange="orgnew.tipo='fração'"><span><b>Fração</b> — atuação coordenada dentro de uma entidade externa</span></label></div>
+  <div><label class="mut" for="on-nome">Nome</label><input type="text" id="on-nome" value="Comissão de Formação"></div>
+  <div class="kv"><div class="r"><span class="k">Posição na árvore</span><span>sob o <b>Comitê Regional</b></span></div>
+   <div class="r"><span class="k">Estatuto</span><span>herdado (quórum metade + 1) — muda por decisão, depois</span></div></div>`,cta:'Continuar'},
+ {title:'Nasce por decisão',html:`<h3>Organismos nascem de decisão</h3>
+  <p class="i1">Isto <b>não cria</b> a sala agora: abre uma <b>decisão no Comitê Regional</b>, com debate e voto. Aprovada, a sala nasce com a fechadura própria e os fundadores dentro.</p>
+  <div class="callout">É proposital: se qualquer pessoa criasse salas por botão, a árvore viraria ruído — e a árvore é o que o servidor guarda (A3). Estrutura nova é decisão política.</div>`,
+  foot:`<button class="btn" onclick="cer.abort()">Sair</button><button class="btn btn-p" onclick="ORGPROP={nome:($('on-nome')&&$('on-nome').value||'Organismo novo'),tipo:orgnew.tipo};cer.close();announce('Proposta aberta no Comitê Regional');ui.go('meuorgs')">Abrir a proposta</button>`},
+])}};
+
 /* ============ teclado: Esc fecha ============ */
 document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;
   if($('blocker').classList.contains('on'))return;
@@ -1215,6 +1348,6 @@ document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;
 document.querySelectorAll('#tabs button').forEach(b=>{if(b.dataset.s!=='__mais')b.onclick=()=>ui.go(b.dataset.s)});
 const h=(location.hash||'').replace('#','');
 ui.setComp(h==='nominal'?'cong':'celula');
-const VALID=['mural','delib','delibdet','nova','apur','resol','membros','convites','fin','jornal','corresp','editor','mandatos','seg','frentes','arquivo','admissao','nominal','disc','cartilha','licao','emendas','meuorgs','regime'];
+const VALID=['mural','delib','delibdet','nova','apur','resol','membros','convites','fin','jornal','corresp','editor','mandatos','seg','frentes','arquivo','admissao','nominal','disc','cartilha','licao','emendas','meuorgs','regime','busca','estatuto'];
 ui.go(VALID.includes(h)?h:'panorama');
 </script>
