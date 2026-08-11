@@ -1,4 +1,4 @@
-# Protótipo de telas — ciclos 1–3
+# Protótipo de telas — ciclos 1–4
 
 **Um único arquivo autocontido** ([index.html](index.html)) — abra no navegador, sem servidor, sem dependência externa (coerente com D7: zero CDN, fontes de sistema, ícones inline). É uma **bancada de demonstração**, não o produto: dados 100% fictícios, e os selos tracejados `DEP-nn` marcam desenho em aberto (registro canônico em [docs/07-paginas/README.md §7](../docs/07-paginas/README.md)).
 
@@ -16,16 +16,22 @@ Telas do plano de prototipagem ([doc 07 §8](../docs/07-paginas/README.md)): Pan
   3. **Camada de aprendizado** (pedido do usuário — "tutoriais para ensinar") — **StarterChecklist** no Panorama (4 primeiros passos que se marcam ao concluir); **Cartilha** com lições L1–L4 (por que nomes por sala, chave-mestra × senha, voto secreto e o que ele não protege, o que o sistema não esconde); **Ensaio de votação** (`PracticeFrame`: pratica todos os passos do voto **sem cédula real, sem rede, nada vale**), acessível do detalhe da deliberação e da cartilha; glossário navegável.
   4. **Acessibilidade** (WCAG 2.2 AA) — `lang="pt-BR"`, regiões `aria-live` (educadas e assertivas) anunciando cada transição, **Esc** fecha folhas e aborta cerimônia, gerência de foco em diálogos e no bloqueio de rede, `aria-pressed`/`aria-current` nos controles, alvos de 44 px, borda de campo visível.
 
-Alternância **recém-chegada × veterana** na barra de topo demonstra a política anti-cegueira-a-avisos (§11): para quem está chegando, os avisos de honestidade aparecem por extenso e a checklist fica visível; para a veterana, encolhem.
+- **Ciclo 4** — fechamento de cobertura:
+  1. **Emendas (P-DEL-04)** — deliberação em fase de emendas com **versão de texto** (v1 guardada, v2 em vigor, trecho emendado marcado), emenda incorporada × apresentada, e as duas regras ditas na tela: emenda aprovada **reabre o debate no texto mudado**, e emendar **não reabre a lista de votantes** (I12).
+  2. **Regime financeiro (P-FIN-08) × PIX (P-FIN-03)** — a bancada alterna a organização entre *movimento/associação* e *partido registrado*: no segundo, o vale em espécie **tranca por lei** (9.096/95), o PIX identificado assume com aviso do que expõe, e a folha de metadados e o Painel de Exposição **ramificam pelo regime** (não prometem anonimato que a lei proíbe).
+  3. **Minhas salas + árvore (P-NAV-02 / P-ORG-07)** — lista transversal das salas com handle e fechadura por sala (com o custo do agregador dito: "uma captura entrega seu mapa"), e a árvore da organização com a honestidade A3: **a estrutura fica no servidor; o conteúdo, não** — salas alheias aparecem como existência, nunca composição.
+  4. **Acesso (P-ON-08/09/10)** — destravar (senha do dia × chave-mestra, com o limite dito), recuperar pela chave-mestra (o que volta: identidade; o que não volta: histórico local e o passado de cada sala; ninguém é avisado), e emparelhar aparelho novo (presencial, QR + conferência de números, "quem filma o código vira você"; desparear à distância ainda não existe — dito).
+
+Alternância **recém-chegada × veterana** na barra de topo demonstra a política anti-cegueira-a-avisos (§11): para quem está chegando, os avisos de honestidade aparecem por extenso e a checklist fica visível; para a veterana, encolhem. As strings de honestidade do protótipo são o rascunho que virou a **tabela única canônica** ([design system §11.1](../docs/07-paginas/00-design-system.md)).
 
 ## Decisões de protótipo (DS §12)
 
 - **Dark-only** (pendência "tema claro sem valores" resolvida por compromisso explícito; defensável por opsec/D7).
 - **`--ink-2` clareado** para `#8C97A6` (o valor original `#6B7684` reprovava o AA 4.5:1 medido na validação).
 - **Identicon**: placeholder normativo (grade 5×5 espelhada, determinística do nome) até o esquema final.
-- **Strings de honestidade**: as canônicas das specs, verbatim — este arquivo serve de rascunho da "tabela única" pendente no DS §12.
+- **Strings de honestidade**: as canônicas da **tabela única** ([DS §11.1](../docs/07-paginas/00-design-system.md)) — este arquivo foi o rascunho dela; divergência daqui em diante é defeito.
 - Dados, nomes e organizações **fictícios**; nenhum dado real.
 
 ## Verificação
 
-`node --check` no JS embutido (sintaxe) + capturas headless de Chromium das telas-chave (Panorama, Cartilha, Lição, Cota, Deliberação, Voto nominal no Congresso, Mural, Conta, Membros) — conferindo render, isolamento de compartimento (Congresso mostra "Camarada Vértice"/fechadura 2, nunca o handle da Célula) e coerência do censo.
+`node --check` no JS embutido (sintaxe) + capturas headless de Chromium das telas-chave (Panorama, Cartilha, Lição, Cota, Deliberação, Voto nominal no Congresso, Mural, Conta, Membros; no ciclo 4: Emendas, Minhas salas + árvore, Regime nos dois estados, Cota sob PIX identificado, e as cerimônias de destravar/recuperar/emparelhar) — conferindo render, isolamento de compartimento (Congresso mostra "Camarada Vértice"/fechadura 2, nunca o handle da Célula), coerência do censo e a ramificação por regime das folhas de metadados.

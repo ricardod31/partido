@@ -2,12 +2,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
 /* ============================================================
-   partido — protótipo de telas (ciclos 1–3)
+   partido — protótipo de telas (ciclos 1–4)
    Aplica docs/07-paginas/00-design-system.md.
    Ciclo 3: simplicidade (tradução de jargão + PIN + cota com valor),
    camada de aprendizado (checklist, cartilha, ensaio, glossário),
    correções de integridade (dados por compartimento, gate offline
    do voto, censo coerente) e acessibilidade (foco, aria-live, Esc).
+   Ciclo 4: cobertura — emendas com versão de texto (P-DEL-04),
+   regime financeiro × PIX identificado (P-FIN-03/08), minhas salas
+   + árvore da organização (P-NAV-02/P-ORG-07) e acesso: destravar,
+   recuperar pela chave-mestra, emparelhar aparelho (P-ON-08/09/10).
    Decisões e dívidas: prototipo/README.md. Dados 100% fictícios.
    ============================================================ */
 :root{
@@ -193,12 +197,18 @@ hr{border:0;border-top:1px solid var(--border);margin:2px 0}
 .notif .dot{width:9px;height:9px;border-radius:3px;margin-top:5px;flex:none}
 .pay{display:flex;gap:10px;align-items:center;background:var(--bg-1);border:1px solid var(--border);border-radius:var(--r-c);padding:10px}
 .pay .n{width:26px;height:26px;border-radius:50%;background:var(--bg-2);border:1px solid var(--field);display:flex;align-items:center;justify-content:center;font-weight:600;font-size:13px;flex:none}
+.tree,.tree ul{list-style:none;padding:0;margin:0;color:var(--ink-1)}
+.tree li{padding:5px 0 0 15px;margin-left:8px;border-left:1px solid var(--border);position:relative;font-size:13.5px}
+.tree li::before{content:"";position:absolute;left:0;top:15px;width:11px;height:1px;background:var(--border)}
+.tree .you{color:var(--ink-0);font-weight:600}
+.tree .them{color:var(--ink-2)}
+mark{background:rgba(91,141,239,.2);color:var(--ink-0);border-radius:3px;padding:0 3px}
 </style>
 
 <div class="bench">
   <div class="bench-head">
-    <h1>partido — protótipo de telas <span class="dim">· ciclos 1–3</span></h1>
-    <p>Bancada das telas prioritárias (<span class="mono">docs/07-paginas/README.md §8</span>). O ciclo 3 acrescenta a camada de aprendizado, tradução de jargão e as correções da auditoria. Dados 100% fictícios, sempre por compartimento. Selos <span class="mono">DEP-nn</span> tracejados = desenho em aberto. Nada aqui é build final.</p>
+    <h1>partido — protótipo de telas <span class="dim">· ciclos 1–4</span></h1>
+    <p>Bancada das telas prioritárias (<span class="mono">docs/07-paginas/README.md §8</span>). O ciclo 3 trouxe a camada de aprendizado, tradução de jargão e as correções da auditoria; o ciclo 4 fecha a cobertura: emendas, regime financeiro × PIX, minhas salas + árvore, e o acesso (destravar, recuperar, emparelhar). Dados 100% fictícios, sempre por compartimento. Selos <span class="mono">DEP-nn</span> tracejados = desenho em aberto. Nada aqui é build final.</p>
   </div>
 
   <div class="vh" id="live" aria-live="polite"></div>
@@ -244,6 +254,9 @@ hr{border:0;border-top:1px solid var(--border);margin:2px 0}
     <div class="screen" id="s-disc"></div>
     <div class="screen" id="s-cartilha"></div>
     <div class="screen" id="s-licao"></div>
+    <div class="screen" id="s-emendas"></div>
+    <div class="screen" id="s-meuorgs"></div>
+    <div class="screen" id="s-regime"></div>
 
     <nav class="tabs" id="tabs" aria-label="Navegação principal">
       <button data-s="panorama"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Início<span class="tabbar"></span></button>
@@ -294,16 +307,21 @@ hr{border:0;border-top:1px solid var(--border);margin:2px 0}
       <div class="row"><span>Votar em segredo</span><button class="btn btn-sm" onclick="ui.setComp('celula');ui.go('delibdet')">Abrir</button></div>
       <div class="row"><span>Ensaiar o voto (sem valer)</span><button class="btn btn-sm" onclick="vote.start(true)">Ensaio</button></div>
       <div class="row"><span>Cartilha (aprender)</span><button class="btn btn-sm" onclick="ui.go('cartilha')">Abrir</button></div>
+      <div class="row"><span>Destravar · recuperar conta</span><span style="display:flex;gap:6px"><button class="btn btn-sm" onclick="acesso.unlock()">Destravar</button><button class="btn btn-sm" onclick="acesso.restore()">Recuperar</button></span></div>
+      <div class="row"><span>Minhas salas + árvore</span><button class="btn btn-sm" onclick="ui.go('meuorgs')">Abrir</button></div>
       <div class="row"><span>Reiniciar</span><button class="btn btn-sm" onclick="location.reload()">Reset</button></div>
     </section>
     <section>
-      <h2>O que observar (ciclo 3)</h2>
+      <h2>O que observar (ciclos 3–4)</h2>
       <ul>
         <li><b>Recém-chegada × veterana</b>: alterne e veja a checklist e os avisos encolherem (anti-cegueira §11).</li>
         <li><b>Linguagem</b>: jargão traduzido; termos <span style="border-bottom:1px dotted">pontilhados</span> abrem explicação de 1 frase.</li>
         <li><b>Voto offline</b>: derrube a conexão no depósito — não finge sucesso.</li>
         <li><b>Nada vaza</b>: troque de organismo — decisões, jornal e finanças mudam junto.</li>
         <li><b>Ensaio</b>: pratique o voto sem cédula real e sem rede.</li>
+        <li><b>Regime</b>: em Dinheiro, vire "partido registrado" — o vale trava por lei e o PIX identificado assume, dizendo o que expõe.</li>
+        <li><b>Emendas</b>: o texto tem versão; emenda aprovada reabre o debate no texto novo.</li>
+        <li><b>Recuperação</b>: o que volta (identidade) e o que não volta (histórico local).</li>
         <li><b>Leitor de tela</b>: Esc fecha; estados são anunciados; foco é gerido.</li>
       </ul>
     </section>
@@ -319,7 +337,7 @@ const COMPS={
  fin:{nome:"Comissão de Finanças",tipo:"comissão",cor:"#C08457",handle:"Camarada Estopim",epoch:9},
  cong:{nome:"3º Congresso",tipo:"congresso · encontro de 20 a 24/09",cor:"#6E8AD6",handle:"Camarada Vértice",epoch:2},
 };
-let comp="celula", tor=true, on=true, votou=false, revelou=false, revPend=false, admitido=false, novata=true, aguardaRede=false;
+let comp="celula", tor=true, on=true, votou=false, revelou=false, revPend=false, admitido=false, novata=true, aguardaRede=false, regime="mov";
 const done={};
 
 const DEPS={
@@ -347,6 +365,7 @@ const GLOSS={
  "chave-mestra":"As palavras que você anotou no papel. São a sua conta: quem tem as palavras, é você.",
  recall:"Tirar alguém de um cargo antes do prazo, por decisão de quem o elegeu.",
  fingerprint:"A impressão digital de uma chave: uma sequência que você confere pessoalmente para ter certeza de que é a chave certa.",
+ emenda:"Uma proposta de mudança num texto em debate. Aprovada, entra no texto — que ganha versão nova — e o debate reabre sobre o texto mudado.",
 };
 
 const MSGS={
@@ -432,8 +451,8 @@ function icon(seed,color){let h=0;for(const ch of seed)h=(h*31+ch.charCodeAt(0))
 /* ============ shell/ui ============ */
 const $=id=>document.getElementById(id);
 function announce(msg,assertive){const el=$(assertive?'livea':'live');el.textContent='';setTimeout(()=>{el.textContent=msg},30)}
-const JGROUP=['jornal','corresp','editor'], DGROUP=['delib','delibdet','nova','apur','resol','nominal','disc'];
-const TRANSV=['panorama','frentes','seg','cartilha','licao'];
+const JGROUP=['jornal','corresp','editor'], DGROUP=['delib','delibdet','nova','apur','resol','nominal','disc','emendas'];
+const TRANSV=['panorama','frentes','seg','cartilha','licao','meuorgs'];
 const ui={
  screen:"panorama",
  go(s){document.querySelectorAll('.screen').forEach(e=>e.classList.remove('on'));
@@ -483,6 +502,7 @@ const ui={
  setNovata(v){novata=v;$('segN').setAttribute('aria-pressed',v);$('segV').setAttribute('aria-pressed',!v);
    announce(v?'Modo recém-chegada':'Modo veterana');render[ui.screen]&&render[ui.screen]()},
  mark(id){if(!done[id]){done[id]=1;announce('Passo concluído')}if(ui.screen==='panorama')render.panorama()},
+ setRegime(r){regime=r;announce(r==='partido'?'Bancada: regime de partido registrado — o caminho anônimo trava':'Bancada: regime de movimento — vale em dinheiro permitido');render[ui.screen]&&render[ui.screen]()},
 };
 
 /* ============ renderizadores ============ */
@@ -546,6 +566,10 @@ const render={
     <div style="display:flex;justify-content:space-between;gap:8px">${chev}<b>Campanha do jornal: fábricas ou bairros?</b><span class="mut">5 dias</span></div>
     <div class="stepper" style="margin-top:7px"><span class="st done">Proposta</span><span class="st now">Debate</span><span class="st">Voto</span><span class="st">Apuração</span><span class="st">Ata</span></div>
     <div class="mut" style="margin-top:6px">voto de rosto · 2 posições em formação</div></button>
+  <button class="card tap" onclick="ui.go('emendas')">
+    <div style="display:flex;justify-content:space-between;gap:8px">${chev}<b>Plano de finanças do semestre</b><span class="mut">emendas: 2 dias</span></div>
+    <div class="stepper" style="margin-top:7px"><span class="st done">Proposta</span><span class="st done">Debate</span><span class="st now">Emendas</span><span class="st">Voto</span><span class="st">Ata</span></div>
+    <div class="mut" style="margin-top:6px">texto na <b>versão 2</b> · 1 emenda incorporada · 1 apresentada</div></button>
   <button class="card tap" onclick="ui.go('disc')">
     <div style="display:flex;justify-content:space-between;gap:8px">${chev}<b>Processo sobre Camarada Cambota</b><span class="mut">defesa</span></div>
     <div class="stepper" style="margin-top:7px"><span class="st done">Aviso</span><span class="st now">Defesa</span><span class="st">Voto</span><span class="st">Apuração</span><span class="st">Ata</span></div>
@@ -606,6 +630,27 @@ const render={
   <div class="msg">${icon('Camarada Baliza',COMPS.celula.cor)}<div class="bubble"><div class="meta"><b>Camarada Baliza</b> · <span class="t">fábricas</span></div>A banca rende conversa, não organização. No portão a gente encontra a mesma pessoa toda semana.</div></div>
   <div class="msg">${icon('Camarada Aduela',COMPS.celula.cor)}<div class="bubble"><div class="meta"><b>Camarada Aduela</b> · <span class="t">bairros</span></div>Metade da tecelagem mora no Arruado. O bairro é onde dá pra reunir longe do encarregado.</div></div>
   <div class="composer"><textarea placeholder="Falar no debate…" aria-label="Falar no debate" style="min-height:44px"></textarea><button class="btn btn-p" onclick="announce('Enviado')">Enviar</button></div>`},
+
+ emendas(){$('s-emendas').innerHTML=`
+  <button class="btn btn-sm" onclick="ui.go('delib')">← decisões</button>
+  <div class="card"><b>Plano de finanças do semestre</b>
+   <div class="stepper" style="margin:8px 0"><span class="st done">Proposta</span><span class="st done">Debate</span><span class="st now">Emendas</span><span class="st">Voto</span><span class="st">Ata</span></div>
+   <div class="kv">
+    <div class="r"><span class="k">Texto em debate</span><span><b>versão 2</b> — já emendado</span></div>
+    <div class="r"><span class="k"><span class="gterm" onclick="ui.term('emenda')">Emendas</span> até</span><span class="big">sexta, 18:00</span></div>
+    <div class="r"><span class="k">Quem vota (fechado na abertura)</span><span>6 pessoas</span></div></div></div>
+  <div class="card"><div class="dim">O TEXTO — VERSÃO 2</div>
+   <p class="i1" style="margin-top:5px">A célula destina o caixa do semestre assim: <b>60% ao jornal</b>, 25% ao fundo de solidariedade, 15% à reserva. <mark>A banca do mercado passa a quinzenal</mark>, liberando a dupla de sábado para os portões.</p>
+   <p class="dim" style="margin-top:6px">O trecho <mark style="padding:0 2px">marcado</mark> veio da emenda nº 1. A versão 1 fica guardada — versões não se apagam.</p></div>
+  <h3 class="sec">Emendas a este texto</h3>
+  <div class="card">
+   <div style="display:flex;justify-content:space-between;gap:8px;align-items:center"><b>nº 1 — banca quinzenal</b><span class="role" style="color:var(--t-prot);border-color:rgba(63,178,127,.5)">incorporada</span></div>
+   <div class="mut" style="margin-top:4px">de Camarada Baliza · aprovada terça — <b>virou a versão 2 e reabriu o debate</b> sobre o texto novo</div></div>
+  <div class="card">
+   <div style="display:flex;justify-content:space-between;gap:8px;align-items:center"><b>nº 2 — 5% da reserva ao arquivo impresso</b><span class="role">apresentada</span></div>
+   <div class="mut" style="margin-top:4px">de Camarada Lastro · vai a voto junto com o texto, como acréscimo</div></div>
+  ${honesty('emendas','','Emenda aprovada <b>muda o texto e reabre o debate no texto mudado</b> — ninguém vota no que não se debateu. E emendar <b>não reabre a lista de votantes</b>: ela segue fechada desde a abertura.','Emenda aprovada reabre o debate; a lista de votantes segue a da abertura.')}
+  <div class="composer"><textarea placeholder="Propor uma emenda…" aria-label="Propor uma emenda" style="min-height:44px"></textarea><button class="btn btn-p" onclick="announce('Emenda apresentada à sala')">Apresentar</button></div>`},
 
  nominal(){$('s-nominal').innerHTML=`
   <button class="btn btn-sm" onclick="ui.go('delib')">← decisões</button>
@@ -702,9 +747,23 @@ const render={
    <div class="card kv"><div class="r"><span class="k">Célula Gráfica</span><span class="mono" style="color:var(--t-prot)">6 vales = 6 contas ✓</span></div>
     <div class="r"><span class="k">Célula Portuária</span><span class="mono" style="color:var(--t-exp)">falta 2ª assinatura</span></div></div>
    ${honesty('conf','','A comissão vê <b>números por sala</b>, nunca quem pagou. Se algo não bate, abre-se apuração — e pode terminar em recall do cargo.','Vê números por sala, nunca quem pagou.')}`;return}
+  const P=regime==='partido';
   el.innerHTML=`
   <h3 class="sec">Sua cota — Célula Gráfica</h3>
   <div class="card"><div style="display:flex;justify-content:space-between;align-items:baseline"><div><div class="dim">3º trimestre de 2026</div><div class="bignum" style="font-size:22px">R$ 30,00</div></div><span id="cotstate" class="role" style="color:var(--t-exp);border-color:rgba(224,163,62,.5)">em aberto</span></div></div>
+  <button class="card tap" onclick="ui.go('regime')" style="padding:9px 12px"><span class="mut">${chev}Regime da organização: <b>${P?'partido registrado':'movimento / associação'}</b> — ${P?'pagamento identificado, por lei':'cota em dinheiro permitida'}</span></button>
+  ${P?`
+  <h3 class="sec">Como pagar — PIX identificado</h3>
+  <div class="card" style="display:flex;flex-direction:column;gap:9px">
+    <label class="mut" for="pixk">Chave PIX da organização</label>
+    <div style="display:flex;gap:8px"><input type="text" id="pixk" class="mono" value="cota@organizacao.org.br" readonly style="flex:1"><button class="btn" onclick="announce('Chave copiada')">Copiar</button></div>
+    ${honesty('pix','nao','Pagamento <b>identificado</b>: o banco — e a prestação de contas pública — ligam <b>seu nome</b> ao valor. É exigência da lei para partido registrado, não escolha do app. Se isso for um risco para você, fale com a tesoureira <b>antes</b> de pagar.','Identificado: banco e prestação pública veem seu nome — exigência legal.')}
+    <button class="btn btn-p" onclick="$('cotstate').textContent='aguardando conferência';$('cotstate').style.color='var(--ink-1)';this.textContent='Avisado — a tesoureira confere no extrato';this.disabled=true;announce('Aviso de pagamento enviado')">Paguei — avisar a tesoureira</button>
+  </div>
+  <div class="card" style="opacity:.75"><b>Vale em dinheiro — trancado neste regime</b>
+    <p class="mut" style="margin-top:4px">Partido registrado não pode receber doação anônima (Lei 9.096/95). O app tranca este caminho sozinho — não é configuração, é lei. <button class="btn btn-sm" style="margin-top:7px" onclick="ui.go('regime')">entender o regime</button></p></div>
+  <button class="tchip tc-exp" onclick="ui.meta('fin')" style="align-self:flex-start">${eye}Aqui, quem pagou fica identificado — por lei</button>`
+  :`
   <h3 class="sec">Como pagar</h3>
   <div class="list">
    <div class="pay"><span class="n">1</span><span>Entregue os R$ 30 <b>em dinheiro</b> à tesoureira (Camarada Baliza).</span></div>
@@ -716,7 +775,7 @@ const render={
     ${honesty('portador','','O vale <b>vale como dinheiro</b>: quem estiver com o código pode usá-lo. Guarde-o até resgatar.','O vale vale como dinheiro — guarde até resgatar.')}
     <button class="btn btn-p" onclick="$('cotstate').textContent='paga ✓';$('cotstate').style.color='var(--t-prot)';$('cotstate').style.borderColor='rgba(63,178,127,.5)';this.textContent='Cota do trimestre: paga';this.disabled=true;announce('Cota paga')">Resgatar vale</button>
   </div>
-  <button class="tchip tc-prot" onclick="ui.meta('fin')" style="align-self:flex-start">${lock}Ninguém no sistema sabe que foi você quem pagou</button>`},
+  <button class="tchip tc-prot" onclick="ui.meta('fin')" style="align-self:flex-start">${lock}Ninguém no sistema sabe que foi você quem pagou</button>`}`},
 
  jornal(){$('s-jornal').innerHTML=`
   <h3 class="sec">Jornal central — desce da redação</h3>
@@ -826,12 +885,48 @@ const render={
    <p class="mut" style="margin-top:7px">A tela não liga esses nomes para ninguém. <b>O servidor, hoje, ainda pode</b> — estamos fechando isso. <button class="dep" onclick="ui.dep('DEP-05')">DEP-05</button></p></div>
   <div class="card" style="display:flex;justify-content:space-between;align-items:center;gap:8px"><span><b>Chave-mestra de papel</b><br><span class="mut">perdeu o papel? refaça antes de perder tudo</span></span>
    <button class="btn btn-sm" onclick="rebackup.start()">Ver de novo</button></div>
+  <div class="card" style="display:flex;justify-content:space-between;align-items:center;gap:8px"><span><b>Aparelhos</b><br><span class="mut">este aparelho · levar a conta a um novo</span></span>
+   <button class="btn btn-sm" onclick="acesso.pair()">Emparelhar</button></div>
   <div class="card"><b>Trocar a chave de conversa</b>
    <p class="mut" style="margin:6px 0">Só a versão mais nova vale. A conferência completa contra um servidor mentiroso ainda depende de um registro público de chaves. <button class="dep" onclick="ui.dep('DEP-11')">DEP-11</button></p>
    <button class="btn btn-sm btn-danger" onclick="if(this.dataset.c){this.textContent='Trocada ✓';this.disabled=true;announce('Chave trocada')}else{this.dataset.c=1;this.textContent='Confirmar troca?'}">Trocar chave</button></div>
   <div class="card"><b>De onde vem este app</b>
    <div class="kv" style="margin-top:6px"><div class="r"><span class="k">Conferido por</span><span style="color:var(--t-prot)">2 verificadores ✓</span></div></div>
    ${honesty('a7','','Isto <b>reduz, não elimina</b>, o risco de um app adulterado. É o ponto mais difícil de toda a segurança.','Reduz, não elimina, o risco de app adulterado.')}</div>`},
+
+ meuorgs(){$('s-meuorgs').innerHTML=`
+  <h3 class="sec">Suas salas — ${Object.keys(COMPS).length}</h3>
+  ${Object.entries(COMPS).map(([k,C])=>`<button class="card tap" style="border-left:3px solid ${C.cor}" onclick="ui.setComp('${k}');ui.go('mural')">
+    <div style="display:flex;align-items:center;gap:8px">${chev}<span style="width:9px;height:9px;border-radius:3px;background:${C.cor};flex:none"></span><b>${C.nome}</b><span class="mono dim" style="margin-left:auto">🔒 ${C.epoch}</span></div>
+    <div class="mut" style="margin-top:3px">${C.tipo} · você é <b>${C.handle}</b></div></button>`).join('')}
+  ${honesty('mapa','','Esta tela junta suas salas — <b>só no seu aparelho</b>. Uma foto dela entrega seu mapa inteiro: é a tela mais reveladora do app, e é por ela que existem o bloqueio do app e o cuidado com capturas.','Só no seu aparelho — uma captura entrega seu mapa inteiro.')}
+  <h3 class="sec">O que você vê da árvore</h3>
+  <div class="card">
+   <div style="font-weight:600;font-size:14px">Organização <span class="dim">· raiz</span></div>
+   <ul class="tree" style="margin-top:4px">
+    <li>Comitê Regional
+     <ul>
+      <li class="you">Célula Gráfica <span class="dim">— sua</span></li>
+      <li class="them">Célula Portuária — existe; quem está dentro, você não vê</li>
+      <li class="them">+ 1 célula do território</li>
+     </ul></li>
+    <li class="you">Comissão de Finanças <span class="dim">— sua</span></li>
+    <li class="you">3º Congresso <span class="dim">— convocado · você é delegado</span></li>
+   </ul></div>
+  ${honesty('arvore','nao','A <b>estrutura</b> — que salas existem e como se ligam — fica no servidor: sem ela, ele não sabe entregar as mensagens. É o que uma apreensão do servidor expõe; o <b>conteúdo</b>, não. Está dito no modelo de ameaças, sem rodeio.','A estrutura fica no servidor; o conteúdo, não.')}`},
+
+ regime(){const P=regime==='partido';$('s-regime').innerHTML=`
+  <button class="btn btn-sm" onclick="ui.go('fin')">← dinheiro</button>
+  <h3 class="sec">Regime financeiro da organização</h3>
+  <div class="card">
+   <div style="display:flex;justify-content:space-between;gap:8px;align-items:center"><b>${P?'Partido registrado':'Movimento / associação'}</b><span class="role">regime atual</span></div>
+   <p class="mut" style="margin-top:5px">${P?'Registrado na Justiça Eleitoral. A lei brasileira (9.096/95) <b>proíbe doação anônima</b> a partido — então o app tranca o caminho anônimo sozinho, para a organização não errar por descuido.':'Sem registro eleitoral. A cota pode ser paga <b>em dinheiro, com vale</b>: anônima perante o sistema — a tesoureira te conhece; o servidor, não.'}</p></div>
+  <div class="card kv">
+   <div class="r"><span class="k">Cota em dinheiro (vale)</span><span style="color:${P?'var(--t-nao)':'var(--t-prot)'}">${P?'trancada por lei':'permitida'}</span></div>
+   <div class="r"><span class="k">PIX identificado</span><span>${P?'é o caminho — obrigatório':'possível, se a sala preferir'}</span></div>
+   <div class="r"><span class="k">Prestação de contas</span><span>${P?'pública, por lei':'interna, sala a sala'}</span></div></div>
+  ${honesty('regime','','Isto não é opinião do app: é o <b>enquadramento legal</b> da organização, declarado por quem a dirige e visível a todo mundo. Mudar de regime é decisão pública da direção — <b>nunca um botão</b>. O botão aqui embaixo existe só nesta bancada.','Enquadramento legal declarado pela direção — não é escolha de tela.')}
+  <button class="btn" onclick="ui.setRegime('${P?'mov':'partido'}')">[bancada] ver como fica: ${P?'movimento / associação':'partido registrado'}</button>`},
 
  cartilha(){const packs = novata?['base']:['base','secretário'];
   $('s-cartilha').innerHTML=`
@@ -853,6 +948,7 @@ const render={
    <span style="width:11px;height:11px;border-radius:3px;background:${C.cor}"></span>
    <span style="flex:1"><b>${C.nome}</b><br><span class="dim">você é: ${C.handle}</span></span>
    ${k===comp?'<span class="mono dim">aqui</span>':''}</button>`).join('')}
+  <button class="mitem" onclick="ui.closeSheets(true);ui.go('meuorgs')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>Todas as suas salas — e a árvore da organização</button>
   <p class="dim">Seus nomes aparecem juntos só em telas suas, só neste aparelho.</p>`},
 
  mais(){$('sh-mais').innerHTML=`<h3>Mais — ${COMPS[comp].nome}</h3>
@@ -862,6 +958,7 @@ const render={
   ${mi('mandatos','Meus cargos')}
   ${mi('arquivo','Arquivo da sala')}
   <hr><p class="sub">Suas coisas</p>
+  ${mi('meuorgs','Minhas salas — todas')}
   ${mi('cartilha','Cartilha (aprender)')}
   ${mi('frentes','Frentes')}
   ${mi('seg','Conta e segurança')}`;
@@ -873,7 +970,7 @@ const render={
 
  exposure(){const ctx={'delibdet':'<b>Aqui:</b> o voto é secreto para o sistema — mas não te protege se te obrigam a mostrar a tela.',
   'nominal':'<b>Aqui:</b> este voto é <b>de rosto</b> por escolha — vai ficar registrado com seu nome deste congresso.',
-  'fin':'<b>Aqui:</b> quem pagou nunca sobe ao servidor; esse vínculo existe só com a tesoureira, no papel.',
+  'fin':regime==='partido'?'<b>Aqui:</b> o pagamento é identificado por exigência legal — banco e prestação pública ligam seu nome ao valor. O app não guarda seu nome; a lei guarda.':'<b>Aqui:</b> quem pagou nunca sobe ao servidor; esse vínculo existe só com a tesoureira, no papel.',
   'mural':'<b>Aqui:</b> o texto é protegido; o servidor só sabe que houve mensagem para esta sala, e quando.'}[ui.screen]||'';
   $('sh-exp').innerHTML=`<h3>O que o sistema não esconde</h3><p class="sub">Adaptado ao que você está fazendo</p>
   ${ctx?`<div class="callout">${ctx}</div>`:''}
@@ -895,7 +992,11 @@ const render={
    <li>· Contra a <b>tesoureira</b> ou a <b>mesa</b> que combinam fraude; e contra <b>derrubar o serviço</b></li>
    <li>· O <b>aviso por notificação</b> foi evitado de propósito (ligaria seu telefone à conta)</li></ul>`},
 
- meta(kind){if(kind==='fin'){$('sh-meta').innerHTML=`<h3>O que o servidor vê no dinheiro</h3>
+ meta(kind){if(kind==='fin'){$('sh-meta').innerHTML=regime==='partido'?`<h3>Quem vê o seu pagamento</h3>
+   <div class="kv"><div class="r"><span class="k">O app / o servidor</span><span>seguem sem o seu nome</span></div>
+    <div class="r"><span class="k">O banco</span><span style="color:var(--t-nao)">nome e CPF — sempre</span></div>
+    <div class="r"><span class="k">A prestação de contas</span><span style="color:var(--t-nao)">pública, por lei</span></div></div>
+   <p class="mut">Para partido registrado, o vínculo nome↔valor existe <b>fora do app, por lei</b>. Não prometemos anonimato que a lei proíbe.</p>`:`<h3>O que o servidor vê no dinheiro</h3>
    <div class="kv"><div class="r"><span class="k">Total da sala</span><span>guardado <b>fechado</b> (o servidor não lê)</span></div>
     <div class="r"><span class="k">Que houve prestação, e quando</span><span>sim</span></div>
     <div class="r"><span class="k">Quem pagou quanto</span><span style="color:var(--t-prot)">nunca sobe</span></div></div>
@@ -1060,6 +1161,50 @@ const onb={start(){cer.open('onb','Entrar pela primeira vez',[
   if(ok){$('qnext').disabled=false;announce('Certo')}else{announce('Não é essa palavra — tente de novo',true)}},
 };
 
+/* ============ acesso: destravar, recuperar, emparelhar ============ */
+const acesso={
+ unlock(){cer.open('unlock','Destravar o app',[
+  {title:'Destravar',html:`<h3>Bom te ver</h3>
+   <label class="mut" for="pw-dia">Senha do dia (ou digital, ou PIN)</label>
+   <input type="password" id="pw-dia" value="••••••••" aria-label="Senha do dia">
+   <p class="dim">A senha destrava <b>este aparelho</b>. A conta mesmo é a chave-mestra de papel.</p>`,
+   foot:`<button class="btn" onclick="cer.close();acesso.restore()">Esqueci — usar a chave-mestra</button><button class="btn btn-p" onclick="cer.next()">Destravar</button>`},
+  {title:'Destravado',html:`<h3>Destravado ✓</h3>
+   <div class="callout">Errou várias vezes? O app <b>espera</b> um tempo crescente entre tentativas — quem furta um aparelho travado espera junto.</div>
+   <div class="callout nao"><b>O que a senha não faz:</b> não protege um aparelho <b>aberto</b> na mão de outra pessoa, nem contra quem te <b>obriga</b> a destravar. Contra isso, o hábito é fechar o app — não há botão que substitua.</div>`,
+   foot:`<button class="btn btn-p" onclick="cer.close()">Entrar</button>`}])},
+ restore(){cer.open('restore','Recuperar pela chave-mestra',[
+  {title:'O que a recuperação faz',html:`<h3>O que a recuperação faz — e o que não faz</h3>
+   <p class="i1">Com as <b>12 palavras do papel</b>, este aparelho refaz suas chaves. Suas salas te reconhecem, porque a chave é a mesma.</p>
+   <div class="callout nao"><b>O que não volta:</b> o histórico que vivia no aparelho antigo. E o que foi dito <b>antes de você entrar</b> em cada sala continua fechado — a fechadura não reabre o passado para ninguém, nem para você.</div>
+   <div class="callout">Quem tem as palavras <b>é você</b>, para todos os efeitos — e ninguém é avisado de uma recuperação. Se o papel pode ter vazado, troque a chave de conversa (Conta e segurança) e avise sua sala.</div>`,cta:'Estou com o papel aqui'},
+  {title:'As 12 palavras',html:`<h3>Escreva as 12 palavras, na ordem</h3>
+   <textarea class="mono" aria-label="As doze palavras da chave-mestra" style="min-height:64px">abrigo tijolo lanterna ferro miúdo sonda vagão cume trilho âmbar fole graveto</textarea>
+   <p class="dim">Nada disto sai do aparelho — as palavras refazem a chave aqui dentro.</p>`,cta:'Refazer minhas chaves'},
+  {title:'Refazendo suas chaves',html:`<h3>Refazendo suas chaves…</h3>
+   <div class="card" style="display:flex;align-items:center;gap:10px"><span class="spin"></span><span id="rk">Derivando a identidade…</span></div>`,
+   foot:`<button class="btn" onclick="cer.abort()">Sair</button><button class="btn btn-p" id="rgo" disabled onclick="cer.next()">Continuar</button>`,
+   run(){setTimeout(()=>{$('rk').innerHTML='Identidade refeita ✓ — é você';$('rgo').disabled=false;announce('Identidade refeita')},1100)}},
+  {title:'De volta',html:`<h3>De volta ✓</h3>
+   <div class="callout prot">Suas 3 salas te reconheceram pela mesma chave. O mural volta a encher <b>daqui para a frente</b>.</div>
+   <p class="mut">No primeiro destravo, defina a senha do dia <b>deste</b> aparelho.</p>`,
+   foot:`<button class="btn btn-p" onclick="cer.close()">Abrir o app</button>`}])},
+ pair(){cer.open('pair','Levar a conta a outro aparelho',[
+  {title:'Só entre aparelhos seus',html:`<h3>Só entre aparelhos seus</h3>
+   <div class="callout nao"><b>Os dois aparelhos na sua mão, no mesmo lugar.</b> Quem fotografa ou filma este código <b>vira você</b>. Nunca por chamada de vídeo; nunca por print.</div>
+   <p class="i1">No aparelho novo, escolha <i>"já tenho conta → ler o código"</i>.</p>`,cta:'Mostrar o código'},
+  {title:'O código',html:`<h3>Aponte o aparelho novo para cá</h3>
+   <div style="display:flex;justify-content:center;padding:8px">${icon('par-2026',COMPS.celula.cor).replace('width="26" height="26"','width="132" height="132"')}</div>
+   <p class="dim" style="text-align:center">o código troca a cada 60 segundos</p>`,cta:'O outro aparelho leu'},
+  {title:'Confira os números',html:`<h3>Os dois mostram os mesmos números?</h3>
+   <div class="fp" style="font-size:22px">47 · 82</div>
+   <p class="i1">Se no outro aparelho aparecer um número <b>diferente</b>, <b>pare</b>: tem alguém no meio do caminho.</p>`,cta:'São iguais — confirmar'},
+  {title:'Emparelhado',html:`<h3>Aparelho emparelhado ✓</h3>
+   <div class="callout">Por ora, o aparelho novo é uma <b>cópia inteira</b> da conta. Desligar um aparelho sozinho, sem trocar tudo, vem depois.</div>
+   <div class="callout nao">Perdeu um dos aparelhos? Não dá para "desparear" à distância — troque a chave de conversa e avise sua sala.</div>`,
+   foot:`<button class="btn btn-p" onclick="cer.close()">Terminar</button>`}])},
+};
+
 /* ============ teclado: Esc fecha ============ */
 document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;
   if($('blocker').classList.contains('on'))return;
@@ -1070,6 +1215,6 @@ document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;
 document.querySelectorAll('#tabs button').forEach(b=>{if(b.dataset.s!=='__mais')b.onclick=()=>ui.go(b.dataset.s)});
 const h=(location.hash||'').replace('#','');
 ui.setComp(h==='nominal'?'cong':'celula');
-const VALID=['mural','delib','delibdet','nova','apur','resol','membros','convites','fin','jornal','corresp','editor','mandatos','seg','frentes','arquivo','admissao','nominal','disc','cartilha','licao'];
+const VALID=['mural','delib','delibdet','nova','apur','resol','membros','convites','fin','jornal','corresp','editor','mandatos','seg','frentes','arquivo','admissao','nominal','disc','cartilha','licao','emendas','meuorgs','regime'];
 ui.go(VALID.includes(h)?h:'panorama');
 </script>
