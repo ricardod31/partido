@@ -153,7 +153,7 @@ h3.sec{font-size:11.5px;letter-spacing:.07em;text-transform:uppercase;color:var(
 .gterm:focus-visible{outline:2px solid var(--spine,var(--accent));outline-offset:2px;border-radius:3px}
 .hchip{display:inline-flex;align-items:center;gap:7px;font-size:14px;font-weight:500}
 .msg{display:flex;gap:9px}
-.msg .bubble{background:var(--bg-1);border:1px solid var(--border);border-radius:4px 14px 14px 14px;padding:9px 12px;font-size:14px;flex:1;box-shadow:0 1px 0 rgba(0,0,0,.2)}
+.msg .bubble{background:var(--bg-1);border:1px solid var(--border);border-radius:4px 14px 14px 14px;padding:9px 12px;font-size:14px;flex:1;min-width:0;box-shadow:0 1px 0 rgba(0,0,0,.2)}
 .msg.mine .bubble{background:color-mix(in srgb,var(--spine,var(--accent)) 9%,var(--bg-1));border-color:color-mix(in srgb,var(--spine,var(--accent)) 28%,var(--border))}
 .msg .meta{font-size:12px;color:var(--ink-1);margin-bottom:2px;display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
 .msg .meta .t{color:var(--ink-2)}
@@ -391,7 +391,7 @@ mark{background:rgba(109,151,244,.22);color:var(--ink-0);border-radius:3px;paddi
       <div class="sheet" id="sh-mais" role="dialog" aria-modal="true" aria-label="Mais" tabindex="-1"></div>
       <div class="sheet" id="sh-epoca" role="dialog" aria-modal="true" aria-label="A fechadura do grupo" tabindex="-1"></div>
       <div class="sheet" id="sh-term" role="dialog" aria-modal="true" aria-label="Explicação" tabindex="-1"></div>
-      <div class="sheet" id="sh-msgact" role="dialog" aria-modal="true" aria-label="Ações da mensagem" tabindex="-1"></div>
+      <div class="sheet" id="sh-msgact" role="dialog" aria-modal="true" aria-label="Folha de ações" tabindex="-1"></div>
     </div>
 
     <div class="blocker" id="blocker" role="alertdialog" aria-modal="true" aria-labelledby="blk-h" tabindex="-1">
@@ -497,17 +497,17 @@ const GLOSS={
 
 const MSGS={
  celula:[
-  {h:"Camarada Aduela",t:"há 3h",x:"O boletim nº 3 rendeu conversa boa na tecelagem — dois contatos pediram o próximo."},
-  {h:"Camarada Pórtico",t:"há 40min",x:"Amanhã eu subo a pauta da reunião de quinta pela correspondência."}],
+  {h:"Camarada Aduela",t:"há 3h",ult:0.125,x:"O boletim nº 3 rendeu conversa boa na tecelagem — dois contatos pediram o próximo."},
+  {h:"Camarada Pórtico",t:"há 40min",ult:0.028,x:"Amanhã eu subo a pauta da reunião de quinta pela correspondência."}],
  fin:[
-  {h:"Camarada Régua",t:"ontem",x:"Recebi as prestações da Gráfica e da Portuária. A conferência fecha esta semana."},
-  {h:"Camarada Estopim",t:"há 3h",x:"Gráfica bate certo: 6 vales para 6 contas. Portuária ainda falta a segunda assinatura."}],
+  {h:"Camarada Régua",t:"ontem",ult:1,x:"Recebi as prestações da Gráfica e da Portuária. A conferência fecha esta semana."},
+  {h:"Camarada Estopim",t:"há 3h",ult:0.125,x:"Gráfica bate certo: 6 vales para 6 contas. Portuária ainda falta a segunda assinatura."}],
  cong:[
-  {h:"Camarada Meridiano",t:"há 5h",x:"A mesa credenciou mais 6 delegações hoje. Faltam duas do interior — chegam sábado."},
-  {h:"Camarada Vértice",t:"há 2h",x:"As emendas à resolução política encerram amanhã ao meio-dia, como diz a pauta."}],
+  {h:"Camarada Meridiano",t:"há 5h",ult:0.21,x:"A mesa credenciou mais 6 delegações hoje. Faltam duas do interior — chegam sábado."},
+  {h:"Camarada Vértice",t:"há 2h",ult:0.083,x:"As emendas à resolução política encerram amanhã ao meio-dia, como diz a pauta."}],
  com:[
-  {h:"Camarada Sonda",t:"ontem",x:"Prestações da Gráfica e do Arruado chegaram; Tecelagem segue em silêncio — vou propor contato antes de qualquer apreciação."},
-  {h:"Camarada Baldrame",t:"há 3h",x:"O balanço do trimestre consolida sexta. Quem tiver informe atrasado das suas células, cobre com jeito — pode ser sobrecarga."}],
+  {h:"Camarada Sonda",t:"ontem",ult:1,x:"Prestações da Gráfica e do Arruado chegaram; Tecelagem segue em silêncio — vou propor contato antes de qualquer apreciação."},
+  {h:"Camarada Baldrame",t:"há 3h",ult:0.125,x:"O balanço do trimestre consolida sexta. Quem tiver informe atrasado das suas células, cobre com jeito — pode ser sobrecarga."}],
 };
 
 /* ---- tópicos por compartimento (ciclo 6): mural = conversa-raiz; tópico = conversa nomeada ---- */
@@ -598,7 +598,7 @@ const CHECK=[
  {id:"m1",lbl:"Conheça os organismos",sub:"toque no nome do grupo, no alto"},
  {id:"m4",lbl:"Veja o que o sistema não esconde",sub:"o escudo, no alto à direita"},
  {id:"m5",lbl:"Ensaie o voto secreto",sub:"pratique sem valer — 2 min"},
- {id:"m3",lbl:"Entenda o que o servidor vê no mural",sub:"toque na etiqueta “protegido”"},
+ {id:"m3",lbl:"Entenda o que o servidor vê no mural",sub:"toque no cadeado verde, na barra da sala"},
 ];
 
 const LICOES={
@@ -701,6 +701,7 @@ const TRANSV=['panorama','frentes','seg','cartilha','licao','meuorgs','mandatos'
 const ui={
  screen:"panorama",
  setSalas(m){SALAS=m;['sal4','sal1','sal0'].forEach(id=>$(id).setAttribute('aria-pressed',String(id==='sal'+m)));
+   ui.closeSheets(true);$('notbadge').style.display=(m==='0'?'none':'');
    $('tabs').classList.toggle('pend',m==='0');
    if(m!=='0'&&!ATIVAS().includes(comp))ui.setComp('celula');
    announce(m==='0'?'Bancada: conta recém-criada — aguardando admissão na célula':m==='1'?'Bancada: militante de base — uma sala':'Bancada: quatro salas (papéis e delegações)',false,true);
@@ -905,10 +906,13 @@ const render={
    <button class="card tap" onclick="vote.start(true)"><div style="display:flex;gap:8px;align-items:center">${chev}<b>Ensaiar o voto secreto</b></div><div class="mut" style="margin-top:3px">pratica todos os passos — nada sai do aparelho, nada vale</div></button>
    <p class="dim">Se o convite expirar sem decisão, procure quem te convidou — pessoalmente.</p>`;return}
   const multi=SALAS!=='4'?false:true;
+  const conf=((TOPICS.celula||[]).find(t=>t.id==='t2')||{}).confirm||[];
+  const nCel=6+(admitido?1:0)-(trancada?1:0);
+  const meuConf=conf.includes(COMPS.celula.handle);
   const IT=[
    {c:'cong',prazo:'hoje · 21:00',t:'Abra seu voto de rosto',sub:'Resolução política — fala registrada é o voto',on:"ui.setComp('cong');ui.go('nominal')"},
-   {c:'celula',prazo:'fecha em 26h',t:'Votação: quem vai ao 3º Congresso',sub:'vote com folga até amanhã 19:30',on:"ui.setComp('celula');ui.go('delibdet')"},
-   {c:'celula',prazo:'quinta · 19h',t:'Reunião da célula — confirmar presença',sub:'3 de 6 confirmaram · confirmar é escrever',on:"ui.setComp('celula');ui.abrirTopico('t2')"},
+   {c:'celula',prazo:'fecha em 26h',t:'Votação: quem vai ao 3º Congresso',sub:votou?'você votou ✓ — os números saem na apuração':'vote com folga até amanhã 19:30',on:"ui.setComp('celula');ui.go('delibdet')"},
+   {c:'celula',prazo:'quinta · 19h',t:'Reunião da célula — confirmar presença',sub:`${conf.length} de ${nCel} confirmaram`+(meuConf?' · você confirmou ✓':' · confirmar é escrever'),on:"ui.setComp('celula');ui.abrirTopico('t2')"},
    {c:'com',prazo:'sexta',t:'Balanço do território consolida',sub:'2 células em silêncio — contato antes de juízo',on:"ui.setComp('com');ui.go('balanco')"},
    {c:'fin',prazo:'até 15/08',t:'Prestação do trimestre',sub:'falta a segunda assinatura',on:"ui.setComp('fin');ui.go('fin')"},
    {c:'celula',prazo:'até 15/08',t:'Cota do trimestre',sub:'R$ 30 — vale em dinheiro ou PIX, conforme o regime',on:"ui.setComp('celula');ui.go('fin')"},
@@ -929,11 +933,20 @@ const render={
   const pinsOrd=[...pins].sort((a,b)=>(b.tipo==='convocacao')-(a.tipo==='convocacao'));
   const decisaoVista=done['seen_decisao'];if(desc)done['seen_decisao']=1;
   const slots=[...pinsOrd.filter(t=>t.tipo==='convocacao').map(t=>({k:'c',t})),
-    ...(desc&&decisaoVista?[{k:'r'}]:[]),
+    ...(desc?[{k:'r'}]:[]),
     ...pinsOrd.filter(t=>t.tipo!=='convocacao').map(t=>({k:'p',t}))];
   const slotHtml=s=>s.k==='r'?`<button class="pinitem" onclick="ui.go('resol')">${PINSVG}<span class="pt">Decisão de cima · Campanha de sindicalização</span><span class="pm">ler ›</span></button>`
     :`<button class="pinitem" onclick="ui.abrirTopico('${s.t.id}')">${PINSVG}<span class="pt">${s.t.titulo}</span><span class="pm">${s.t.tipo==='convocacao'?s.t.hora:nresp(s.t)}</span></button>`;
   updConv();
+  const cardTop=t=>{const r=t.msgs.find(m=>!m.parent);if(!r)return'';const u=t.msgs[t.msgs.length-1];const n=t.msgs.length-1;
+    return `<div class="msg">${icon(r.h,COMPS[comp].cor)}<div class="bubble"><div class="meta"><b>${r.h}</b><span class="t">${r.t}</span></div>${r.x}
+     ${u&&u.id!==r.id?`<div class="dim" style="margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">↳ ${u.h.replace('Camarada ','')}: ${u.x}</div>`:''}
+     <div class="tfoot"><button onclick="ui.abrirTopico('${t.id}')">↳ ${n} ${n===1?'resposta':'respostas'} · ${t.escalado?'virou decisão':'ativa'}</button><button onclick="ui.abrirTopico('${t.id}')">Responder</button><button onclick="ui.msgAct('${t.id}','${r.id}')" aria-label="Mais ações">···</button></div></div></div>`};
+  const msgSolta=(m,i)=>m.topico?`<button class="pinitem" onclick="ui.abrirTopico('${m.topico}')" style="border-left-color:var(--border-2)"><span class="pt">→ virou a conversa "${(topFind(m.topico)||{}).titulo||''}"</span><span class="pm">abrir ›</span></button>`
+   :`<div class="msg${m.h===COMPS[comp].handle?' mine':''}">${icon(m.h,COMPS[comp].cor)}<div class="bubble"><div class="meta"><b>${m.h}</b><span class="t">${m.t}</span>${m.fila?'<span class="role warn">na fila — sem conexão</span>':''}</div>${m.x}
+   <div class="tfoot"><button onclick="ui.novaConversa(${i})">Abrir conversa</button><button onclick="ui.msgAct(null,${i})" aria-label="Mais ações">···</button></div></div></div>`;
+  const FEED=[...abertas.filter(t=>t.tipo!=='convocacao'&&(t.ult===undefined||t.ult<=3)).map(t=>({u:t.ult||0,h:cardTop(t)})),
+    ...M.map((m,i)=>({u:m.ult||0,h:msgSolta(m,i)}))].sort((a,b)=>(b.u||0)-(a.u||0)).map(x=>x.h).join('');
   $('s-mural').innerHTML=`
   ${slots.length?`<div class="muraltop"><div class="pinrow" role="navigation" aria-label="Ordem do dia">
     ${slotHtml(slots[0])}
@@ -944,14 +957,7 @@ const render={
     <div class="ata" style="font-size:14.5px;margin-top:4px"><b>Campanha de sindicalização</b></div>
     <div class="mut">obriga: Célula Gráfica e Portuária · toque para ler a ata</div></button>`):''}
   ${admitido&&desc?`<p class="dim" style="text-align:center">— Camarada Fresa entrou · a fechadura mudou para 🔒 ${COMPS.celula.epoch} —</p>`:''}
-  ${abertas.filter(t=>t.tipo!=='convocacao'&&(t.ult===undefined||t.ult<=3)).sort((a,b)=>(b.ult||0)-(a.ult||0)).map(t=>{const r=t.msgs.find(m=>!m.parent);if(!r)return'';
-    const u=t.msgs[t.msgs.length-1];
-    return `<div class="msg">${icon(r.h,COMPS[comp].cor)}<div class="bubble"><div class="meta"><b>${r.h}</b><span class="t">${r.t}</span></div>${r.x}
-     ${u&&u.id!==r.id?`<div class="dim" style="margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">↳ ${u.h.replace('Camarada ','')}: ${u.x}</div>`:''}
-     <div class="tfoot"><button onclick="ui.abrirTopico('${t.id}')">↳ ${t.msgs.length-1} respostas · ${t.escalado?'virou decisão':'ativa'}</button><button onclick="ui.abrirTopico('${t.id}')">Responder</button><button onclick="ui.msgAct('${t.id}','${r.id}')" aria-label="Mais ações">···</button></div></div></div>`}).join('')}
-  ${M.map((m,i)=>m.topico?`<button class="pinitem" onclick="ui.abrirTopico('${m.topico}')" style="border-left-color:var(--border-2)"><span class="pt">→ virou a conversa "${(topFind(m.topico)||{}).titulo||''}"</span><span class="pm">abrir ›</span></button>`
-   :`<div class="msg${m.h===COMPS[comp].handle?' mine':''}">${icon(m.h,COMPS[comp].cor)}<div class="bubble"><div class="meta"><b>${m.h}</b><span class="t">${m.t}</span>${m.fila?'<span class="role warn">na fila — sem conexão</span>':''}</div>${m.x}
-   <div class="tfoot"><button onclick="ui.novaConversa(${i})">Abrir conversa</button><button onclick="ui.msgAct(null,${i})" aria-label="Mais ações">···</button></div></div></div>`).join('')}`},
+  ${FEED}`},
 
  topicos(){const T=TOPICS[comp]||[];
   const q=norm(TOPFILTRO);const filtrando=q.length>=2;const hit=t=>!filtrando||norm(t.titulo).includes(q);
@@ -989,7 +995,7 @@ const render={
   ${enc.length?(expand?`<h3 class="sec">Encerradas · ${enc.length}${filtrando?'':` <button class="btn btn-sm" style="margin-left:6px;min-height:28px" onclick="TOPEXP=false;render.topicos()">recolher</button>`}</h3>`+enc.map(cardEnc).join('')
     :`<button class="card tap" style="padding:10px 12px" onclick="TOPEXP=true;render.topicos()"><span class="mut">${chev}Encerradas · ${enc.length} — nada se apaga; responder reabre</span></button>`):''}
   ${nadaAberto?`<div class="empty">Nada com "${TOPFILTRO.replace(/</g,'')}" nos títulos desta sala.<br><button class="btn btn-sm" style="margin-top:10px" onclick="ui.buscarDoFiltro()">Buscar dentro das mensagens ›</button></div>`:''}
-  ${T.length?'':'<div class="empty">Nenhuma conversa nomeada — o mural corrente é a conversa.</div>'}
+  ${(T.length||filtrando)?'':'<div class="empty">Nenhuma conversa nomeada — o mural corrente é a conversa.</div>'}
   <p class="dim">Fixar e encerrar são atos assinados, à vista da sala — contestar é uma questão de ordem. Encerrar não apaga nada.</p>`},
 
  topico(){const t=topFind(curTopic);if(!t){ui.go('mural');return}
@@ -1311,7 +1317,7 @@ ${DISCFALAS.map(falaHtml).join('')}`;composerCtl.custom({ph:'Falar no debate…'
   <h3 class="sec">Mandar recado para cima</h3>
   <div class="card" style="display:flex;flex-direction:column;gap:9px">
     <label class="mut" for="cdest">Para quem</label>
-    <select id="cdest"><option>Redação Central</option><option>Comitê Regional</option></select>
+    <select id="cdestsel" aria-label="Para quem vai o recado"><option>Redação Central</option><option>Comitê Regional</option></select>
     <textarea aria-label="Recado">Recado da semana: greve de zelo na expedição; dois contatos novos no turno da noite; boletim nº 3 distribuído nos três portões.</textarea>
     <span class="tchip tc-prot" style="pointer-events:none">${lock}protegido, só quem recebe lê <button class="dep" onclick="ui.dep('DEP-04')" style="pointer-events:auto">DEP-04</button></span>
     <button class="btn btn-p" onclick="if(on){this.textContent='Enviado — a redação vai ver';announce('Enviado')}else{this.textContent='Na fila — envia quando você reconectar';announce('Sem conexão: na fila')}this.disabled=true">Enviar</button>
@@ -1340,11 +1346,12 @@ ${DISCFALAS.map(falaHtml).join('')}`;composerCtl.custom({ph:'Falar no debate…'
 
  mandatos(){$('s-mandatos').innerHTML=`
   <h3 class="sec">Meus cargos por eleição</h3>
-  <div class="card" style="border-left:3px solid ${COMPS.cong.cor}">
+  ${ATIVAS().includes('cong')?'':'<div class="empty">Nenhum cargo ativo por eleição — cargos nascem em Decisões, com mandato e recall.</div>'}
+  ${ATIVAS().includes('cong')?`<div class="card" style="border-left:3px solid ${COMPS.cong.cor}">
     <div style="display:flex;justify-content:space-between;gap:8px"><b>Delegado ao 3º Congresso</b><span class="role">titular</span></div>
     <div class="mut" style="margin:4px 0">quem me elegeu: Célula Gráfica · 20 a 24/09 · pode ter <span class="gterm" role="button" tabindex="0" onclick="ui.term('recall')">recall</span></div>
     <div class="kv"><div class="r"><span class="k">Prestação de contas</span><span id="pcstate" style="color:var(--t-exp)">depois do congresso</span></div></div>
-    <button class="btn btn-sm" style="margin-top:8px" onclick="$('pcstate').textContent='relatório enviado ✓';this.remove()">Prestar contas a quem me elegeu</button></div>
+    <button class="btn btn-sm" style="margin-top:8px" onclick="$('pcstate').textContent='relatório enviado ✓';this.remove()">Prestar contas a quem me elegeu</button></div>`:''}
   <h3 class="sec">Cargos desta sala</h3>
   <div class="card">
     <div style="display:flex;justify-content:space-between;gap:8px"><b>Camarada Baliza — tesoureira</b><span class="role">buro</span></div>
@@ -1380,10 +1387,10 @@ ${DISCFALAS.map(falaHtml).join('')}`;composerCtl.custom({ph:'Falar no debate…'
 
  seg(){$('s-seg').innerHTML=`
   <h3 class="sec">Conta e segurança</h3>
-  <div class="card kv"><div class="r"><span class="k">Seu apelido</span><span>Camarada Pórtico</span></div></div>
+  <div class="card kv"><div class="r"><span class="k">Seu apelido</span><span>${SALAS==='0'?'nasce com a admissão':'Camarada Pórtico'}</span></div></div>
   <div class="card"><b>Seus nomes por sala — só neste aparelho</b>
    <div class="kv" style="margin-top:6px">
-    ${Object.values(COMPS).map(C=>`<div class="r"><span>${C.nome}</span><span>${C.handle}</span></div>`).join('')}</div>
+    ${SALAS==='0'?'<div class="r"><span class="dim">nenhuma sala ainda — o primeiro nome nasce quando a célula te admitir</span></div>':Object.entries(COMPS).filter(([k])=>ATIVAS().includes(k)).map(([k,C])=>`<div class="r"><span>${C.nome}</span><span>${C.handle}</span></div>`).join('')}</div>
    <p class="mut" style="margin-top:7px">A tela não liga esses nomes para ninguém. <b>O servidor, hoje, ainda pode</b> — estamos fechando isso. <button class="dep" onclick="ui.dep('DEP-05')">DEP-05</button></p></div>
   <div class="card" style="display:flex;justify-content:space-between;align-items:center;gap:8px"><span><b>Chave-mestra de papel</b><br><span class="mut">perdeu o papel? refaça antes de perder tudo</span></span>
    <button class="btn btn-sm" onclick="rebackup.start()">Ver de novo</button></div>
@@ -1414,9 +1421,9 @@ ${DISCFALAS.map(falaHtml).join('')}`;composerCtl.custom({ph:'Falar no debate…'
       <li class="them">+ 1 célula do território</li>
       ${ORGPROP?`<li class="them">${ORGPROP.nome} <span class="role">proposta em decisão</span></li>`:''}
      </ul></li>
-    <li class="you">Comitê Municipal Leste <span class="dim">— seu · mandato</span></li>
-    <li class="you">Comissão de Finanças <span class="dim">— sua</span></li>
-    <li class="you">3º Congresso <span class="dim">— convocado · você é delegado</span></li>
+    ${ATIVAS().includes('com')?`<li class="you">Comitê Municipal Leste <span class="dim">— seu · mandato</span></li>`:`<li class="them">Comitê Municipal Leste — existe; quem está dentro, você não vê</li>`}
+    ${ATIVAS().includes('fin')?`<li class="you">Comissão de Finanças <span class="dim">— sua</span></li>`:`<li class="them">Comissão de Finanças — existe</li>`}
+    ${ATIVAS().includes('cong')?`<li class="you">3º Congresso <span class="dim">— convocado · você é delegado</span></li>`:`<li class="them">3º Congresso — convocado para 20 a 24/09</li>`}
    </ul>
    <button class="btn btn-sm" style="margin-top:10px" onclick="orgnew.start()">Propor sala nova</button></div>
   ${honesty('arvore','nao','A <b>estrutura</b> — que salas existem e como se ligam — fica no servidor: sem ela, ele não sabe entregar as mensagens. É o que uma apreensão do servidor expõe; o <b>conteúdo</b>, não. Está dito no modelo de ameaças, sem rodeio.','A estrutura fica no servidor; o conteúdo, não.')}`},
@@ -1509,7 +1516,7 @@ ${DISCFALAS.map(falaHtml).join('')}`;composerCtl.custom({ph:'Falar no debate…'
   if(q.length<2){R.innerHTML=`<p class="dim">Digite ao menos 2 letras.</p>`;return}
   const ms=(MSGS[comp]||[]).filter(m=>norm(m.x+' '+m.h).includes(nq));
   const ts=(TOPICS[comp]||[]).filter(t=>norm(t.titulo+' '+t.msgs.map(m=>m.x).join(' ')).includes(nq));
-  const XD={cong:[{t:'Resolução política geral',pr:'voto de rosto — abre 21:00',act:"ui.go('nominal')"}],com:[{t:'Apreciação: contato com a Célula Tecelagem',pr:'debate',act:"ui.go('delib')"}]}[comp]||[];
+  const XD={celula:[{t:'Campanha de sindicalização — decisão de cima',pr:'resolução · obriga',act:"ui.go('resol')"}],cong:[{t:'Resolução política geral',pr:'voto de rosto — abre 21:00',act:"ui.go('nominal')"}],com:[{t:'Apreciação: contato com a Célula Tecelagem',pr:'debate',act:"ui.go('delib')"}]}[comp]||[];
   const ds=(CDELIBS[comp]||[]).filter(d=>norm(d.t).includes(nq)),xs=XD.filter(d=>norm(d.t+' '+d.pr).includes(nq));
   R.innerHTML=(ms.length?`<h3 class="sec">No mural</h3>`+ms.map(m=>`<div class="msg">${icon(m.h,COMPS[comp].cor)}<div class="bubble"><div class="meta"><b>${m.h}</b><span class="t">${m.t}</span></div>${m.x}</div></div>`).join(''):'')+
    (ts.length?`<h3 class="sec" style="margin-top:8px">Nas conversas</h3>`+ts.map(t=>`<button class="card tap" onclick="ui.abrirTopico('${t.id}')"><div style="display:flex;justify-content:space-between;gap:8px">${chev}<b>${t.titulo}</b><span class="mut">${t.msgs.length} msg${t.estado==='encerrada'?(t.ata?' · ✓ decidida':' · ⊘ encerrada'):''}</span></div></button>`).join(''):'')+
