@@ -94,8 +94,8 @@ b{font-weight:600}
 .phone::before{content:"";position:absolute;inset:0 auto 0 0;width:4px;background:var(--spine,transparent);transition:background var(--t-med) var(--ease);z-index:var(--z-spine);pointer-events:none}
 .phone.transversal::before{background:transparent}
 /* ---------- shell ---------- */
-.statusbar{display:flex;align-items:center;gap:8px;padding:9px 12px;background:var(--bg-1);border-bottom:1px solid var(--border);font-size:12px;flex:none}
-.pill{display:inline-flex;align-items:center;gap:5px;border-radius:99px;padding:6px 11px;min-height:32px;font-size:11px;font-weight:600;letter-spacing:.01em;border:1px solid;transition:color var(--t-fast),border-color var(--t-fast),background var(--t-fast)}
+.statusbar{display:flex;align-items:center;gap:8px;padding:5px 12px;background:var(--bg-1);border-bottom:1px solid var(--border);font-size:12px;flex:none}
+.pill{display:inline-flex;align-items:center;gap:5px;border-radius:99px;padding:4px 10px;min-height:28px;font-size:11px;font-weight:600;letter-spacing:.01em;border:1px solid;transition:color var(--t-fast),border-color var(--t-fast),background var(--t-fast)}
 .pill .dot{width:7px;height:7px;border-radius:50%;background:currentColor;flex:none}
 .pill-tor{color:var(--t-prot);border-color:rgba(69,181,132,.45);background:var(--t-prot-bg)}
 .pill-tor.off{color:var(--t-nao);border-color:rgba(230,106,110,.55);background:var(--t-nao-bg)}
@@ -104,11 +104,14 @@ b{font-weight:600}
 .iconbtn{width:40px;height:40px;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;flex:none;color:var(--ink-1);position:relative;transition:background var(--t-fast),color var(--t-fast)}
 .iconbtn:hover{background:var(--bg-2);color:var(--ink-0)}
 .iconbtn:active{background:var(--bg-3)}
+.statusbar .iconbtn{width:36px;height:36px}
 .iconbtn .badge{position:absolute;top:5px;right:5px;width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 2px var(--bg-1)}
-.comp-head{display:flex;align-items:center;gap:10px;padding:12px;border-bottom:1px solid var(--border);flex:none;background:linear-gradient(90deg,color-mix(in srgb,var(--spine) 9%,var(--bg-1)),var(--bg-1) 62%)}
+.comp-head{display:flex;align-items:center;gap:10px;padding:9px 12px;border-bottom:1px solid var(--border);flex:none;background:linear-gradient(90deg,color-mix(in srgb,var(--spine) 9%,var(--bg-1)),var(--bg-1) 62%)}
 .comp-head .sw{width:14px;height:14px;border-radius:4px;background:var(--spine);flex:none;transition:background var(--t-med) var(--ease);box-shadow:0 0 0 3px color-mix(in srgb,var(--spine) 22%,transparent)}
 .comp-head .t{font-size:16px;font-weight:650;line-height:1.2;letter-spacing:-.01em}
-.comp-head .s{font-size:12px;color:var(--ink-1)}
+.comp-head .s{font-size:12px;color:var(--ink-1);display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.comp-head .hchip{flex:1;min-width:0}
+.comp-head .hchip>span:last-child{min-width:0;flex:1;text-align:left}
 .epoch{margin-left:auto;font:500 11px/1 var(--f-mono);font-variant-numeric:tabular-nums;color:var(--ink-1);border:1px solid var(--border-2);background:var(--bg-2);border-radius:99px;padding:8px 10px;min-height:34px;white-space:nowrap;flex:none;display:inline-flex;align-items:center;transition:color var(--t-fast),border-color var(--t-fast)}
 .epoch.hot{color:var(--t-exp);border-color:rgba(226,168,62,.55);background:var(--t-exp-bg)}
 .screen{flex:1;overflow-y:auto;padding:16px 14px 18px;display:none;flex-direction:column;gap:12px;scrollbar-width:thin;scrollbar-color:var(--border-2) transparent}
@@ -126,6 +129,7 @@ b{font-weight:600}
 .card.tap:hover{border-color:var(--border-2);background:var(--bg-2)}
 .card.tap:active{transform:translateY(1px)}
 .card.tap .chev{float:right;color:var(--ink-2);order:99;margin-left:auto}
+.screen>.btn-sm{align-self:flex-start}
 h3.sec{font-size:11.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-2);font-weight:600;margin:4px 0 -4px}
 .tchip{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;border-radius:99px;padding:7px 12px;min-height:34px;border:1px solid;cursor:pointer;max-width:100%;text-align:left;transition:filter var(--t-fast)}
 .tchip:hover{filter:brightness(1.12)}
@@ -159,6 +163,8 @@ h3.sec{font-size:11.5px;letter-spacing:.07em;text-transform:uppercase;color:var(
 .mono{font-family:var(--f-mono);font-size:13px}
 .kv{display:flex;flex-direction:column;gap:7px;font-size:14px;font-variant-numeric:tabular-nums}
 .kv .r{display:flex;justify-content:space-between;gap:12px}
+.kv .r>span:last-child{text-align:right}
+.nw{white-space:nowrap}
 .kv .k{color:var(--ink-1)}
 .big{font-size:15px;font-weight:600;color:var(--ink-0)}
 .ata{font-family:var(--f-serif);font-size:15px;line-height:1.7;letter-spacing:.002em}
@@ -186,9 +192,10 @@ textarea{min-height:76px;resize:vertical}
 .check.done .lbl{color:var(--ink-2);text-decoration:line-through}
 .check .lbl{font-size:14px}
 .check .sub{font-size:12px;color:var(--ink-2)}
-#toast{position:absolute;left:14px;right:14px;top:104px;z-index:70;background:var(--bg-2);border:1px solid var(--border-2);border-left:3px solid var(--spine,var(--accent));border-radius:10px;padding:10px 13px;font-size:13px;line-height:1.45;color:var(--ink-0);box-shadow:0 10px 30px rgba(0,0,0,.5);opacity:0;transform:translateY(-6px);pointer-events:none;transition:opacity var(--t-fast) var(--ease),transform var(--t-fast) var(--ease)}
+#toast{position:absolute;left:14px;right:14px;top:auto;bottom:76px;z-index:70;background:var(--bg-2);border:1px solid var(--border-2);border-left:3px solid var(--spine,var(--accent));border-radius:10px;padding:10px 13px;font-size:13px;line-height:1.45;color:var(--ink-0);box-shadow:0 10px 30px rgba(0,0,0,.5);opacity:0;transform:translateY(-6px);pointer-events:none;transition:opacity var(--t-fast) var(--ease),transform var(--t-fast) var(--ease)}
 #toast.on{opacity:1;transform:none}
 #toast.warn{border-left-color:var(--t-exp)}
+.phone:has(#composer.on) #toast{bottom:162px}
 /* ---------- sheets & overlays ---------- */
 .scrim{position:absolute;inset:0;background:rgba(5,7,10,.6);backdrop-filter:blur(2px);z-index:var(--z-sheet);display:none;align-items:flex-end}
 .scrim.on{display:flex}
@@ -254,7 +261,11 @@ hr{border:0;border-top:1px solid var(--border);margin:2px 0}
 #composer textarea{min-height:44px;max-height:124px}
 .replybar{display:flex;align-items:center;gap:8px;background:var(--bg-2);border-left:2px solid var(--spine);border-radius:6px;padding:6px 9px;font-size:12.5px;color:var(--ink-1)}
 .replybar b{color:var(--ink-0)}
-.pinrow{display:flex;flex-direction:column;gap:4px}
+.pinrow{display:flex;flex-direction:row;gap:6px;align-items:stretch}
+.pinrow .pinitem{flex:1;min-width:0}
+.pinrow .pt{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pinplus{flex:none;min-width:44px;min-height:44px;display:inline-flex;align-items:center;justify-content:center;background:var(--bg-1);border:1px solid var(--border);border-radius:8px;font-size:12.5px;font-weight:600;color:var(--ink-1)}
+.pinplus:hover{background:var(--bg-2);color:var(--ink-0)}
 .pinitem{display:flex;align-items:center;gap:8px;background:color-mix(in srgb,var(--spine) 7%,var(--bg-1));border:1px solid var(--border);border-left:2px solid var(--spine);border-radius:8px;padding:8px 11px;min-height:44px;font-size:13px;width:100%}
 .pinitem .pt{flex:1;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .pinitem .pm{color:var(--ink-2);font-size:11.5px;white-space:nowrap;font-variant-numeric:tabular-nums}
@@ -263,10 +274,17 @@ hr{border:0;border-top:1px solid var(--border);margin:2px 0}
 .pinitem:active{transform:translateY(1px)}
 .thr{border-left:2px solid color-mix(in srgb,var(--spine) 36%,var(--border));margin-left:9px;padding-left:11px;display:flex;flex-direction:column;gap:8px}
 .tfoot{display:flex;gap:14px;align-items:center;font-size:12.5px;color:var(--ink-1)}
-.tfoot button{color:var(--ink-1);font-weight:600;min-height:44px;padding:10px 4px;margin:-6px 0}
+.tfoot{flex-wrap:wrap;gap:8px;margin-top:7px}
+.tfoot button{color:var(--ink-1);font-weight:600;font-size:12px;border:1px solid var(--border-2);background:var(--bg-2);border-radius:99px;padding:4px 11px;min-height:30px;margin:0;position:relative}
+.tfoot button::after{content:"";position:absolute;inset:-7px -2px}
 .tfoot button:hover{color:var(--ink-0)}
 .ctxline{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
-.muraltop{position:sticky;top:-14px;z-index:5;background:var(--bg-0);margin:-16px -14px 0;padding:14px 14px 8px;display:flex;flex-direction:column;gap:8px;border-bottom:1px solid var(--border)}
+.muraltop{position:sticky;top:-16px;z-index:5;background:var(--bg-0);margin:-16px -14px 0;padding:8px 14px 6px;display:flex;flex-direction:column;gap:6px;border-bottom:1px solid var(--border)}
+.muraltop .btn-sm{padding:6px 9px}
+.muraltop .ctxline{gap:4px}
+.lockline{font-size:12px;color:var(--ink-2);text-align:center;padding:2px 0;min-height:24px;position:relative;width:100%}
+.lockline::after{content:"";position:absolute;inset:-10px 0}
+.lockline:hover{color:var(--ink-1)}
 .role.warn{color:var(--t-exp);border-color:rgba(226,168,62,.5)}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .grid2 .cell{text-align:left;padding:12px 13px;background:var(--bg-1);border:1px solid var(--border);border-radius:var(--r-card)}
@@ -294,7 +312,7 @@ mark{background:rgba(109,151,244,.22);color:var(--ink-0);border-radius:3px;paddi
   <main class="phone" id="phone" style="--spine:#3E9CA8" aria-label="Aplicativo partido (protótipo)">
     <div class="statusbar">
       <button class="pill pill-tor" id="torpill" onclick="ui.netInfo()"><span class="dot"></span><span id="torlbl">Rede protegida</span></button>
-      <span class="pill" style="color:var(--ink-1);border-color:var(--border)">🔓 destravado</span>
+      <span class="pill" style="color:var(--ink-1);border-color:transparent">🔓 destravado</span>
       <span style="flex:1"></span>
       <button class="iconbtn" onclick="ui.sheet('sh-not')" aria-label="Avisos"><svg viewBox="0 0 24 24" width="20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 8a6 6 0 1 1 12 0c0 7 2 8 2 8H4s2-1 2-8"/><path d="M10 21h4"/></svg><span class="badge" id="notbadge"></span></button>
       <button class="iconbtn" onclick="ui.exposure()" aria-label="O que o sistema não esconde"><svg viewBox="0 0 24 24" width="20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7z"/><path d="M9 12h6M12 9v6"/></svg></button>
@@ -344,7 +362,7 @@ mark{background:rgba(109,151,244,.22);color:var(--ink-0);border-radius:3px;paddi
     <div id="composer">
       <div class="replybar" id="replybar" style="display:none"><span id="replytxt"></span><button class="iconbtn" style="width:44px;height:44px;margin-left:auto" onclick="composerCtl.cancelReply()" aria-label="Cancelar resposta"><svg viewBox="0 0 24 24" width="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
       <div class="dest" id="cdest"><span class="sq" aria-hidden="true"></span><span id="cdesttxt"></span></div>
-      <div class="row2"><textarea id="ctxt" aria-label="Escrever" placeholder="Escrever…" oninput="$('csend').setAttribute('aria-disabled',!this.value.trim())"></textarea><button class="btn btn-p" id="csend" aria-disabled="true" onclick="composerCtl.send()">Enviar</button></div>
+      <div class="row2"><textarea id="ctxt" rows="1" aria-label="Escrever" placeholder="Escrever…" oninput="$('csend').setAttribute('aria-disabled',!this.value.trim())"></textarea><button class="btn btn-p" id="csend" aria-disabled="true" onclick="composerCtl.send()">Enviar</button></div>
     </div>
 
     <div id="toast" aria-hidden="true"></div>
@@ -430,10 +448,10 @@ document.documentElement.lang='pt-BR';
 
 /* ============ dados fictícios — por compartimento ============ */
 const COMPS={
- celula:{nome:"Célula Gráfica",tipo:"grupo de base · gráfica",cor:"#3E9CA8",handle:"Camarada Pórtico",epoch:14,entrou:12},
- fin:{nome:"Comissão de Finanças",tipo:"comissão",cor:"#C08457",handle:"Camarada Estopim",epoch:9,entrou:7},
- cong:{nome:"3º Congresso",tipo:"congresso · encontro de 20 a 24/09",cor:"#6E8AD6",handle:"Camarada Vértice",epoch:2,entrou:1},
- com:{nome:"Comitê Municipal Leste",tipo:"comitê · municipal — você tem mandato aqui",cor:"#8A6FB8",handle:"Camarada Baldrame",epoch:21,entrou:19},
+ celula:{nome:"Célula Gráfica",tipo:"grupo de base · gráfica",tipoCurto:"célula",cor:"#3E9CA8",handle:"Camarada Pórtico",epoch:14,entrou:12},
+ fin:{nome:"Comissão de Finanças",tipo:"comissão",tipoCurto:"comissão",cor:"#C08457",handle:"Camarada Estopim",epoch:9,entrou:7},
+ cong:{nome:"3º Congresso",tipo:"congresso · encontro de 20 a 24/09",tipoCurto:"congresso",cor:"#6E8AD6",handle:"Camarada Vértice",epoch:2,entrou:1},
+ com:{nome:"Comitê Municipal Leste",tipo:"comitê · municipal — você tem mandato aqui",tipoCurto:"comitê · mandato",cor:"#8A6FB8",handle:"Camarada Baldrame",epoch:21,entrou:19},
 };
 let comp="celula", tor=true, on=true, votou=false, revelou=false, revPend=false, admitido=false, novata=true, aguardaRede=false, regime="mov", trancada=false;
 const done={};
@@ -486,7 +504,7 @@ const MSGS={
 /* ---- tópicos por compartimento (ciclo 6): mural = conversa-raiz; tópico = conversa nomeada ---- */
 const TOPICS={
  celula:[
-  {id:"t1",titulo:"Distribuição de sexta",criadoDe:"Camarada Baliza",
+  {id:"t1",titulo:"Distribuição de sexta",criadoDe:"Camarada Baliza",ult:0.02,ultLabel:"há 30min",
    pin:{por:"Camarada Pórtico",papel:"secretário",ate:"20/08"},
    msgs:[
     {id:"r1",parent:null,h:"Camarada Baliza",t:"há 2h",x:"Fechei com a gráfica do turno da noite: 400 exemplares pra sexta. Alguém cobre o portão 3?"},
@@ -499,10 +517,29 @@ const TOPICS={
    pin:{por:"Camarada Pórtico",papel:"secretário",ate:"quinta 19h",auto:true},
    confirm:["Camarada Baliza","Camarada Trilho","Camarada Lastro"],
    msgs:[]},
+  {id:"t3",titulo:"Boletim nº 4 — pauta da semana",criadoDe:"Camarada Trilho",ult:0.1,ultLabel:"há 2h",
+   msgs:[
+    {id:"r1",parent:null,h:"Camarada Trilho",t:"há 2h",x:"Pauta do nº 4: a vitória do portão 3, a cota extra e a acolhida dos novos. Sugestões até quinta."},
+    {id:"r2",parent:"r1",h:"Camarada Baliza",t:"há 1h",x:"Acrescenta a banca de sábado — rendeu dois contatos novos."}]},
+  {id:"t4",titulo:"Acolhida dos camaradas novos",criadoDe:"Camarada Lastro",ult:3,ultLabel:"há 3 dias",
+   msgs:[{id:"r1",parent:null,h:"Camarada Lastro",t:"há 3 dias",x:"Cada novo com um veterano de referência no primeiro mês — comigo funcionou assim."}]},
+  {id:"t5",titulo:"Caixa de solidariedade",criadoDe:"Camarada Baliza",ult:45,ultLabel:"28/06",
+   msgs:[{id:"r1",parent:null,h:"Camarada Baliza",t:"28/06",x:"Proposta em rascunho: 5% da cota para um fundo de emergência das famílias."}]},
+  {id:"t6",titulo:"Mutirão de reparo da impressora",criadoDe:"Camarada Trilho",ult:82,ultLabel:"22/05",
+   msgs:[{id:"r1",parent:null,h:"Camarada Trilho",t:"22/05",x:"A impressora da sala 2 precisa de rolo novo — quem topa um sábado de mutirão?"}]},
+  {id:"t7",titulo:"Festa junina do bairro",criadoDe:"Camarada Aduela",estado:"encerrada",ult:20,ultLabel:"12/07",
+   enc:{por:"Camarada Pórtico",papel:"secretário",em:"05/08",motivo:"papel"},
+   msgs:[{id:"r1",parent:null,h:"Camarada Aduela",t:"12/07",x:"A banca na festa rendeu bem — fica o registro do que funcionou, pro ano que vem."}]},
+  {id:"t8",titulo:"Panfleto de maio — texto final",criadoDe:"Camarada Pórtico",estado:"encerrada",ult:60,ultLabel:"12/07",ata:true,
+   enc:{em:"12/07",motivo:"decidida"},
+   msgs:[{id:"r1",parent:null,h:"Camarada Pórtico",t:"em maio",x:"Texto final do panfleto em debate — a versão 3 ficou anexada à decisão."}]},
  ],
  fin:[],cong:[],com:[],
 };
-let curTopic=null, topicStack=[], replyTo=null, ESCFROM=null, DNCUR=null, NOVAQ=null;
+let curTopic=null, topicStack=[], replyTo=null, ESCFROM=null, DNCUR=null, NOVAQ=null, TOPFILTRO='', TOPEXP=false;
+const norm=s=>(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+function topQuieta(t){if(t.estado==='encerrada'||t.escalado||t.pin)return null;const u=t.ult||0;
+ if(u>=76)return{prazo:90-Math.floor(u)};if(u>=30)return{desde:t.ultLabel||'há tempo'};return null}
 const DISCFALAS=[];
 function topFind(id){return (TOPICS[comp]||[]).find(t=>t.id===id)}
 function topFilhos(t,pid){return t.msgs.filter(m=>m.parent===pid)}
@@ -629,6 +666,9 @@ const COMPOSER_CFG={
  apur:()=>({fase:'Apuração: números públicos — o debate desta decisão já encerrou.'}),
  nominal:()=>({fase:'Voto de rosto em curso — fala registrada é o voto que você abre.'}),
  topico:()=>{const t=topFind(curTopic);if(!t)return null;
+  if(t.estado==='encerrada'){
+    if(t.ata)return{fase:'Decidida — a ata está ligada. Reabrir pede 2 camaradas: subscreva no cartão acima.'};
+    return{ph:'Responder reabre esta conversa…',cta:'Responder',dest:`${COMPS[comp].nome} › ${t.titulo}`,send:x=>ui.sendReabrir(x)}}
   if(t.tipo==='convocacao'){if((t.confirm||[]).includes(COMPS[comp].handle))return{ph:'Recado à sala…',cta:'Enviar',dest:`${COMPS[comp].nome} › ${t.titulo}`,send:x=>ui.sendTopico(x)};
    return{ph:'Confirmo, vou… (escreva com suas palavras)',cta:'Enviar',dest:`${COMPS[comp].nome} › ${t.titulo}`,mode:'sai num momento aleatório antes da hora',send:x=>ui.sendConfirm(x)}};
   return{ph:'Responder…',cta:'Responder',dest:`${COMPS[comp].nome} › ${t.titulo}`,keepReply:true,send:x=>ui.sendTopico(x)}},
@@ -642,8 +682,8 @@ function icon(seed,color){let h=0;for(const ch of seed)h=(h*31+ch.charCodeAt(0))
 /* ============ shell/ui ============ */
 const $=id=>document.getElementById(id);
 let toastT=0;
-function announce(msg,assertive){const el=$(assertive?'livea':'live');el.textContent='';setTimeout(()=>{el.textContent=msg},30);
- const tt=$('toast');if(tt){tt.textContent=msg;tt.classList.toggle('warn',!!assertive);tt.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>tt.classList.remove('on'),2600)}}
+function announce(msg,assertive,quiet){const el=$(assertive?'livea':'live');el.textContent='';setTimeout(()=>{el.textContent=msg},30);
+ const tt=$('toast');if(tt&&!quiet){tt.textContent=msg;tt.classList.toggle('warn',!!assertive);tt.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>tt.classList.remove('on'),2600)}}
 const JGROUP=['jornal','corresp','editor'], DGROUP=['delib','delibdet','nova','apur','resol','nominal','disc','emendas'];
 const TRANSV=['panorama','frentes','seg','cartilha','licao','meuorgs','mandatos'];
 const ui={
@@ -659,9 +699,10 @@ const ui={
    $('phone').classList.toggle('transversal',transv);
    el.scrollTop=0;},
  setComp(c){comp=c;const C=COMPS[c];$('phone').style.setProperty('--spine',C.cor);
-   $('ch-nome').textContent=C.nome;$('ch-tipo').innerHTML=`${C.tipo} — você: <b>${C.handle}</b>`;$('ch-epoch').innerHTML='🔒 '+C.epoch;
-   $('ctxt').value='';composerCtl.cancelReply(true);curTopic=null;topicStack=[];ESCFROM=null;DNCUR=null;
-   ui.closeSheets(true);announce('Agora em '+C.nome+' — rascunho não atravessa a fronteira');if(!TRANSV.includes(ui.screen))ui.go('mural');},
+   $('ch-nome').textContent=C.nome;$('ch-tipo').innerHTML=`${C.tipoCurto||C.tipo} · você: <b>${C.handle}</b>`;$('ch-epoch').innerHTML='🔒 '+C.epoch;
+   const tinha=($('ctxt').value||'').trim();
+   $('ctxt').value='';composerCtl.cancelReply(true);curTopic=null;topicStack=[];ESCFROM=null;DNCUR=null;TOPFILTRO='';TOPEXP=false;
+   ui.closeSheets(true);announce('Agora em '+C.nome+(tinha?' — o rascunho ficou; ele não atravessa a fronteira':''),false,!tinha);if(!TRANSV.includes(ui.screen))ui.go('mural');},
  sheet(id){focusReturn.cur=document.activeElement;$('scrim').classList.add('on');
    document.querySelectorAll('.sheet').forEach(s=>s.style.display='none');const el=$(id);el.style.display='flex';
    if(id==='sh-comp')render.selector();if(id==='sh-not')render.notices();if(id==='sh-mais')render.mais();if(id==='sh-epoca')render.epoca();
@@ -705,7 +746,7 @@ const ui={
  showBlocker(){focusReturn.cur=document.activeElement;$('blocker').classList.add('on');$('blocker').focus();announce('Voto travado: a rede protegida caiu',true)},
  hideBlocker(){$('blocker').classList.remove('on');if(focusReturn.cur&&focusReturn.cur.focus)focusReturn.cur.focus()},
  setNovata(v){novata=v;$('segN').setAttribute('aria-pressed',v);$('segV').setAttribute('aria-pressed',!v);
-   announce(v?'Modo recém-chegada':'Modo veterana');render[ui.screen]&&render[ui.screen]()},
+   announce(v?'Modo recém-chegada':'Modo veterana',false,true);render[ui.screen]&&render[ui.screen]()},
  mark(id){if(!done[id]){done[id]=1;announce('Passo concluído')}if(ui.screen==='panorama')render.panorama()},
  setRegime(r){regime=r;announce(r==='partido'?'Bancada: regime de partido registrado — o caminho anônimo trava':'Bancada: regime de movimento — vale em dinheiro permitido');render[ui.screen]&&render[ui.screen]()},
  sendMural(x){composerCtl.cancelReply(true);const m={h:COMPS[comp].handle,t:'agora',x};
@@ -726,11 +767,12 @@ const ui={
    if(!(t.confirm||[]).includes(COMPS[comp].handle))t.confirm=[...(t.confirm||[]),COMPS[comp].handle];
    t.msgs.push({id:'c'+t.msgs.length,parent:null,h:COMPS[comp].handle,t:'agora',x});
    announce('Confirmação na fila — sai num momento aleatório antes da hora');composerCtl.apply('topico');render.topico()},
- abrirTopico(id){curTopic=id;topicStack=[];ui.go('topico');const t=topFind(id);if(t)announce('Conversa: '+t.titulo)},
+ buscarDoFiltro(){const q=TOPFILTRO;ui.go('busca');const i=$('q');if(i){i.value=q;render.buscar(q)}},
+ abrirTopico(id){curTopic=id;topicStack=[];ui.go('topico');const t=topFind(id);if(t)announce('Conversa: '+t.titulo,false,true)},
  diveTopic(mid){topicStack.push(mid);render.topico();$('s-topico').scrollTop=0;
-   const t=topFind(curTopic);const m=t&&t.msgs.find(x=>x.id===mid);announce(m?('Conversa de '+m.h):'Conversa');
+   const t=topFind(curTopic);const m=t&&t.msgs.find(x=>x.id===mid);announce(m?('Conversa de '+m.h):'Conversa',false,true);
    const bt=$('s-topico').querySelector('.btn');bt&&bt.focus()},
- backTopic(){if(topicStack.length){topicStack.pop();render.topico();announce('De volta');const bt=$('s-topico').querySelector('.btn');bt&&bt.focus()}else ui.go('mural')},
+ backTopic(){if(topicStack.length){topicStack.pop();render.topico();announce('De volta',false,true);const bt=$('s-topico').querySelector('.btn');bt&&bt.focus()}else ui.go('mural')},
  novaConversa(mi){const src=(MSGS[comp]||[])[mi];if(!src)return;
    if(src.topico){ui.abrirTopico(src.topico);return}
    const T=TOPICS[comp]=TOPICS[comp]||[];
@@ -745,13 +787,15 @@ const ui={
    <hr><p class="sub">Mais…</p>
    <button class="mitem" onclick="ui.closeSheets(true);ui.escalar('${tid||''}')">Abrir uma decisão a partir daqui</button>
    <button class="mitem" onclick="ui.qordem('${tid||''}')">Contestar (questão de ordem)</button>
-   ${t&&t.tipo!=='convocacao'?`<button class="mitem" onclick="ui.closeSheets(true);ui.fixar('${tid}')"><span style="flex:1">${t.pin?'Renovar fixação':'Fixar na ordem do dia'}</span><span class="role">secretário</span></button>`:''}`;
+   ${t&&t.tipo!=='convocacao'&&t.estado!=='encerrada'?`<button class="mitem" onclick="ui.closeSheets(true);ui.fixar('${tid}')"><span style="flex:1">${t.pin?'Renovar fixação':'Fixar na ordem do dia'}</span><span class="role">secretário</span></button>`:''}
+   ${t&&t.tipo!=='convocacao'&&t.estado!=='encerrada'?(t.trava14?`<button class="mitem" disabled style="opacity:.55"><span style="flex:1">Encerrar — reaberta pela sala; disponível de novo em 14 dias</span></button>`:`<button class="mitem" onclick="ui.closeSheets(true);ui.encerrar('${tid}')"><span style="flex:1">Encerrar a conversa</span><span class="role">secretário</span></button>`):''}`;
    ui.sheet('sh-msgact')},
  replyFromSheet(tid,ref){ui.closeSheets(true);const t=topFind(tid);const m=t&&t.msgs.find(x=>x.id===ref);
    if(!m)return;if(ui.screen!=='topico'||curTopic!==tid){curTopic=tid;topicStack=[];ui.go('topico')}
    composerCtl.setReply(m.id,m.h,m.x.slice(0,28)+'…')},
  fixar(tid){const t=topFind(tid);if(!t)return;
    if(t.tipo==='convocacao'){announce('Convocação já fica fixada até a hora, sozinha — nada a renovar');return}
+   if(t.estado==='encerrada'){announce('Conversa encerrada — responder reabre; fixar, só depois');return}
    t.pin={por:COMPS[comp].handle,papel:'secretário',ate:'+14 dias'};
    announce('Fixado por '+COMPS[comp].handle+' (secretário) — por 14 dias, com assinatura à vista');
    if(ui.screen==='mural')render.mural();if(ui.screen==='topico')render.topico();if(ui.screen==='topicos')render.topicos()},
@@ -765,6 +809,20 @@ const ui={
    if(t){const root=t.msgs.find(x=>!x.parent);m.id='q'+t.msgs.length;m.parent=root?root.id:null;t.msgs.push(m);if(ui.screen==='topico')render.topico()}
    else{(MSGS[comp]=MSGS[comp]||[]).push(m);if(ui.screen==='mural')render.mural()}
    announce('Questão de ordem registrada na sala, com a sua assinatura — a sala decide')},
+ encerrar(tid){const t=topFind(tid);if(!t||t.tipo==='convocacao'||t.estado==='encerrada')return;
+   if(!on){announce('Sem conexão — encerrar é ato assinado; não acontece sem rede',true);return}
+   t.estado='encerrada';t.enc={por:COMPS[comp].handle,papel:'secretário',em:'12/08',motivo:'papel'};
+   const tinhaPin=!!t.pin;delete t.pin;
+   announce('Encerrada por você (secretário) — assinado, à vista da sala.'+(tinhaPin?' A fixação caiu com o encerramento.':'')+' Nada foi apagado; responder reabre.');
+   if(ui.screen==='topico'){composerCtl.apply('topico');render.topico()}
+   if(ui.screen==='topicos')render.topicos();if(ui.screen==='mural')render.mural()},
+ sendReabrir(x){const t=topFind(curTopic);if(!t)return;
+   t.estado='ativa';t.ult=0;t.ultLabel='agora';t.trava14=true;delete t.ata;
+   const root=t.msgs.find(m=>!m.parent);
+   const m={id:'n'+(t.msgs.length+1),h:COMPS[comp].handle,t:'agora',x,parent:root?root.id:null};
+   if(!on)m.fila=true;t.msgs.push(m);
+   announce('Reaberta pela sua resposta'+(on?'':' — na fila')+'. O mesmo papel não pode encerrá-la de novo por 14 dias.');
+   composerCtl.apply('topico');render.topico()},
  escalar(tid){const t=tid?topFind(tid):null;ui.go('nova');ESCFROM=t?tid:null;
    if(t){$('np-t').value=t.titulo;$('np-b').value=`Nascida da conversa "${t.titulo}" — proposta redigida por mim a partir do debate.`;
    announce('Proposta pré-preenchida a partir da conversa — o texto é seu')}},
@@ -799,6 +857,8 @@ const lock=`<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="
 const eye=`<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/></svg>`;
 const chev=`<svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>`;
 const chipMural=`<button class="tchip tc-prot" onclick="ui.meta('mural')">${lock}Protegido · o servidor vê: grupo, quando, tamanho, sequência e ritmo</button>`;
+const chipMuralCurto=`<button class="tchip tc-prot" onclick="ui.meta('mural')">${lock}Protegido · o servidor vê</button>`;
+const PINSVG=`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 17v5M5 9l7-7 7 7-3 1v5l-4 3-4-3v-5z"/></svg>`;
 const falaHtml=m=>`<div class="msg${m.h===COMPS[comp].handle?' mine':''}">${icon(m.h,COMPS[comp].cor)}<div class="bubble"><div class="meta"><b>${m.h}</b><span class="t">${m.t}</span>${m.fila?'<span class="role warn">na fila — sem conexão</span>':''}</div>${m.x}</div></div>`;
 
 /* honestidade com política 1ª-vez/veterana (§11) */
@@ -820,47 +880,79 @@ const render={
    <div style="font-size:14px;margin-top:4px">${html}</div></button>`}},
 
  mural(){const M=MSGS[comp]||[];const T=TOPICS[comp]||[];const desc=comp==='celula';
-  const pins=T.filter(t=>t.pin);
+  const abertas=T.filter(t=>t.estado!=='encerrada');
+  const chipCheio=novata||!done['seen_muralchip'];done['seen_muralchip']=1;
+  const fInt=novata||!done['seen_fech_'+comp];done['seen_fech_'+comp]=1;
+  const pins=abertas.filter(t=>t.pin);
   const nresp=t=>t.tipo==='convocacao'?`${(t.confirm||[]).length} confirmaram`:`${t.msgs.length} respostas`;
   const pinsOrd=[...pins].sort((a,b)=>(b.tipo==='convocacao')-(a.tipo==='convocacao'));
   const decisaoVista=done['seen_decisao'];if(desc)done['seen_decisao']=1;
+  const slots=[...pinsOrd.filter(t=>t.tipo==='convocacao').map(t=>({k:'c',t})),
+    ...(desc&&decisaoVista?[{k:'r'}]:[]),
+    ...pinsOrd.filter(t=>t.tipo!=='convocacao').map(t=>({k:'p',t}))];
+  const slotHtml=s=>s.k==='r'?`<button class="pinitem" onclick="ui.go('resol')">${PINSVG}<span class="pt">Decisão de cima · Campanha de sindicalização</span><span class="pm">ler ›</span></button>`
+    :`<button class="pinitem" onclick="ui.abrirTopico('${s.t.id}')">${PINSVG}<span class="pt">${s.t.titulo}</span><span class="pm">${s.t.tipo==='convocacao'?s.t.hora:nresp(s.t)}</span></button>`;
   $('s-mural').innerHTML=`
   <div class="muraltop">
-  <div class="ctxline">${chipMural}<button class="dep" onclick="ui.dep('DEP-13')">DEP-13</button><span style="flex:1"></span>
-   <button class="btn btn-sm" onclick="ui.go('topicos')">Conversas${T.length?` (${T.length})`:''} ›</button>
-   <button class="iconbtn" onclick="ui.go('busca')" aria-label="Buscar nesta sala"><svg viewBox="0 0 24 24" width="19" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg></button></div>
-  ${pinsOrd.length?`<div class="pinrow" role="navigation" aria-label="Ordem do dia">
-    ${pinsOrd.slice(0,1).map(t=>`<button class="pinitem" onclick="ui.abrirTopico('${t.id}')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 17v5M5 9l7-7 7 7-3 1v5l-4 3-4-3v-5z"/></svg><span class="pt">${t.titulo}</span><span class="pm">${t.tipo==='convocacao'?t.hora:nresp(t)}</span></button>`).join('')}
-    ${pinsOrd.length>1?`<button class="pinmore" onclick="ui.go('topicos')">+ ${pinsOrd.length-1} ${pinsOrd.length-1>1?'fixados':'fixado'} — ver todos</button>`:''}</div>`:''}
+  <div class="ctxline">${chipCheio?chipMural:chipMuralCurto}<span style="flex:1"></span>
+   <button class="btn btn-sm" onclick="ui.go('topicos')">Conversas${abertas.length?` ${abertas.length}`:''}</button>
+   <button class="iconbtn" style="width:36px;height:36px" onclick="ui.go('busca')" aria-label="Buscar nesta sala"><svg viewBox="0 0 24 24" width="19" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg></button></div>
+  ${slots.length?`<div class="pinrow" role="navigation" aria-label="Ordem do dia">
+    ${slotHtml(slots[0])}
+    ${slots.length>1?`<button class="pinplus" onclick="ui.go('topicos')" aria-label="Mais ${slots.length-1} na ordem do dia">+${slots.length-1}</button>`:''}</div>`:''}
   </div>
-  <div class="empty" style="padding:14px">Você entrou aqui na fechadura ${COMPS[comp].entrou} — o que veio antes fica fechado. <b>Desenho, não falha.</b></div>
-  ${desc?(decisaoVista?`<button class="pinitem" onclick="ui.go('resol')" style="border-left-color:${COMPS.celula.cor}"><span class="pt">Decisão de cima · Campanha de sindicalização</span><span class="pm">ler a ata ›</span></button>`
-   :`<button class="card tap" style="border-left:3px solid ${COMPS.celula.cor}" onclick="ui.go('resol')">
+  ${fInt?`<div class="empty" style="padding:14px">Você entrou aqui na fechadura ${COMPS[comp].entrou} — o que veio antes fica fechado. <b>Desenho, não falha.</b></div>`
+   :`<button class="lockline" onclick="ui.sheet('sh-epoca')">— fechadura ${COMPS[comp].entrou} · o que veio antes fica fechado —</button>`}
+  ${desc&&!decisaoVista?(`<button class="card tap" style="border-left:3px solid ${COMPS.celula.cor}" onclick="ui.go('resol')">
     <div class="dim">${chev}DECISÃO DE CIMA · Comitê Regional</div>
     <div class="ata" style="font-size:14.5px;margin-top:4px"><b>Campanha de sindicalização</b></div>
     <div class="mut">obriga: Célula Gráfica e Portuária · toque para ler a ata</div></button>`):''}
   ${admitido&&desc?`<p class="dim" style="text-align:center">— Camarada Fresa entrou · a fechadura mudou para 🔒 ${COMPS.celula.epoch} —</p>`:''}
-  ${T.filter(t=>t.tipo!=='convocacao').map(t=>{const r=t.msgs.find(m=>!m.parent);if(!r)return'';
+  ${abertas.filter(t=>t.tipo!=='convocacao'&&(t.ult===undefined||t.ult<=3)).map(t=>{const r=t.msgs.find(m=>!m.parent);if(!r)return'';
     return `<div class="msg">${icon(r.h,COMPS[comp].cor)}<div class="bubble"><div class="meta"><b>${r.h}</b><span class="t">${r.t}</span></div>${r.x}
      <div class="tfoot"><button onclick="ui.abrirTopico('${t.id}')">↳ ${t.msgs.length-1} respostas · ${t.escalado?'virou decisão':'ativa'}</button><button onclick="ui.abrirTopico('${t.id}')">Responder</button><button onclick="ui.msgAct('${t.id}','${r.id}')" aria-label="Mais ações">···</button></div></div></div>`}).join('')}
   ${M.map((m,i)=>m.topico?`<button class="pinitem" onclick="ui.abrirTopico('${m.topico}')" style="border-left-color:var(--border-2)"><span class="pt">→ virou a conversa "${(topFind(m.topico)||{}).titulo||''}"</span><span class="pm">abrir ›</span></button>`
    :`<div class="msg${m.h===COMPS[comp].handle?' mine':''}">${icon(m.h,COMPS[comp].cor)}<div class="bubble"><div class="meta"><b>${m.h}</b><span class="t">${m.t}</span>${m.fila?'<span class="role warn">na fila — sem conexão</span>':''}</div>${m.x}
-   <div class="tfoot"><button onclick="ui.novaConversa(${i})">Abrir conversa a partir daqui</button><button onclick="ui.msgAct(null,${i})" aria-label="Mais ações">···</button></div></div></div>`).join('')}`},
+   <div class="tfoot"><button onclick="ui.novaConversa(${i})">Abrir conversa</button><button onclick="ui.msgAct(null,${i})" aria-label="Mais ações">···</button></div></div></div>`).join('')}`},
 
- topicos(){const T=TOPICS[comp]||[];$('s-topicos').innerHTML=`
+ topicos(){const T=TOPICS[comp]||[];
+  const q=norm(TOPFILTRO);const filtrando=q.length>=2;const hit=t=>!filtrando||norm(t.titulo).includes(q);
+  const abertos=T.filter(t=>t.estado!=='encerrada');
+  const pins=abertos.filter(t=>t.pin&&hit(t));
+  const ativas=abertos.filter(t=>!t.pin&&!t.escalado&&hit(t)).sort((a,b)=>(a.ult||0)-(b.ult||0));
+  const escaladas=abertos.filter(t=>!t.pin&&t.escalado&&hit(t));
+  const enc=T.filter(t=>t.estado==='encerrada'&&hit(t));
+  const expand=TOPEXP||filtrando;
+  const selo=t=>{const qi=topQuieta(t);if(!qi)return '';
+    return qi.prazo!==undefined?`<div class="dim" style="margin-top:4px;color:var(--t-exp)">◦ encerra em ${qi.prazo} dias se seguir quieta — responder mantém aberta</div>`
+     :`<div class="dim" style="margin-top:4px">◦ quieta desde ${qi.desde}</div>`};
+  const card=t=>`<button class="card tap" onclick="ui.abrirTopico('${t.id}')">
+    <div style="display:flex;justify-content:space-between;gap:8px">${chev}<b>${t.titulo}</b><span class="mut nw">${t.ultLabel||''}</span></div>
+    <div class="mut" style="margin-top:4px">${t.msgs.length} mensagens</div>${selo(t)}</button>`;
+  const cardEnc=t=>`<button class="card tap" style="opacity:.78" onclick="ui.abrirTopico('${t.id}')">
+    <div style="display:flex;justify-content:space-between;gap:8px">${chev}<b>${t.titulo}</b><span class="role">${t.ata?'✓ decidida':'⊘ encerrada'}</span></div>
+    <div class="mut" style="margin-top:4px">${t.ata?`decidida em ${t.enc.em} — ata ligada · reabrir: 2 camaradas`
+      :t.enc&&t.enc.motivo==='inatividade'?`encerrada pela regra da sala — 90 dias sem mensagens · ninguém apagou nada`
+      :`encerrada por ${t.enc.por} (${t.enc.papel}) em ${t.enc.em} · responder reabre`}</div></button>`;
+  const instit=(comp==='celula'&&done['seen_decisao'])?`<button class="card tap" style="border-left:3px solid ${COMPS.celula.cor}" onclick="ui.go('resol')"><div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start">${chev}<b>Decisão de cima · Campanha de sindicalização</b><span class="role" style="flex:none">obriga</span></div><div class="mut" style="margin-top:4px">destaque institucional — topo por direito, não por curadoria · ler a ata</div></button>`:'';
+  const nadaAberto=filtrando&&!pins.length&&!ativas.length&&!escaladas.length&&!enc.length;
+  $('s-topicos').innerHTML=`
   <button class="btn btn-sm" onclick="ui.go('mural')">← mural</button>
   <h3 class="sec">Conversas — ${COMPS[comp].nome}</h3>
-  ${T.filter(t=>t.pin).length?`<h3 class="sec">Ordem do dia</h3>`:''}
-  ${T.filter(t=>t.pin).map(t=>`<button class="card tap" style="border-left:3px solid ${COMPS[comp].cor}" onclick="ui.abrirTopico('${t.id}')">
-    <div style="display:flex;justify-content:space-between;gap:8px">${chev}<b>${t.titulo}</b><span class="mut">${t.tipo==='convocacao'?t.hora:''}</span></div>
+  <input type="text" id="topq" placeholder="Filtrar por título…" aria-label="Filtrar conversas por título — só desta sala" value="${TOPFILTRO.replace(/"/g,'&quot;')}" oninput="TOPFILTRO=this.value;render.topicos();const i=$('topq');i.focus();i.setSelectionRange(i.value.length,i.value.length)" autocomplete="off">
+  ${(pins.length||(instit&&!filtrando))?`<h3 class="sec">Ordem do dia · ${pins.length+((instit&&!filtrando)?1:0)}</h3>`:''}
+  ${filtrando?'':instit}
+  ${pins.map(t=>`<button class="card tap" style="border-left:3px solid ${COMPS[comp].cor}" onclick="ui.abrirTopico('${t.id}')">
+    <div style="display:flex;justify-content:space-between;gap:8px">${chev}<b>${t.titulo}</b><span class="mut nw">${t.tipo==='convocacao'?t.hora:''}</span></div>
     <div class="mut" style="margin-top:4px">${t.tipo==='convocacao'?`${(t.confirm||[]).length} confirmaram`:`${t.msgs.length} mensagens`} · fixado por ${t.pin.por} (${t.pin.papel}) · até ${t.pin.ate}</div></button>`).join('')}
-  ${T.filter(t=>!t.pin&&!t.escalado).length?`<h3 class="sec">Ativas</h3>`:''}
-  ${T.filter(t=>!t.pin&&!t.escalado).map(t=>`<button class="card tap" onclick="ui.abrirTopico('${t.id}')">
-    <div style="display:flex;justify-content:space-between;gap:8px">${chev}<b>${t.titulo}</b></div>
-    <div class="mut" style="margin-top:4px">${t.msgs.length} mensagens</div></button>`).join('')}
-  ${T.filter(t=>t.escalado).length?`<h3 class="sec">Viraram decisão</h3>`+T.filter(t=>t.escalado).map(t=>`<button class="card tap" onclick="ui.abrirTopico('${t.id}')"><div style="display:flex;justify-content:space-between;gap:8px">${chev}<b>${t.titulo}</b><span class="role">virou decisão</span></div><div class="mut" style="margin-top:4px">o debate continua lá — elo nos dois sentidos</div></button>`).join(''):''}
+  ${ativas.length?`<h3 class="sec">Ativas · ${ativas.length}</h3>`:''}
+  ${ativas.map(card).join('')}
+  ${escaladas.length?`<h3 class="sec">Viraram decisão · ${escaladas.length}</h3>`+escaladas.map(t=>`<button class="card tap" onclick="ui.abrirTopico('${t.id}')"><div style="display:flex;justify-content:space-between;gap:8px">${chev}<b>${t.titulo}</b><span class="role">virou decisão</span></div><div class="mut" style="margin-top:4px">o debate continua lá — elo nos dois sentidos</div></button>`).join(''):''}
+  ${enc.length?(expand?`<h3 class="sec">Encerradas · ${enc.length}${filtrando?'':` <button class="btn btn-sm" style="margin-left:6px;min-height:28px" onclick="TOPEXP=false;render.topicos()">recolher</button>`}</h3>`+enc.map(cardEnc).join('')
+    :`<button class="card tap" style="padding:10px 12px" onclick="TOPEXP=true;render.topicos()"><span class="mut">${chev}Encerradas · ${enc.length} — nada se apaga; responder reabre</span></button>`):''}
+  ${nadaAberto?`<div class="empty">Nada com "${TOPFILTRO.replace(/</g,'')}" nos títulos desta sala.<br><button class="btn btn-sm" style="margin-top:10px" onclick="ui.buscarDoFiltro()">Buscar dentro das mensagens ›</button></div>`:''}
   ${T.length?'':'<div class="empty">Nenhuma conversa nomeada — o mural corrente é a conversa.</div>'}
-  <p class="dim">Fixar é ato de papel, com prazo e assinatura — a ordem do dia da sala. Contestar um pin é uma decisão.</p>`},
+  <p class="dim">Fixar e encerrar são atos assinados, à vista da sala — contestar é uma questão de ordem. Encerrar não apaga nada.</p>`},
 
  topico(){const t=topFind(curTopic);if(!t){ui.go('mural');return}
   const anchor=topicStack.length?topicStack[topicStack.length-1]:null;
@@ -876,11 +968,11 @@ const render={
     <div style="font-size:19px;font-weight:650;margin-top:4px">${t.titulo}</div>
     <div class="bignum" style="font-size:20px;margin-top:2px">${t.hora}</div>
     <p class="mut" style="margin-top:6px">Só título e hora, de propósito — o quê e onde viajam por fora. Se esta tela vazar, vaza que "algo acontece ${t.hora}".</p></div>
+   ${honesty('convritmo','','Sua confirmação <b>sai num momento aleatório</b> antes da hora — nunca na hora do toque. O lembrete dispara <b>no seu aparelho</b>, sem ir à rede.','Confirmação sai em momento aleatório; lembrete é local.')}
    <div class="card"><b>${(t.confirm||[]).length} de ${((MEMBROS[comp]||[]).length||6)+(comp==='celula'&&admitido?1:0)-(comp==='celula'&&trancada?1:0)} confirmaram</b>
     <div class="kv" style="margin-top:6px">${(t.confirm||[]).map(h=>`<div class="r"><span>${h}</span><span style="color:var(--t-prot)">confirmou ✓</span></div>`).join('')}</div>
     ${(t.confirm||[]).includes(COMPS[comp].handle)?`<p class="mut" style="margin-top:8px">Você confirmou. <button class="btn btn-sm" style="margin-left:6px" onclick="announce('Combinado — lembrete 1h antes, só no seu aparelho')">Me lembrar 1h antes</button></p>`:`<p class="mut" style="margin-top:8px">Confirmar é <b>escrever</b>: os camaradas veem quem confirmou; o servidor não lê nada — mas mensagens curtas depois de um aviso deixam um <b>compasso contável</b>.</p>`}
    </div>
-   ${honesty('convritmo','','Sua confirmação <b>sai num momento aleatório</b> antes da hora — nunca na hora do toque. O lembrete dispara <b>no seu aparelho</b>, sem ir à rede.','Confirmação sai em momento aleatório; lembrete é local.')}
    ${t.msgs.length?`<h3 class="sec">Recados</h3>${t.msgs.map(m=>msgHtml(m)).join('')}`:''}`;return}
   const root=t.msgs.find(m=>!m.parent);
   $('s-topico').innerHTML=`
@@ -888,6 +980,8 @@ const render={
   ${anchor?(()=>{const anc=t.msgs.find(m=>m.id===anchor)||{};const org=t.msgs.find(m=>m.id===anc.parent)||t.msgs.find(m=>!m.parent)||{};
    return `<button class="card tap" style="padding:9px 12px" onclick="ui.backTopic()"><span class="mut">${chev}Em resposta a <b>${org.h||''}</b>: "${(org.x||'').slice(0,42)}…"</span></button>`})():''}
   ${!anchor&&root&&t.escalado?`<div class="callout prot"><b>Virou decisão — o debate continua lá.</b> A conversa e a decisão ficam ligadas, nos dois sentidos.<br><button class="btn btn-sm" style="margin-top:8px" onclick="ui.goEscalado('${t.id}')">Abrir a decisão →</button></div>`:''}
+  ${!anchor&&root&&t.estado==='encerrada'?(t.ata?`<div class="callout prot"><b>✓ Decidida em ${t.enc.em} — a ata está ligada.</b> A conversa cumpriu o caminho: resposta → conversa → decisão → ata.<br><button class="btn btn-sm" style="margin:8px 6px 0 0" onclick="ui.go('resol')">Ler a ata →</button><button class="btn btn-sm" style="margin-top:8px" onclick="this.disabled=true;this.textContent='Você subscreveu — falta 1 camarada';announce('Você subscreveu a reabertura — falta 1 camarada')">Reabrir (2 camaradas) — subscrever</button></div>`
+   :`<div class="callout"><b>Encerrada (responder reabre).</b> ${t.enc&&t.enc.motivo==='inatividade'?'Pela regra da sala — 90 dias sem mensagens. Ninguém apagou nada.':`Por ${t.enc.por} (${t.enc.papel}) em ${t.enc.em} — assinado, à vista da sala. Nada foi apagado.`}</div>`):''}
   ${!anchor&&root?`<div class="card" style="border-left:3px solid ${COMPS[comp].cor}">
     <div style="display:flex;justify-content:space-between;gap:8px;align-items:center"><b>${t.titulo}</b>${t.pin?`<span class="role">fixado · até ${t.pin.ate}</span>`:''}</div>
     ${t.pin?`<div class="dim" style="margin-top:2px">fixado por ${t.pin.por} (${t.pin.papel})</div>`:''}
@@ -948,7 +1042,7 @@ const render={
    <div><label class="mut">Como vamos votar</label>
     <div class="radio"><label><input type="radio" name="np-v" checked><span><b>De rosto</b> — fica registrado quem votou o quê</span></label>
     <label><input type="radio" name="np-v"><span><b>Secreto</b> — ninguém liga o voto a você <button class="dep" onclick="ui.dep('DEP-09')">DEP-09</button></span></label></div></div>
-   <div class="kv"><div class="r"><span class="k">Precisa de (quórum, vem do estatuto)</span><span>${q}</span></div>
+   <div class="kv"><div class="r"><span class="k">Precisa de (quórum, vem do estatuto)</span><span class="nw">${q}</span></div>
     <div class="r"><span class="k">Primeiro vem o</span><span><b>debate</b> — sempre antes do voto</span></div></div>
    <div class="callout">Você abre o <b>debate</b>, não o voto. E abrir a decisão <b>fecha a lista de votantes</b> de agora: quem entrar durante o debate não vota nesta.</div>
    <div class="callout nao">Numa sala pequena, o placar pode entregar o voto: num 3 a 0, todos sabem como todos votaram — aritmética, não falha.</div>
@@ -961,7 +1055,7 @@ const render={
     <div class="stepper" style="margin:8px 0"><span class="st done">Proposta</span><span class="st done">Debate</span><span class="st now">Voto</span><span class="st">Apuração</span><span class="st">Ata</span></div>
     <div class="kv">
       <div class="r"><span class="k">Como</span><span>voto secreto</span></div>
-      <div class="r"><span class="k">Quem pode votar (fechado na abertura)</span><span>6 pessoas</span></div>
+      <div class="r"><span class="k">Quem pode votar (fechado na abertura)</span><span class="nw">6 pessoas</span></div>
       <div class="r"><span class="k">Fecha</span><span class="big">amanhã, 21:00</span></div>
       <div class="r"><span class="k">Vote com folga até</span><span class="big" style="color:var(--t-exp)">amanhã, 19:30</span></div>
       <div class="r"><span class="k">Candidatos</span><span>Camarada Trilho · Camarada Aduela</span></div>
@@ -990,8 +1084,8 @@ ${DISCFALAS.map(falaHtml).join('')}`;composerCtl.custom({ph:'Falar no debate…'
   <div class="card"><b>${d.t}</b>
    <div class="stepper" style="margin:8px 0">${S5.map((s,j)=>`<span class="st ${j<1?'done':j===1?'now':''}">${s}</span>`).join('')}</div>
    ${d.body?`<p class="i1">${d.body}</p>`:'<p class="mut">Proposta aberta agora, em debate.</p>'}
-   <div class="kv" style="margin-top:8px"><div class="r"><span class="k">Quem vota (congelou na abertura)</span><span>6 pessoas</span></div>
-   <div class="r"><span class="k">Precisa de</span><span>metade + 1</span></div></div></div>
+   <div class="kv" style="margin-top:8px"><div class="r"><span class="k">Quem vota (congelou na abertura)</span><span class="nw">6 pessoas</span></div>
+   <div class="r"><span class="k">Precisa de</span><span class="nw">metade + 1</span></div></div></div>
   <div class="callout">O debate vem <b>antes</b> do voto, sempre. Quem entrar na sala durante o debate não vota nesta decisão.</div>
   ${d.de?`<button class="btn btn-sm" style="align-self:flex-start" onclick="ui.abrirTopico('${d.de}')">← nasceu da conversa — reler o debate de origem</button>`:''}
   <div class="msg mine">${icon(COMPS[comp].handle,COMPS[comp].cor)}<div class="bubble"><div class="meta"><b>${COMPS[comp].handle}</b> · <span class="t">agora</span></div>Apresento a proposta — quem tiver objeção, traga para o debate.</div></div>
@@ -1006,7 +1100,7 @@ ${DISCFALAS.map(falaHtml).join('')}`;composerCtl.custom({ph:'Falar no debate…'
    <div class="kv">
     <div class="r"><span class="k">Texto em debate</span><span><b>versão 2</b> — já emendado</span></div>
     <div class="r"><span class="k"><span class="gterm" role="button" tabindex="0" onclick="ui.term('emenda')">Emendas</span> até</span><span class="big">sexta, 18:00</span></div>
-    <div class="r"><span class="k">Quem vota (fechado na abertura)</span><span>6 pessoas</span></div></div></div>
+    <div class="r"><span class="k">Quem vota (fechado na abertura)</span><span class="nw">6 pessoas</span></div></div></div>
   <div class="card"><div class="dim">O TEXTO — VERSÃO 2</div>
    <p class="i1" style="margin-top:5px">A célula destina o caixa do semestre assim: <b>60% ao jornal</b>, 25% ao fundo de solidariedade, 15% à reserva. <mark>A banca do mercado passa a quinzenal</mark>, liberando a dupla de sábado para os portões.</p>
    <p class="dim" style="margin-top:6px">O trecho <mark style="padding:0 2px">marcado</mark> veio da emenda nº 1. A versão 1 fica guardada — versões não se apagam.</p></div>
@@ -1305,8 +1399,7 @@ ${DISCFALAS.map(falaHtml).join('')}`;composerCtl.custom({ph:'Falar no debate…'
     <div style="display:flex;flex-direction:column;gap:9px;margin-top:8px">
      <div><label class="mut" for="ac-sit">Situação</label><select id="ac-sit"><option>aparelho perdido, relatado pessoalmente</option><option>sem sinal há 90 dias</option><option>possível coação — urgente</option></select></div>
      <div><label class="mut" for="ac-just">Por quê (fica registrado nesta sala, à vista de todos)</label><textarea id="ac-just">Aduela me avisou no portão: perdeu o aparelho no ônibus. Sem backup.</textarea></div>
-     <div class="callout">O que isto faz: a fechadura avança — o aparelho perdido <b>não lê mais nada</b> daqui em diante. O que ele já leu, já leu.</div>
-     <div class="callout nao"><b>O que isto NÃO é:</b> não é afastamento nem desligamento — isso é processo com quórum, defesa e recurso, em Decisões. Ela <b>continua da célula</b>.</div>
+     <div class="callout"><b style="color:var(--t-exp)">O que isto faz:</b> a fechadura avança — o aparelho perdido <b>não lê mais nada</b> daqui em diante. O que ele já leu, já leu.<br><b style="color:var(--t-nao)">O que isto NÃO é:</b> afastamento ou desligamento — isso é processo com quórum, defesa e recurso, em Decisões. Ela <b>continua da célula</b>.</div>
      <div class="callout"><b>Trava desta sala:</b> Aduela está no <b>censo da votação aberta</b> (e é candidata) — trancar sozinho é proibido (I18). Precisa de <b>coassinatura de um segundo papel do buro</b>.</div>
      <button class="btn btn-danger" onclick="if(!on){announce('Sem conexão — um Commit não acontece sem rede',true);return}if(this.dataset.c2){trancada=true;COMPS.celula.epoch++;$('ch-epoch').innerHTML='🔒 '+COMPS.celula.epoch;announce('Trancado com coassinatura — registrado na sala; notificação ao comitê: canal em desenho');render.acessos()}else if(this.dataset.c){this.dataset.c2=1;this.textContent='Coassinado por Baliza — trancar agora'}else{this.dataset.c=1;this.textContent='Pedir coassinatura à tesoureira (Baliza)'}">Trancar acesso</button></div></div>`}
   <div class="card"><b>Aguardando há muito tempo</b>
@@ -1322,6 +1415,7 @@ ${DISCFALAS.map(falaHtml).join('')}`;composerCtl.custom({ph:'Falar no debate…'
    <h3 class="sec">Balanço do território — 1 jun a 31 ago</h3>
    <p class="dim">você vê isto pelo seu mandato — eleito mar/2026, até dez/2026</p>
    <button class="tchip tc-prot" onclick="ui.meta('balanco')" style="align-self:flex-start">${lock}Calculado neste aparelho, do que o comitê já recebe</button>
+   ${honesty('balcaptura','','Esta tela concentra o <b>mapa do território</b> deste mandato — uma foto dela o entrega de uma vez. Você vê <b>um nível abaixo</b>, por desenho; do resto, só números consolidados.','Uma captura entrega o mapa; você vê um nível abaixo, por desenho.')}
    <div class="grid2">
     <button class="cell card tap" style="text-align:left" onclick="announce('Abrindo cotização por organismo')"><div class="dim">COTIZAÇÃO</div><div class="bignum">82%</div><div class="mut">11/12 prestaram · ↑ 6 pts</div></button>
     <button class="cell card tap" style="text-align:left" onclick="announce('Abrindo informes por organismo')"><div class="dim">INFORMES</div><div class="bignum">9<span style="font-size:15px"> de 12</span></div><div class="mut">2 em silêncio · ↓ 3</div></button>
@@ -1337,7 +1431,6 @@ ${DISCFALAS.map(falaHtml).join('')}`;composerCtl.custom({ph:'Falar no debate…'
    <p class="dim">Ordenado por pendência, não por mérito — isto não é uma classificação.</p>
    <div class="card kv"><div class="r"><span class="k">Nosso organismo</span><span>2 decisões abertas · 3 resoluções no período</span></div></div>
    <button class="btn" onclick="announce('Consolidado coassinado — conferir e mandar para cima')">Conferir e mandar para cima</button>
-   ${honesty('balcaptura','','Esta tela concentra o <b>mapa do território</b> deste mandato — uma foto dela o entrega de uma vez. Você vê <b>um nível abaixo</b>, por desenho; do resto, só números consolidados.','Uma captura entrega o mapa; você vê um nível abaixo, por desenho.')}
    <p class="dim">dados até: prestação de T3 · recebida há 12 dias — este painel nunca é mais fresco que a prestação de contas.</p>
    <button class="btn btn-sm" style="align-self:flex-start" onclick="ui.exposure()">O que este balanço nunca mostra →</button>`;return}
   if(comp==='celula'){el.innerHTML=`
@@ -1370,17 +1463,17 @@ ${DISCFALAS.map(falaHtml).join('')}`;composerCtl.custom({ph:'Falar no debate…'
  busca(){$('s-busca').innerHTML=`
   <h3 class="sec">Buscar — só nesta sala</h3>
   <input type="text" id="q" placeholder="Buscar em ${COMPS[comp].nome}…" aria-label="Buscar nesta sala" oninput="render.buscar(this.value)" autocomplete="off">
-  <div id="qres"><div class="empty">Digite para buscar no mural e nas decisões <b>desta sala</b>.</div></div>
+  <div id="qres"><p class="dim">Busca no mural, nas conversas e nas decisões desta sala.</p></div>
   ${honesty('busca','','A busca acontece <b>no seu aparelho</b>, só nesta sala. Não existe busca global de pessoas nem entre salas — <b>por desenho</b>: um índice global seria um mapa pronto para quem apreender o servidor.','Busca local, só desta sala — não há busca global, por desenho.')}`;
   setTimeout(()=>$('q')&&$('q').focus(),80)},
- buscar(q){q=(q||'').trim().toLowerCase();const R=$('qres');if(!R)return;
-  if(q.length<2){R.innerHTML=`<div class="empty">Digite ao menos 2 letras.</div>`;return}
-  const ms=(MSGS[comp]||[]).filter(m=>(m.x+' '+m.h).toLowerCase().includes(q));
-  const ts=(TOPICS[comp]||[]).filter(t=>(t.titulo+' '+t.msgs.map(m=>m.x).join(' ')).toLowerCase().includes(q));
+ buscar(q){q=(q||'').trim();const nq=norm(q);const R=$('qres');if(!R)return;
+  if(q.length<2){R.innerHTML=`<p class="dim">Digite ao menos 2 letras.</p>`;return}
+  const ms=(MSGS[comp]||[]).filter(m=>norm(m.x+' '+m.h).includes(nq));
+  const ts=(TOPICS[comp]||[]).filter(t=>norm(t.titulo+' '+t.msgs.map(m=>m.x).join(' ')).includes(nq));
   const XD={cong:[{t:'Resolução política geral',pr:'voto de rosto — abre 21:00',act:"ui.go('nominal')"}],com:[{t:'Apreciação: contato com a Célula Tecelagem',pr:'debate',act:"ui.go('delib')"}]}[comp]||[];
-  const ds=(CDELIBS[comp]||[]).filter(d=>d.t.toLowerCase().includes(q)),xs=XD.filter(d=>(d.t+' '+d.pr).toLowerCase().includes(q));
+  const ds=(CDELIBS[comp]||[]).filter(d=>norm(d.t).includes(nq)),xs=XD.filter(d=>norm(d.t+' '+d.pr).includes(nq));
   R.innerHTML=(ms.length?`<h3 class="sec">No mural</h3>`+ms.map(m=>`<div class="msg">${icon(m.h,COMPS[comp].cor)}<div class="bubble"><div class="meta"><b>${m.h}</b><span class="t">${m.t}</span></div>${m.x}</div></div>`).join(''):'')+
-   (ts.length?`<h3 class="sec" style="margin-top:8px">Nas conversas</h3>`+ts.map(t=>`<button class="card tap" onclick="ui.abrirTopico('${t.id}')"><div style="display:flex;justify-content:space-between;gap:8px">${chev}<b>${t.titulo}</b><span class="mut">${t.msgs.length} msg</span></div></button>`).join(''):'')+
+   (ts.length?`<h3 class="sec" style="margin-top:8px">Nas conversas</h3>`+ts.map(t=>`<button class="card tap" onclick="ui.abrirTopico('${t.id}')"><div style="display:flex;justify-content:space-between;gap:8px">${chev}<b>${t.titulo}</b><span class="mut">${t.msgs.length} msg${t.estado==='encerrada'?(t.ata?' · ✓ decidida':' · ⊘ encerrada'):''}</span></div></button>`).join(''):'')+
    ((ds.length||xs.length)?`<h3 class="sec" style="margin-top:8px">Nas decisões</h3>`+ds.map(d=>`<button class="card tap" onclick="ui.openDelib(${(CDELIBS[comp]||[]).indexOf(d)})"><div style="display:flex;justify-content:space-between;gap:8px">${chev}<b>${d.t}</b><span class="mut">${d.pr}</span></div></button>`).join('')+xs.map(d=>`<button class="card tap" onclick="${d.act}"><div style="display:flex;justify-content:space-between;gap:8px">${chev}<b>${d.t}</b><span class="mut">${d.pr}</span></div></button>`).join(''):'')||
    `<div class="empty">Nada com "${q}" nesta sala.</div>`},
 
@@ -1397,7 +1490,7 @@ ${DISCFALAS.map(falaHtml).join('')}`;composerCtl.custom({ph:'Falar no debate…'
   <div class="card kv">
    <div class="r"><span class="k">Tópicos: profundidade</span><span>2 (teto da organização: 3)</span></div>
    <div class="r"><span class="k">Fixados: teto · prazo</span><span>3 · 14 dias</span></div>
-   <div class="r"><span class="k">Encerramento por inatividade</span><span>90 dias, com aviso</span></div></div>
+   <div class="r"><span class="k">Encerramento por inatividade</span><span class="nw">90 dias · aviso desde os 30</span></div></div>
   <h3 class="sec">Da organização — muda lá</h3>
   <div class="card kv" style="opacity:.85">
    <div class="r"><span class="k">Janela de contestação (acessos)</span><span>14 dias</span></div>
@@ -1522,7 +1615,7 @@ ${DISCFALAS.map(falaHtml).join('')}`;composerCtl.custom({ph:'Falar no debate…'
    <div class="r"><span class="k">Quando alguém entra ou sai</span><span>vê a mudança; o tráfego ao redor pode sugerir o <b>tipo</b></span></div>
    <div class="r"><span class="k">Quem escreveu</span><span>um dos ${N} — <b>não sabe qual</b></span></div></div>
   ${N<20?`<div class="callout">Numa sala pequena, o vai-e-vem rápido pode sugerir <b>quem fala com quem</b>, pelo horário. É aritmética e comportamento, não falha.</div>`:''}
-  <div class="callout">Numa sala pequena, "um entre poucos" é proteção fraca com análise de horário. A trilha que confere a ordem das mensagens ainda está em reprojeto. <button class="dep" onclick="ui.dep('DEP-08')">DEP-08</button></div>`},
+  <div class="callout">Numa sala pequena, "um entre poucos" é proteção fraca com análise de horário. A trilha que confere a ordem das mensagens ainda está em reprojeto. <button class="dep" onclick="ui.dep('DEP-08')">DEP-08</button> <button class="dep" onclick="ui.dep('DEP-13')">DEP-13</button></div>`},
 
  notices(){$('notbadge').style.display='none';$('sh-not').innerHTML=`<h3>Avisos</h3><p class="sub">O app consulta de tempos em tempos pela rede protegida — nada é empurrado ao seu telefone.</p>
   <p class="dim">Nesta bancada os avisos são fixos — no app real, o ponto de aviso volta quando chega algo novo.</p>
