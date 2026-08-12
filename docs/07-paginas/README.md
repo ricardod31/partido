@@ -172,6 +172,14 @@ Cada página tem um **identificador citável** `P-AREA-NN` (o mesmo espírito de
 | P-ORG-08 | Arquivo durável | Memória (atas, resoluções); acesso concedido por deliberação | ✔ | doc 03 §7.3 |
 | P-ORG-09 | Estado de época / rekey | Feedback quando a composição muda (Commit, PCS) | ✔ | I9, doc 03 §7 |
 | P-ORG-10 | Convites do organismo | Emitir/revogar/expirar convites conforme a política do estatuto; log **dentro do compartimento** | ✔ | doc 03 §4, A6, DEP-03 |
+| P-ORG-11 | Tópico (fio) | Conversa nomeada do mural: responder, desdobrar, abrir decisão a partir dela | ✔ cond. | [07/10](10-conversas.md), I14–I16, DEP-13 |
+| P-ORG-12 | Tópicos do organismo (índice) | Ordem do dia e conversas por estado; porta "Conversas (N) ›" | ✔ cond. | [07/10](10-conversas.md), I15, DEP-13 |
+| P-ORG-13 | Ciclo de vida do organismo | Dissolução/fusão/cisão com plano de destino; homologação | ⛔ ADR | [07/11](11-gestao-organica.md), I17 |
+| P-ORG-14 | Realocações (mudança de célula) | Comitê propõe; acompanhamento com proveniência | ⛔ ADR | [07/11](11-gestao-organica.md), I1 |
+| P-ORG-15 | Consentimento de mudança de célula | Cerimônia pessoal do militante: aceitar/recusar com registro | ⛔ ADR | [07/11](11-gestao-organica.md), I1 |
+| P-ORG-16 | Acessos da célula | Trancar chave morta com justificativa; reconvite; série/limiares | ⛔ ADR | [07/11](11-gestao-organica.md), I18, DEP-04 |
+| P-ORG-17 | Balanço do território | Cartões-síntese + fila de apoio, calculado no aparelho (B1–B5) | ✔ cond. | [07/11](11-gestao-organica.md), DEP-04 |
+| P-ORG-18 | Organismo subordinado (ficha) | O que o filho **nos enviou**, contra as réguas do estatuto | ✔ cond. | [07/11](11-gestao-organica.md), DEP-04 |
 
 ### D. Deliberação e voto — [`03-deliberacao-voto.md`](03-deliberacao-voto.md)
 
@@ -263,7 +271,7 @@ Cada página tem um **identificador citável** `P-AREA-NN` (o mesmo espírito de
 | P-AJU-05 | Glossário / termo sob toque | Explicar jargão no ponto de uso; fonte única = GLOSSARIO | ✔ | GLOSSARIO, D7 |
 | P-AJU-06 | Modo de aprendizado | Recém-chegada × veterana: ajusta verbosidade dos avisos, nunca a proteção | ✔ | §11, UX6 |
 
-**Total:** 10 áreas, **83 páginas** — 79 no MVP, 3 futuras (P-ON-11, P-SEG-07, P-SEG-08) e 1 bloqueada por ADR (P-ON-13). O detalhe de cada uma vive no documento da área. A área **J (aprendizado)** é resposta direta à auditoria de usabilidade: a plataforma é para todo mundo, e a curva de entrada não pode ser um muro — sem que ensinar vire teatro de segurança (UX6).
+**Total:** 10 áreas, **91 páginas** — 83 no MVP (das quais 4 condicionadas a DEP-04/DEP-13), 3 futuras (P-ON-11, P-SEG-07, P-SEG-08) e 5 bloqueadas por ADR (P-ON-13, P-ORG-13..16). O detalhe de cada uma vive no documento da área. A área **J (aprendizado)** é resposta direta à auditoria de usabilidade; as páginas P-ORG-11..18 vêm dos documentos de rota **[07/10 — Conversas](10-conversas.md)** e **[07/11 — Gestão orgânica](11-gestao-organica.md)** (sínteses multi-agente validadas por 3 ataques adversariais).
 
 ## 5. Modelo de especificação de cada página [técnico]
 
@@ -298,7 +306,7 @@ Registro **canônico** das decisões de arquitetura ainda em aberto que afetam a
 | **DEP-01** | Propagação descendente de resoluções (relay; doc 02 §2.6, revisao-critica §2-A) | a ata desce e aparece no feed dos vinculados | mecânica de reembalagem/relay, latência, estados | P-DEL-09, P-ORG-02, P-NAV-01, P-JOR-01 (`interno_organizacao`) |
 | **DEP-02** | Assinatura do organismo (esquema coletivo, ex.: FROST RFC 9591) | existe cerimônia de coassinatura, agnóstica ao esquema | esquema, número de cossignatários, UX da coleta | P-DEL-09, P-JOR-04, P-FED-03/06 |
 | **DEP-03** | Convite cegado (doc 03 §4) | convite existe, com emissão/validade/revogação | validação cega vs. nominal; metadado residual exposto | P-ON-02, P-ORG-10, P-SEG-06 |
-| **DEP-04** | **Mensageria entre organismos** (ascendente + variante cross-servidor; ADR a escrever) | compositor/caixas existem; "quem lê" declarado por chip honesto | mecanismo (chave caixa-postal etc.); escopo mínimo: correspondência, prestação de contas de mandato e financeira, limiar do congresso extraordinário entre células, recuperação social, atestados, escrita de delegado externo na sede | P-JOR-06/07, P-MAN-04/06/08, P-FIN-06/07, P-ON-11, P-FED-04 |
+| **DEP-04** | **Mensageria entre organismos** (ascendente + variante cross-servidor; ADR a escrever) | compositor/caixas existem; "quem lê" declarado por chip honesto | mecanismo (chave caixa-postal etc.); escopo mínimo: correspondência, prestação de contas de mandato e financeira, limiar do congresso extraordinário entre células, recuperação social, atestados, escrita de delegado externo na sede, **notificação de atos de acesso ao pai e proposta/consentimento de mudança de célula ([07/11](11-gestao-organica.md))** | P-JOR-06/07, P-MAN-04/06/08, P-FIN-06/07, P-ON-11, P-FED-04, **P-ORG-14/15/16/17/18** |
 | **DEP-05** | **ADR de identidade** (matriz de identificadores: `user_id` global × pseudônimo único × handles por-organismo × roster do MLS-DS; atestados que cruzam compartimentos) | a interface não correlaciona (garantia atual); handles locais na exibição | não-vinculabilidade criptográfica; onde aparece pseudônimo vs. handle; normalização/unicidade (NFKC, confusables — norma no domínio) | P-ON-03/08, P-SEG-01/06, P-MAN-08, P-FED-05, DS §4 |
 | **DEP-06** | **ADR de gênese** (fundação: chave da org, estatuto inicial, célula fundadora, papéis provisórios com prazo — exceção desenhada de I3/I6) | o produto só cobre organização já fundada | cerimônia de fundação, salvaguardas (nº mínimo de fundadores, convite-gênese, limites do estado provisório) | P-ON-01, **P-ON-13 (bloqueada)**, P-FED-06 |
 | **DEP-07** | **Congresso × I13** (árvore ORG→Congresso→CC, fiel ao doc 01 A.7, ou exceção tipada; frente = readoção interna; emendas I13/I4) | resoluções do congresso obrigam a organização; resoluções de frente vinculam por readoção de cada organização | forma da emenda; caso do pai dissolvido | P-MAN-07, P-DEL-09, P-FED-04 |
@@ -307,6 +315,7 @@ Registro **canônico** das decisões de arquitetura ainda em aberto que afetam a
 | **DEP-10** | **Lista canônica de operações fail-closed** (pertence ao doc 06 emendado; 3 classes: voto = recusa inegociável; operações de membro = recusa por padrão com *bridges*; leitura pública = permitida com aviso) | fail-closed existe e o voto nunca degrada | fronteiras exatas das classes; existência de modo degradado por operação | P-ON-06, P-SEG-04, DS §7 (FailClosedBlocker), todas as páginas com ação sensível |
 | **DEP-11** | Key transparency (log de chaves estilo CONIKS) | rotação de chave com versão monotônica local | detecção plena de rollback (MVP: só monotonicidade local) | P-SEG-02, P-SEG-08 |
 | **DEP-12** | Arquivo durável sobre MLS (doc 03 §7.3) | superfície de arquivo com acesso por deliberação | camada de chave de arquivo, rotação, concessão | P-ORG-08 |
+| **DEP-13** | **Conversas cifradas no mural** ([07/10 §8](10-conversas.md)) — estrutura de tópicos/pins/moderação como eventos cifrados sobre a cadeia única do organismo | árvore/títulos/pins/remoções **fora do cabeçalho** (servidor vê fluxo plano); atos de moderação com proveniência intra-grupo; **reemissão de índice por época como mensagem de grupo com state commitment (ancorado no checkpoint DEP-08) + comparação obrigatória pelos membros antigos + rótulo epistêmico ao recém-chegado**; mensagens maquinais sempre em cadência com jitter; evento de 1 toque com cardinalidade N-por-gatilho proibido ou enfileirado; transições que mudam direito exigem marco na cadeia | formato exato dos eventos; regras de projeção; quem emite o índice; competência de remoção (com revisao-critica-2 §1.8); poda local × Arquivo (DEP-12) | P-ORG-02, P-ORG-11/12, P-NAV-04/05, P-SEG-06, DS §11.1 |
 
 ## 8. Plano de prototipagem [conceitual]
 
