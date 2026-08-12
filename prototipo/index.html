@@ -124,6 +124,7 @@ b{font-weight:600}
 .tabs button{flex:1;padding:7px 2px 8px;text-align:center;font-size:10.5px;font-weight:500;color:var(--ink-2);display:flex;flex-direction:column;align-items:center;gap:3px;min-height:56px;border-radius:10px;transition:color var(--t-fast),background var(--t-fast)}
 .tabs button svg{width:20px;height:20px}
 .tabs button:hover{color:var(--ink-1)}
+.tabs.pend button:not([data-s="panorama"]):not([data-s="__mais"]){opacity:.35}
 .tabs button.on{color:var(--ink-0);font-weight:600;background:color-mix(in srgb,var(--spine,var(--accent)) 10%,transparent)}
 .tabs button.on .tabbar{width:16px}
 .tabbar{width:0;height:2.5px;border-radius:2px;background:var(--spine,var(--accent));transition:width var(--t-fast) var(--ease)}
@@ -416,6 +417,7 @@ mark{background:rgba(109,151,244,.22);color:var(--ink-0);border-radius:3px;paddi
       <div class="row"><span>Rede protegida (derrube no meio do voto)</span><button class="switch" id="torsw" role="switch" aria-checked="true" onclick="ui.toggleTor()" aria-label="Rede protegida"></button></div>
       <div class="row"><span>Conexão (fila offline × prazo)</span><button class="switch" id="offsw" role="switch" aria-checked="true" onclick="ui.toggleOff()" aria-label="Conexão"></button></div>
       <div class="row"><span>Quem está usando</span><div class="seg" role="group" aria-label="Estado de aprendizado"><button id="segN" aria-pressed="true" onclick="ui.setNovata(true)">recém-chegada</button><button id="segV" aria-pressed="false" onclick="ui.setNovata(false)">veterana</button></div></div>
+      <div class="row"><span>Salas na conta</span><div class="seg" role="group" aria-label="Quantas salas"><button id="sal4" aria-pressed="true" onclick="ui.setSalas('4')">4 salas</button><button id="sal1" aria-pressed="false" onclick="ui.setSalas('1')">1 sala</button><button id="sal0" aria-pressed="false" onclick="ui.setSalas('0')">entrando</button></div></div>
     </section>
     <section>
       <h2>Percursos</h2>
@@ -544,6 +546,8 @@ const TOPICS={
  fin:[],cong:[],com:[],
 };
 let curTopic=null, topicStack=[], replyTo=null, ESCFROM=null, DNCUR=null, NOVAQ=null, TOPFILTRO='', TOPEXP=false;
+let SALAS='4';
+const ATIVAS=()=>SALAS==='0'?[]:SALAS==='1'?['celula']:Object.keys(COMPS);
 const norm=s=>(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
 function topQuieta(t){if(t.estado==='encerrada'||t.escalado||t.pin)return null;const u=t.ult||0;
  if(u>=76)return{prazo:90-Math.floor(u)};if(u>=30)return{desde:t.ultLabel||'há tempo'};return null}
@@ -696,7 +700,13 @@ const JGROUP=['jornal','corresp','editor'], DGROUP=['delib','delibdet','nova','a
 const TRANSV=['panorama','frentes','seg','cartilha','licao','meuorgs','mandatos'];
 const ui={
  screen:"panorama",
- go(s){document.querySelectorAll('.screen').forEach(e=>e.classList.remove('on'));
+ setSalas(m){SALAS=m;['sal4','sal1','sal0'].forEach(id=>$(id).setAttribute('aria-pressed',String(id==='sal'+m)));
+   $('tabs').classList.toggle('pend',m==='0');
+   if(m!=='0'&&!ATIVAS().includes(comp))ui.setComp('celula');
+   announce(m==='0'?'Bancada: conta recém-criada — aguardando admissão na célula':m==='1'?'Bancada: militante de base — uma sala':'Bancada: quatro salas (papéis e delegações)',false,true);
+   ui.go('panorama')},
+ go(s){if(SALAS==='0'&&!['panorama','cartilha','licao','seg'].includes(s)){announce('Você ainda não está numa sala — a célula decide sua admissão',true);s='panorama'}
+   document.querySelectorAll('.screen').forEach(e=>e.classList.remove('on'));
    const el=$('s-'+s);el.classList.add('on','fade');setTimeout(()=>el.classList.remove('fade'),200);
    document.querySelectorAll('#tabs button').forEach(b=>{const t=b.dataset.s;
      const cur=(t===s||(t==='delib'&&DGROUP.includes(s))||(t==='jornal'&&JGROUP.includes(s)));
@@ -881,17 +891,36 @@ function honesty(key,cls,full,short){
  return `<div class="callout ${cls}" style="font-size:12.5px">${short}</div>`}
 
 const render={
- panorama(){$('s-panorama').innerHTML=`
-  <h3 class="sec">Início</h3>
+ panorama(){
+  if(SALAS==='0'){$('s-panorama').innerHTML=`
+   <h3 class="sec">Sua admissão</h3>
+   <div class="card"><b>Convite aceito — a célula decide sua admissão.</b>
+    <div class="kv" style="margin-top:8px">
+     <div class="r"><span class="k">Convite conferido</span><span style="color:var(--t-prot)">✓</span></div>
+     <div class="r"><span class="k">Suas chaves</span><span style="color:var(--t-prot)">criadas neste aparelho ✓</span></div>
+     <div class="r"><span class="k">Admissão</span><span class="nw">a sala vota — ninguém entra por botão</span></div></div></div>
+   <div class="callout">Você ainda não está em nenhuma sala. Quando a célula te admitir, o mural, as decisões e o jornal abrem sozinhos. Só a sala que te convidou sabe que você existe aqui.</div>
+   <h3 class="sec">Enquanto espera</h3>
+   <button class="card tap" onclick="ui.go('cartilha')"><div style="display:flex;gap:8px;align-items:center">${chev}<b>Cartilha</b></div><div class="mut" style="margin-top:3px">por que nomes por sala, a chave-mestra de papel, o voto secreto</div></button>
+   <button class="card tap" onclick="vote.start(true)"><div style="display:flex;gap:8px;align-items:center">${chev}<b>Ensaiar o voto secreto</b></div><div class="mut" style="margin-top:3px">pratica todos os passos — nada sai do aparelho, nada vale</div></button>
+   <p class="dim">Se o convite expirar sem decisão, procure quem te convidou — pessoalmente.</p>`;return}
+  const multi=SALAS!=='4'?false:true;
+  const IT=[
+   {c:'cong',prazo:'hoje · 21:00',t:'Abra seu voto de rosto',sub:'Resolução política — fala registrada é o voto',on:"ui.setComp('cong');ui.go('nominal')"},
+   {c:'celula',prazo:'fecha em 26h',t:'Votação: quem vai ao 3º Congresso',sub:'vote com folga até amanhã 19:30',on:"ui.setComp('celula');ui.go('delibdet')"},
+   {c:'celula',prazo:'quinta · 19h',t:'Reunião da célula — confirmar presença',sub:'3 de 6 confirmaram · confirmar é escrever',on:"ui.setComp('celula');ui.abrirTopico('t2')"},
+   {c:'com',prazo:'sexta',t:'Balanço do território consolida',sub:'2 células em silêncio — contato antes de juízo',on:"ui.setComp('com');ui.go('balanco')"},
+   {c:'fin',prazo:'até 15/08',t:'Prestação do trimestre',sub:'falta a segunda assinatura',on:"ui.setComp('fin');ui.go('fin')"},
+   {c:'celula',prazo:'até 15/08',t:'Cota do trimestre',sub:'R$ 30 — vale em dinheiro ou PIX, conforme o regime',on:"ui.setComp('celula');ui.go('fin')"},
+  ].filter(i=>ATIVAS().includes(i.c));
+  $('s-panorama').innerHTML=`
+  <h3 class="sec">Hoje</h3>
   ${novata?checklist():''}
-  ${pcard('celula',`<b>1 votação fecha em 26h</b> · Quem vai ao 3º Congresso<br><span class="mut">1 decisão de cima chegou · 3 mensagens novas</span>`)}
-  ${pcard('fin',`<b>Prestação de contas do trimestre aberta</b> · até 15/08<br><span class="mut">falta a segunda assinatura</span>`)}
-  ${pcard('cong',`<b>Votação aberta</b> · Resolução política — abre às 21:00<br><span class="mut">credenciamento: 41 de 58 delegações</span>`)}
-  ${pcard('com',`<b>Balanço consolida sexta</b> · 2 decisões abertas<br><span class="mut">2 células em silêncio — contato antes de juízo</span>`)}
-  <button class="card tap" onclick="ui.go('frentes')"><div class="dim">FRENTES</div><div style="margin-top:3px">${chev}<b>Frente 1º de Maio</b> · cópia local em dia</div></button>`;
-  function pcard(c,html){const C=COMPS[c];return `<button class="card tap" style="border-left:3px solid ${C.cor}" onclick="ui.setComp('${c}');ui.go('mural')">
-   <div class="mut" style="display:flex;gap:6px;align-items:center">${chev}<span style="width:9px;height:9px;border-radius:3px;background:${C.cor}"></span>${C.nome}</div>
-   <div style="font-size:14px;margin-top:4px">${html}</div></button>`}},
+  ${IT.map(i=>`<button class="card tap" style="border-left:3px solid ${COMPS[i.c].cor}" onclick="${i.on}">
+   <div style="display:flex;justify-content:space-between;gap:8px;align-items:baseline"><b>${i.t}</b><span class="nw" style="color:var(--t-exp);font-weight:600;font-size:13px">${i.prazo}</span></div>
+   <div class="mut" style="margin-top:3px">${multi?`<span style="color:${COMPS[i.c].cor}">●</span> ${COMPS[i.c].nome} · `:''}${i.sub}</div></button>`).join('')}
+  <button class="card tap" onclick="ui.go('frentes')"><div class="dim">FRENTES</div><div style="margin-top:3px">${chev}<b>Frente 1º de Maio</b> · cópia local em dia</div></button>
+  <p class="dim">Aqui entram só prazos e pendências — nunca conteúdo. Uma foto desta tela não entrega o que se diz nas salas.</p>`},
 
  mural(){const M=MSGS[comp]||[];const T=TOPICS[comp]||[];const desc=comp==='celula';
   const abertas=T.filter(t=>t.estado!=='encerrada');
@@ -916,7 +945,9 @@ const render={
     <div class="mut">obriga: Célula Gráfica e Portuária · toque para ler a ata</div></button>`):''}
   ${admitido&&desc?`<p class="dim" style="text-align:center">— Camarada Fresa entrou · a fechadura mudou para 🔒 ${COMPS.celula.epoch} —</p>`:''}
   ${abertas.filter(t=>t.tipo!=='convocacao'&&(t.ult===undefined||t.ult<=3)).sort((a,b)=>(b.ult||0)-(a.ult||0)).map(t=>{const r=t.msgs.find(m=>!m.parent);if(!r)return'';
+    const u=t.msgs[t.msgs.length-1];
     return `<div class="msg">${icon(r.h,COMPS[comp].cor)}<div class="bubble"><div class="meta"><b>${r.h}</b><span class="t">${r.t}</span></div>${r.x}
+     ${u&&u.id!==r.id?`<div class="dim" style="margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">↳ ${u.h.replace('Camarada ','')}: ${u.x}</div>`:''}
      <div class="tfoot"><button onclick="ui.abrirTopico('${t.id}')">↳ ${t.msgs.length-1} respostas · ${t.escalado?'virou decisão':'ativa'}</button><button onclick="ui.abrirTopico('${t.id}')">Responder</button><button onclick="ui.msgAct('${t.id}','${r.id}')" aria-label="Mais ações">···</button></div></div></div>`}).join('')}
   ${M.map((m,i)=>m.topico?`<button class="pinitem" onclick="ui.abrirTopico('${m.topico}')" style="border-left-color:var(--border-2)"><span class="pt">→ virou a conversa "${(topFind(m.topico)||{}).titulo||''}"</span><span class="pm">abrir ›</span></button>`
    :`<div class="msg${m.h===COMPS[comp].handle?' mine':''}">${icon(m.h,COMPS[comp].cor)}<div class="bubble"><div class="meta"><b>${m.h}</b><span class="t">${m.t}</span>${m.fila?'<span class="role warn">na fila — sem conexão</span>':''}</div>${m.x}
@@ -1366,8 +1397,9 @@ ${DISCFALAS.map(falaHtml).join('')}`;composerCtl.custom({ph:'Falar no debate…'
    ${honesty('a7','','Isto <b>reduz, não elimina</b>, o risco de um app adulterado. É o ponto mais difícil de toda a segurança.','Reduz, não elimina, o risco de app adulterado.')}</div>`},
 
  meuorgs(){$('s-meuorgs').innerHTML=`
-  <h3 class="sec">Suas salas — ${Object.keys(COMPS).length}</h3>
-  ${Object.entries(COMPS).map(([k,C])=>`<button class="card tap" style="border-left:3px solid ${C.cor}" onclick="ui.setComp('${k}');ui.go('mural')">
+  <h3 class="sec">Suas salas — ${ATIVAS().length}</h3>
+  ${SALAS==='1'?'<p class="dim">Papéis, delegações e mandatos abrem novas salas aqui — hoje você está na sua célula.</p>':''}
+  ${Object.entries(COMPS).filter(([k])=>ATIVAS().includes(k)).map(([k,C])=>`<button class="card tap" style="border-left:3px solid ${C.cor}" onclick="ui.setComp('${k}');ui.go('mural')">
     <div style="display:flex;align-items:center;gap:8px">${chev}<span style="width:9px;height:9px;border-radius:3px;background:${C.cor};flex:none"></span><b>${C.nome}</b><span class="mono dim" style="margin-left:auto">🔒 ${C.epoch}</span></div>
     <div class="mut" style="margin-top:3px">${C.tipo} · você é <b>${C.handle}</b></div></button>`).join('')}
   ${honesty('mapa','','Esta tela junta suas salas — <b>só no seu aparelho</b>. Uma foto dela entrega seu mapa inteiro: é a tela mais reveladora do app, e é por ela que existem o bloqueio do app e o cuidado com capturas.','Só no seu aparelho — uma captura entrega seu mapa inteiro.')}
@@ -1539,15 +1571,20 @@ ${DISCFALAS.map(falaHtml).join('')}`;composerCtl.custom({ph:'Falar no debate…'
   ui.go('licao');},
  licao(){if(!$('s-licao').innerHTML.trim())render.licaoLoad('L1')},
 
- selector(){$('sh-comp').innerHTML=`<h3>Trocar de sala</h3><p class="sub">Trocar é um gesto seu — a cor da borda muda com você.</p>
-  ${Object.entries(COMPS).map(([k,C])=>`<button class="card tap" style="display:flex;align-items:center;gap:10px;border-left:3px solid ${C.cor}" onclick="ui.setComp('${k}')">
+ selector(){$('sh-comp').innerHTML=`<h3>Trocar de sala</h3><p class="sub">${SALAS==='1'?'Você está na sua célula. Papéis, delegações e mandatos abrem novas salas aqui.':'Trocar é um gesto seu — a cor da borda muda com você.'}</p>
+  ${Object.entries(COMPS).filter(([k])=>ATIVAS().includes(k)).map(([k,C])=>`<button class="card tap" style="display:flex;align-items:center;gap:10px;border-left:3px solid ${C.cor}" onclick="ui.setComp('${k}')">
    <span style="width:11px;height:11px;border-radius:3px;background:${C.cor}"></span>
    <span style="flex:1"><b>${C.nome}</b><br><span class="dim">você é: ${C.handle}</span></span>
    ${k===comp?'<span class="mono dim">aqui</span>':''}</button>`).join('')}
   <button class="mitem" onclick="ui.closeSheets(true);ui.go('meuorgs')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>Todas as suas salas — e a árvore da organização</button>
   <p class="dim">Seus nomes aparecem juntos só em telas suas, só neste aparelho.</p>`},
 
- mais(){$('sh-mais').innerHTML=`<h3>Mais — ${COMPS[comp].nome}</h3>
+ mais(){if(SALAS==='0'){$('sh-mais').innerHTML=`<h3>Mais</h3>
+  ${mi0('cartilha','Cartilha (aprender)')}
+  ${mi0('seg','Conta e segurança')}`;
+  function mi0(s,l){return `<button class="mitem" onclick="ui.closeSheets(true);ui.go('${s}')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>${l}</button>`}
+  return}
+  $('sh-mais').innerHTML=`<h3>Mais — ${COMPS[comp].nome}</h3>
   ${mi('membros','Quem é desta sala')}
   ${comp==='celula'?mi('admissao','Entradas'+(admitido?'':' · 1')):''}
   ${mi('topicos','Conversas da sala')}
@@ -1626,9 +1663,10 @@ ${DISCFALAS.map(falaHtml).join('')}`;composerCtl.custom({ph:'Falar no debate…'
 
  notices(){$('notbadge').style.display='none';$('sh-not').innerHTML=`<h3>Avisos</h3><p class="sub">O app consulta de tempos em tempos pela rede protegida — nada é empurrado ao seu telefone.</p>
   <p class="dim">Nesta bancada os avisos são fixos — no app real, o ponto de aviso volta quando chega algo novo.</p>
-  <button class="notif" onclick="ui.closeSheets(true);ui.setComp('celula');ui.go('delibdet')"><span class="dot" style="background:${COMPS.celula.cor}"></span><span><b>Votação fecha em 26h</b> — Quem vai ao 3º Congresso.<br><span class="dim">vote com folga até amanhã 19:30</span></span></button>
-  <button class="notif" onclick="ui.closeSheets(true);ui.setComp('cong');ui.go('nominal')"><span class="dot" style="background:${COMPS.cong.cor}"></span><span><b>Abra seu voto</b> — Resolução política, até 21:00.</span></button>
-  <button class="notif" onclick="ui.closeSheets(true);ui.setComp('celula');ui.go('resol')"><span class="dot" style="background:${COMPS.celula.cor}"></span><span><b>Chegou decisão de cima</b> — Campanha de sindicalização.</span></button>`},
+  ${SALAS==='0'?'<div class="empty">Nenhum aviso — você ainda não está numa sala.</div>':''}
+  ${ATIVAS().includes('celula')?`<button class="notif" onclick="ui.closeSheets(true);ui.setComp('celula');ui.go('delibdet')"><span class="dot" style="background:${COMPS.celula.cor}"></span><span><b>Votação fecha em 26h</b> — Quem vai ao 3º Congresso.<br><span class="dim">vote com folga até amanhã 19:30</span></span></button>`:''}
+  ${ATIVAS().includes('cong')?`<button class="notif" onclick="ui.closeSheets(true);ui.setComp('cong');ui.go('nominal')"><span class="dot" style="background:${COMPS.cong.cor}"></span><span><b>Abra seu voto</b> — Resolução política, até 21:00.</span></button>`:''}
+  ${ATIVAS().includes('celula')?`<button class="notif" onclick="ui.closeSheets(true);ui.setComp('celula');ui.go('resol')"><span class="dot" style="background:${COMPS.celula.cor}"></span><span><b>Chegou decisão de cima</b> — Campanha de sindicalização.</span></button>`:''}`},
 };
 
 /* checklist de primeiros passos */
