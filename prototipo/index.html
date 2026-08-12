@@ -856,7 +856,6 @@ const ui={
 const lock=`<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>`;
 const eye=`<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/></svg>`;
 const chev=`<svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>`;
-const chipMural=`<button class="tchip tc-prot" onclick="ui.meta('mural')">${lock}Protegido · o servidor vê: grupo, quando, tamanho, sequência e ritmo</button>`;
 const chipMuralCurto=`<button class="tchip tc-prot" onclick="ui.meta('mural')">${lock}Protegido · o servidor vê</button>`;
 const PINSVG=`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 17v5M5 9l7-7 7 7-3 1v5l-4 3-4-3v-5z"/></svg>`;
 const falaHtml=m=>`<div class="msg${m.h===COMPS[comp].handle?' mine':''}">${icon(m.h,COMPS[comp].cor)}<div class="bubble"><div class="meta"><b>${m.h}</b><span class="t">${m.t}</span>${m.fila?'<span class="role warn">na fila — sem conexão</span>':''}</div>${m.x}</div></div>`;
@@ -881,7 +880,7 @@ const render={
 
  mural(){const M=MSGS[comp]||[];const T=TOPICS[comp]||[];const desc=comp==='celula';
   const abertas=T.filter(t=>t.estado!=='encerrada');
-  const chipCheio=novata||!done['seen_muralchip'];done['seen_muralchip']=1;
+  const metaCheia=novata||!done['seen_muralchip'];done['seen_muralchip']=1;
   const fInt=novata||!done['seen_fech_'+comp];done['seen_fech_'+comp]=1;
   const pins=abertas.filter(t=>t.pin);
   const nresp=t=>t.tipo==='convocacao'?`${(t.confirm||[]).length} confirmaram`:`${t.msgs.length} respostas`;
@@ -894,13 +893,14 @@ const render={
     :`<button class="pinitem" onclick="ui.abrirTopico('${s.t.id}')">${PINSVG}<span class="pt">${s.t.titulo}</span><span class="pm">${s.t.tipo==='convocacao'?s.t.hora:nresp(s.t)}</span></button>`;
   $('s-mural').innerHTML=`
   <div class="muraltop">
-  <div class="ctxline">${chipCheio?chipMural:chipMuralCurto}<span style="flex:1"></span>
+  <div class="ctxline">${chipMuralCurto}<span style="flex:1"></span>
    <button class="btn btn-sm" onclick="ui.go('topicos')">Conversas${abertas.length?` ${abertas.length}`:''}</button>
    <button class="iconbtn" style="width:36px;height:36px" onclick="ui.go('busca')" aria-label="Buscar nesta sala"><svg viewBox="0 0 24 24" width="19" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg></button></div>
   ${slots.length?`<div class="pinrow" role="navigation" aria-label="Ordem do dia">
     ${slotHtml(slots[0])}
     ${slots.length>1?`<button class="pinplus" onclick="ui.go('topicos')" aria-label="Mais ${slots.length-1} na ordem do dia">+${slots.length-1}</button>`:''}</div>`:''}
   </div>
+  ${metaCheia?`<div class="callout prot">${lock} <b>Protegido de ponta a ponta.</b> O servidor vê: para qual grupo, quando, tamanho, posição na sequência e ritmo — <b>não o conteúdo, não qual de vocês escreveu</b>. A íntegra fica no selo "Protegido", no alto, sempre.</div>`:''}
   ${fInt?`<div class="empty" style="padding:14px">Você entrou aqui na fechadura ${COMPS[comp].entrou} — o que veio antes fica fechado. <b>Desenho, não falha.</b></div>`
    :`<button class="lockline" onclick="ui.sheet('sh-epoca')">— fechadura ${COMPS[comp].entrou} · o que veio antes fica fechado —</button>`}
   ${desc&&!decisaoVista?(`<button class="card tap" style="border-left:3px solid ${COMPS.celula.cor}" onclick="ui.go('resol')">
