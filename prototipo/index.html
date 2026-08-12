@@ -705,7 +705,7 @@ const ui={
    const transv=TRANSV.includes(s);
    $('comphead').style.display=transv?'none':'flex';
    $('phone').classList.toggle('transversal',transv);
-   el.scrollTop=0;},
+   el.scrollTop=(s==='mural'?el.scrollHeight:0);},
  setComp(c){comp=c;const C=COMPS[c];$('phone').style.setProperty('--spine',C.cor);
    $('ch-nome').textContent=C.nome;$('ch-tipo').innerHTML=`você: <b>${C.handle}</b>`;$('ch-epoch').innerHTML='🔒 '+C.epoch;updConv(c);
    const tinha=($('ctxt').value||'').trim();
@@ -775,6 +775,14 @@ const ui={
    if(!(t.confirm||[]).includes(COMPS[comp].handle))t.confirm=[...(t.confirm||[]),COMPS[comp].handle];
    t.msgs.push({id:'c'+t.msgs.length,parent:null,h:COMPS[comp].handle,t:'agora',x});
    announce('Confirmação na fila — sai num momento aleatório antes da hora');composerCtl.apply('topico');render.topico()},
+ ordemDia(){const T=TOPICS[comp]||[];const pins=T.filter(t=>t.estado!=='encerrada'&&t.pin);
+   const conv=pins.filter(t=>t.tipo==='convocacao'),cur=pins.filter(t=>t.tipo!=='convocacao');
+   $('sh-msgact').innerHTML=`<h3>Ordem do dia</h3><p class="sub">O que a sala fixou — com assinatura e prazo. Contestar um pin é uma questão de ordem.</p>
+   ${conv.map(t=>`<button class="mitem" onclick="ui.closeSheets(true);ui.abrirTopico('${t.id}')"><span style="flex:1"><b>${t.titulo}</b><br><span class="dim">${t.hora} · ${(t.confirm||[]).length} confirmaram · fixada até a hora, sozinha</span></span><span class="role">convocação</span></button>`).join('')}
+   ${(comp==='celula'&&done['seen_decisao'])?`<button class="mitem" onclick="ui.closeSheets(true);ui.go('resol')"><span style="flex:1"><b>Campanha de sindicalização</b><br><span class="dim">decisão de cima — topo por direito, não por curadoria · ler a ata</span></span><span class="role">obriga</span></button>`:''}
+   ${cur.map(t=>`<button class="mitem" onclick="ui.closeSheets(true);ui.abrirTopico('${t.id}')"><span style="flex:1"><b>${t.titulo}</b><br><span class="dim">fixado por ${t.pin.por} (${t.pin.papel}) · até ${t.pin.ate}</span></span><span class="role">fixada</span></button>`).join('')}
+   <p class="dim">A convocação some sozinha na hora; os demais caem no prazo ou por quem fixou.</p>`;
+   ui.sheet('sh-msgact')},
  buscarDoFiltro(){const q=TOPFILTRO;ui.go('busca');const i=$('q');if(i){i.value=q;render.buscar(q)}},
  abrirTopico(id){curTopic=id;topicStack=[];ui.go('topico');const t=topFind(id);if(t)announce('Conversa: '+t.titulo,false,true)},
  diveTopic(mid){topicStack.push(mid);render.topico();$('s-topico').scrollTop=0;
@@ -887,8 +895,6 @@ const render={
 
  mural(){const M=MSGS[comp]||[];const T=TOPICS[comp]||[];const desc=comp==='celula';
   const abertas=T.filter(t=>t.estado!=='encerrada');
-  const metaCheia=novata||!done['seen_muralchip'];done['seen_muralchip']=1;
-  const fInt=novata||!done['seen_fech_'+comp];done['seen_fech_'+comp]=1;
   const pins=abertas.filter(t=>t.pin);
   const nresp=t=>t.tipo==='convocacao'?`${(t.confirm||[]).length} confirmaram`:`${t.msgs.length} respostas`;
   const pinsOrd=[...pins].sort((a,b)=>(b.tipo==='convocacao')-(a.tipo==='convocacao'));
@@ -902,16 +908,14 @@ const render={
   $('s-mural').innerHTML=`
   ${slots.length?`<div class="muraltop"><div class="pinrow" role="navigation" aria-label="Ordem do dia">
     ${slotHtml(slots[0])}
-    ${slots.length>1?`<button class="pinplus" onclick="ui.go('topicos')" aria-label="Mais ${slots.length-1} na ordem do dia">+${slots.length-1}</button>`:''}</div></div>`:''}
-  ${metaCheia?`<div class="callout prot">${lock} <b>Protegido de ponta a ponta.</b> O servidor vê: para qual grupo, quando, tamanho, posição na sequência e ritmo — <b>não o conteúdo, não qual de vocês escreveu</b>. A íntegra fica no <b>cadeado verde</b>, na barra da sala, sempre.</div>`:''}
-  ${fInt?`<div class="empty" style="padding:14px">Você entrou aqui na fechadura ${COMPS[comp].entrou} — o que veio antes fica fechado. <b>Desenho, não falha.</b></div>`
-   :`<button class="lockline" onclick="ui.sheet('sh-epoca')">— fechadura ${COMPS[comp].entrou} · o que veio antes fica fechado —</button>`}
+    ${slots.length>1?`<button class="pinplus" onclick="ui.ordemDia()" aria-label="Ordem do dia completa — mais ${slots.length-1}">+${slots.length-1}</button>`:''}</div></div>`:''}
+  <button class="lockline" onclick="ui.sheet('sh-epoca')">— aqui começa a sua história nesta sala · fechadura ${COMPS[comp].entrou} —</button>
   ${desc&&!decisaoVista?(`<button class="card tap" style="border-left:3px solid ${COMPS.celula.cor}" onclick="ui.go('resol')">
     <div class="dim">${chev}DECISÃO DE CIMA · Comitê Regional</div>
     <div class="ata" style="font-size:14.5px;margin-top:4px"><b>Campanha de sindicalização</b></div>
     <div class="mut">obriga: Célula Gráfica e Portuária · toque para ler a ata</div></button>`):''}
   ${admitido&&desc?`<p class="dim" style="text-align:center">— Camarada Fresa entrou · a fechadura mudou para 🔒 ${COMPS.celula.epoch} —</p>`:''}
-  ${abertas.filter(t=>t.tipo!=='convocacao'&&(t.ult===undefined||t.ult<=3)).map(t=>{const r=t.msgs.find(m=>!m.parent);if(!r)return'';
+  ${abertas.filter(t=>t.tipo!=='convocacao'&&(t.ult===undefined||t.ult<=3)).sort((a,b)=>(b.ult||0)-(a.ult||0)).map(t=>{const r=t.msgs.find(m=>!m.parent);if(!r)return'';
     return `<div class="msg">${icon(r.h,COMPS[comp].cor)}<div class="bubble"><div class="meta"><b>${r.h}</b><span class="t">${r.t}</span></div>${r.x}
      <div class="tfoot"><button onclick="ui.abrirTopico('${t.id}')">↳ ${t.msgs.length-1} respostas · ${t.escalado?'virou decisão':'ativa'}</button><button onclick="ui.abrirTopico('${t.id}')">Responder</button><button onclick="ui.msgAct('${t.id}','${r.id}')" aria-label="Mais ações">···</button></div></div></div>`}).join('')}
   ${M.map((m,i)=>m.topico?`<button class="pinitem" onclick="ui.abrirTopico('${m.topico}')" style="border-left-color:var(--border-2)"><span class="pt">→ virou a conversa "${(topFind(m.topico)||{}).titulo||''}"</span><span class="pm">abrir ›</span></button>`
